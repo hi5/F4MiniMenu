@@ -1,8 +1,8 @@
 # F4MiniMenu
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files in
-editor(s)) just offering the basic functionality. Original F4Menu program by Shao Shanny 
-- http://www.shanny.com.cn/ (website seems to be offline, see TC forum links below)
+editor(s)) just offering the basic functionality. Original F4Menu program by Shao 
+Shanny - http://www.shanny.com.cn/ (website seems to be offline, see TC forum links below)
 
 __Introduction__
 
