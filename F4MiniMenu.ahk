@@ -194,11 +194,11 @@ Hotkey, IfWinActive, ahk_class TTOTAL_CMD
 hk_prefix:="$"
 If (RegExMatch(MatchList[0].ForegroundHotkey,"[\^\+\!\# \&]"))
 	hk_prefix:="~"
-Hotkey, % hk_prefix . MatchList[0].ForegroundHotkey, Process,  %HotKeyState%  ; %
+Hotkey, % hk_prefix . MatchList[0].ForegroundHotkey, ShowMenu,  %HotKeyState%  ; %
 hk_prefix:="$"
 If (RegExMatch(MatchList[0].BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in inplace rename (shift-f6) operations in a panel, or at least that is my experience.
 	hk_prefix:="~"
-Hotkey, % hk_prefix . MatchList[0].BackgroundHotkey, ShowMenu, %HotKeyState%  ; %
+Hotkey, % hk_prefix . MatchList[0].BackgroundHotkey, Process, %HotKeyState%  ; %
 Hotkey, IfWinActive
 Return	
 	

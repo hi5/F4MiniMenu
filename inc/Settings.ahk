@@ -41,11 +41,32 @@ Gui, Add, Edit, xp+53  yp-5 w180 h21 vTCPath, % MatchList[0].TCPath ; %
 Gui, Add, Button, xp+187  yp   w30  h20 gSelectExe, >>
 
 Gui, Add, GroupBox, x16 yp+40 w395 h90 , Hotkeys
-Gui, Add, Text, x25 yp+25 w150 h16 , &Foreground mode (menu)
+
+Gui, Add, Text, x25 yp+25 w150 h16 , &Background mode (direct)
+Gui, Add, Radio, xp+130 yp w45 h16  vBesc, Esc
+Gui, Add, Radio, xp+45  yp w45 h16  vBWin, Win
+
+; Always annoying to work around Hotkey control limit, use boxes for Win & Esc keys
+If InStr(BGHKey,"#")
+	{
+	 StringReplace, BGHKey, BGHKey, #, , All
+	 GuiControl, , BWin, 1
+	}
+If InStr(BGHKey,"Esc &")
+	{
+	 StringReplace, BGHKey, BGHKey, Esc &, , All
+	 StringReplace, BGHKey, BGHKey, Esc &amp`;, , All
+	 StringReplace, BGHKey, BGHKey, Esc &amp;, , All
+	 StringReplace, BGHKey, BGHKey, %A_Space%, , All
+	 GuiControl, , BEsc, 1
+	}
+
+Gui, Add, Hotkey, xp+50 yp-3 w140 h20 vBGHKey  , %BGHKey%
+
+Gui, Add, Text, x25 yp+35 w150 h16 , &Foreground mode (menu)
 Gui, Add, Radio, xp+130 yp w45 h16 vFesc, Esc
 Gui, Add, Radio, xp+45  yp w45 h16 vFWin, Win
 
-; Always annoying to work around Hotkey control limit, use boxes for Win & Esc keys
 If InStr(FGHKey,"#")
 	{
 	 StringReplace, FGHKey, FGHKey, #, , All
@@ -63,25 +84,6 @@ If InStr(FGHKey,"Esc &")
 	
 Gui, Add, Hotkey, xp+50 yp-3 w140 h20 vFGHKey  , %FGHKey% 
 
-Gui, Add, Text, x25 yp+35 w150 h16 , &Background mode
-Gui, Add, Radio, xp+130 yp w45 h16  vBesc, Esc
-Gui, Add, Radio, xp+45  yp w45 h16  vBWin, Win
-
-If InStr(BGHKey,"#")
-	{
-	 StringReplace, BGHKey, BGHKey, #, , All
-	 GuiControl, ,BWin, 1
-	}
-If InStr(BGHKey,"Esc &")
-	{
-	 StringReplace, BGHKey, BGHKey, Esc &, , All
-	 StringReplace, BGHKey, BGHKey, Esc &amp`;, , All
-	 StringReplace, BGHKey, BGHKey, Esc &amp;, , All
-	 StringReplace, BGHKey, BGHKey, %A_Space%, , All
-	 GuiControl, , BEsc, 1
-	}
-
-Gui, Add, Hotkey, xp+50 yp-3 w140 h20 vBGHKey  , %BGHKey%
 
 Gui, Add, Button, xp+177 yp-48 w120 h25 gButtonOK, OK
 Gui, Add, Button, xp     yp+30 w120 h25 gButtonClear, Clear Hotkeys
