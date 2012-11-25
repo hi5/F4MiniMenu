@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MatchList>
+	<Invalid_Name id="0" ahk="True">
+		<BackgroundHotkey>Esc & F4</BackgroundHotkey>
+		<ForegroundHotkey>F4</ForegroundHotkey>
+		<MaxFiles>30</MaxFiles>
+		<MenuPos>3</MenuPos>
+		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
+		<TCStart>1</TCStart>
+	</Invalid_Name>
+	<Invalid_Name id="1" ahk="True">
+		<Exe>c:\WINDOWS\notepad.exe</Exe>
+		<Ext>txt,xml</Ext>
+		<Method>Normal</Method>
+		<WindowMode>1</WindowMode>
+	</Invalid_Name>
+	<Invalid_Name id="2" ahk="True">
+		<Delay>1500</Delay>
+		<Exe>c:\WINDOWS\system32\mspaint.exe</Exe>
+		<Ext>bmp,png</Ext>
+		<Method>DragDrop</Method>
+		<WindowMode>1</WindowMode>
+	</Invalid_Name>
+</MatchList>
