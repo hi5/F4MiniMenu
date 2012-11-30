@@ -132,7 +132,11 @@ OpenFile(Editor,open)
 	 title:="ahk_exe " Editor.Exe
 	 If IsFunc(func)
 		%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)
-	 If (Editor.windowmode = 2) ; maximize
+	 If (Editor.windowmode = 1) ; normal (activate)
+		{
+		 WinActivate, %title%
+		}
+	 Else If (Editor.windowmode = 2) ; maximize
 		{
 		 WinWait, %title%
 		 WinMaximize, %title%

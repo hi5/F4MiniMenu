@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MatchList>
 	<Invalid_Name id="0" ahk="True">
-		<BackgroundHotkey>Esc & F4</BackgroundHotkey>
-		<ForegroundHotkey>F4</ForegroundHotkey>
+		<BackgroundHotkey>F4</BackgroundHotkey>
+		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
 		<MaxFiles>30</MaxFiles>
 		<MenuPos>3</MenuPos>
 		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>

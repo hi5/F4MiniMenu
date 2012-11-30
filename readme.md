@@ -1,8 +1,8 @@
 # F4MiniMenu
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files in
-editor(s)) just offering the basic functionality. Original F4Menu program by Shao 
-Shanny - http://www.shanny.com.cn/ (website seems to be offline, see TC forum links below)
+editor(s)) just offering the basic functionality. Original F4Menu program by Shao Shanny 
+- http://www.shanny.com.cn/ (website seems to be offline, see TC forum links below)
 
 __Introduction__
 
@@ -44,7 +44,7 @@ Use at your own risk.
 
 __Drag & Drop support__
 
-Many program support Drag & Drop, but not all programs will respond well to the Drag & Drop
+Many programs support Drag & Drop, but not all programs will respond well to the Drag & Drop
 method used in this script, so if it does not seem to work with a particular program, try
 the Normal method.
 
@@ -64,7 +64,8 @@ and unpack. To start it simply run F4MiniMenu.ahk - You can now setup F4MiniMenu
 the tray menu options for *Settings* and *Configure editors*.
 
 Once you have setup your shortcuts you can also access *Settings* and *Configure editors* 
-via the Foreground menu options by pressing the shortcut (press Esc & F4 by default). See screenshots below.
+via the Foreground menu options by pressing the shortcut (press <kbd>Esc</kbd>+<kbd>F4</kbd> by default).
+See screenshots below.
 
 *Executable*
 
@@ -98,9 +99,9 @@ __Editor configuration__
 2. TOFIX: If you change the order of the editors first and then add a new one, the order is set back to the initial order.
 3. INFO: Delay (in miliseconds) is only applicable to Drag & Drop method.
 4. TODO: "Open Mode" not implemented yet (unsure if it will).
-5. TODO: Unicode support for the Drag & Drop feature so it can be run using AutoHotkey Uncide version.
+5. TODO: Unicode support for the Drag & Drop feature so it can be run using the AutoHotkey Unicode version.
 6. TODO: Process entire file list first, sort files by program, open files per program.
-7. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in "always" running AHK script.
+7. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
 
 ## Benefits
 
