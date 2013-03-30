@@ -43,13 +43,13 @@ and your computer can become unstable requiring a reboot.
 
 Use at your own risk.
 
-__Drag & Drop support__<a id="dragdrop"></a>
+__Drag & Drop support__<a name="dragdrop"></a>
 
 Many programs support Drag & Drop, but not all programs will respond well to the Drag & Drop
 method used in this script, so if it does not seem to work with a particular program, try
 the Normal method.
 
-__Filelist support__<a id="filelist"></a>
+__Filelist support__<a name="filelist"></a>
 
 Some programs allow you to open files which are listed in a (temporary) file. In Total Commander
 you can use something similar in the _Button bar_ and in the _Start Menu_ where you can use the %L
