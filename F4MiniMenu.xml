@@ -5,20 +5,52 @@
 		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
 		<MaxFiles>30</MaxFiles>
 		<MenuPos>3</MenuPos>
-		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
+		<TCPath>d:\totalcmd\TotalCmd.exe</TCPath>
 		<TCStart>1</TCStart>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
-		<Exe>c:\WINDOWS\notepad.exe</Exe>
-		<Ext>txt,xml</Ext>
+		<Delay>0</Delay>
+		<Exe>D:\Program Files\npp6\notepad++.exe</Exe>
+		<Ext>ahk</Ext>
 		<Method>Normal</Method>
+		<Parameters></Parameters>
+		<StartDir></StartDir>
 		<WindowMode>1</WindowMode>
 	</Invalid_Name>
 	<Invalid_Name id="2" ahk="True">
 		<Delay>1500</Delay>
+		<Exe>d:\Program Files\UltraEdit\uedit32.exe</Exe>
+		<Ext>xml,md</Ext>
+		<Method>FileList</Method>
+		<Parameters>/f</Parameters>
+		<StartDir></StartDir>
+		<WindowMode>1</WindowMode>
+	</Invalid_Name>
+	<Invalid_Name id="3" ahk="True">
+		<Delay>1500</Delay>
 		<Exe>c:\WINDOWS\system32\mspaint.exe</Exe>
 		<Ext>bmp,png</Ext>
 		<Method>DragDrop</Method>
+		<Parameters></Parameters>
+		<StartDir></StartDir>
+		<WindowMode>1</WindowMode>
+	</Invalid_Name>
+	<Invalid_Name id="4" ahk="True">
+		<Delay>0</Delay>
+		<Exe>D:\Program Files\Winamp\winamp.exe</Exe>
+		<Ext>mp3</Ext>
+		<Method>Normal</Method>
+		<Parameters></Parameters>
+		<StartDir></StartDir>
+		<WindowMode>1</WindowMode>
+	</Invalid_Name>
+	<Invalid_Name id="5" ahk="True">
+		<Delay>0</Delay>
+		<Exe>D:\Program Files\XnView\xnview.exe</Exe>
+		<Ext>JPG</Ext>
+		<Method>FileList</Method>
+		<Parameters>-filelist</Parameters>
+		<StartDir></StartDir>
 		<WindowMode>1</WindowMode>
 	</Invalid_Name>
 </MatchList>

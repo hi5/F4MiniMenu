@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi)
-Version     : 0.4
+Version     : 0.5
 Author      : hi5
-Last update : 17 Nov 2012
+Last update : 30 March 2013
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -21,7 +21,9 @@ global AllExtensions:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
-F4Version:="v0.4"
+F4Version:="v0.5"
+
+FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u
 
 Menu, tray, icon, res\f4.ico
 Menu, tray, Tip , F4MiniMenu - %F4Version%
@@ -90,24 +92,51 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 		 SplitPath, A_LoopField, , , OutExtension
 		 Loop % MatchList.MaxIndex() ; %
 			{
+			 Index:=A_Index
 	 		 If CheckFile(done,open) ; safety check - otherwise each file would be processed for all editors
 				Break
 			 If (SelectedEditor < 0) ; Find out which editor to use, first come first serve
 				{
 				 If OutExtension not in %AllExtensions% ; Open in default program
 					{
-					 Done.Insert(OpenFile(MatchList[1], open))
+					 FileList1 .= open "`n"
+					 Done.Insert(open)
 					} 
-				 Else If OutExtension in % MatchList[A_Index].ext ; Open in defined program %
+				 Else If OutExtension in % MatchList[Index].ext ; Open in defined program %
 					{
-					 Done.Insert(OpenFile(MatchList[A_Index], open))
+					 FileList%Index% .= open "`n"
+					 Done.Insert(open)
 					} 
 				}
  			 Else If (SelectedEditor > 0) ; Use selected editor from the Menu (Foreground option)
 				{
-				 Done.Insert(OpenFile(MatchList[SelectedEditor], open))
+				 FileList%SelectedEditor% .= open "`n"
+				 Done.Insert(open)
 				} 
 			}
+		}
+
+	 Loop % MatchList.MaxIndex() ; %
+		{
+		 Index:=A_Index
+		 list:=Trim(FileList%Index%,"`n")
+		 If (list = "")
+			Continue
+		 If (MatchList[Index].Method = "FileList")
+			{
+			 FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u
+			 FileAppend, %list%, %A_ScriptDir%\$$f4mtmplist$$.m3u
+			 OpenFile(MatchList[Index], A_ScriptDir "\$$f4mtmplist$$.m3u")
+			}
+		 Else If (MatchList[Index].Method <> "Files")
+			{
+			 Loop, parse, list, `n
+				{
+				 If (A_LoopField = "")
+					Continue
+				 OpenFile(MatchList[Index],A_LoopField)
+				} 
+			} 
 		}
 	}
 
@@ -130,7 +159,9 @@ OpenFile(Editor,open)
 	{
 	 func:=Editor.Method
 	 title:="ahk_exe " Editor.Exe
-	 If IsFunc(func)
+	 If (func = "FileList")	
+		Normal(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)
+	 Else If IsFunc(func)
 		%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)
 	 If (Editor.windowmode = 1) ; normal (activate)
 		{
@@ -209,6 +240,7 @@ Return
 SaveSettings:
 If (A_ExitReason <> "Exit") ; to prevent saving it twice
 	XA_Save("MatchList", "F4MiniMenu.xml")
+FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u	
 ExitApp	
 Return	
 

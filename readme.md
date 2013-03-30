@@ -1,15 +1,15 @@
-# F4MiniMenu
+# F4MiniMenu - v0.5
 
-A minimalistic clone of the F4Menu program for Total Commander (open selected files in
-editor(s)) just offering the basic functionality. Original F4Menu program by Shao Shanny 
-- http://www.shanny.com.cn/ (website seems to be offline, see TC forum links below)
+A minimalistic clone of the F4Menu program for Total Commander (open selected files
+in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
+Shanny - www.shanny.com.cn (website seems to be offline, see TC forum links below)
 
 __Introduction__
 
-F4 is the shortcut key used in [Total Commander](www.ghisler.com) - a file manager for Windows -
-for opening selected files in a pre-defined editor. In TC only one program can be assigned to F4
-making it impossible to define or select other editors for different file types.
-Several tools have been made to solve this problem, these include:
+F4 is the shortcut key used in [Total Commander](http://www.ghisler.com/) - a file manager 
+for Windows - for opening selected files in a pre-defined editor. In TC only one program can
+be assigned to F4 making it impossible to define or select other editors for different file
+types. Several tools have been made to solve this problem, these include:
 
 * [ChoiceEditor](http://www.totalcmd.net/plugring/ChoiceEditor.html)
 * [Open File shell for TC](http://www.totalcmd.net/plugring/OpenFileTC.html)
@@ -18,7 +18,8 @@ Several tools have been made to solve this problem, these include:
 
 While the original F4Menu has quite a few options, this minimalistic "clone" only has the
 basic functionality: opening multiple file types in various editors. An additional feature
-is that it can open selected files using a "Drag & Drop" method (a personal requirement).
+is that it can open selected files using a "[Drag & Drop](#dragdrop)" method (a personal requirement)
+or by preparing a [Filelist](#filelist).
 
 *First come, first serve*
 
@@ -42,11 +43,35 @@ and your computer can become unstable requiring a reboot.
 
 Use at your own risk.
 
-__Drag & Drop support__
+__Drag & Drop support__<a id="dragdrop"></a>
 
 Many programs support Drag & Drop, but not all programs will respond well to the Drag & Drop
 method used in this script, so if it does not seem to work with a particular program, try
 the Normal method.
+
+__Filelist support__<a id="filelist"></a>
+
+Some programs allow you to open files which are listed in a (temporary) file. In Total Commander
+you can use something similar in the _Button bar_ and in the _Start Menu_ where you can use the %L
+parameter to create a list file with the names of the selected files and directories, one file
+per line. __F4MiniMenu__ can do the same. If you use this method a temporary file named 
+_$$f4mtmplist$$.m3u_ is created which is passed on to the target program. 
+
+*Example Filelist usage:*
+
+    Program: C:\Program Files\XnView\xnview.exe
+    Parameters: -filelist  
+    Method: 3 - Filelist
+
+Result: Selected files will now be opened in the XnView browser.
+
+*Notes:*
+
+* The reason for the .m3u extension is simple: it enables playlist support for WinAmp: Select 
+multiple music files and press the hotkey to play the selected files. If the temporary file 
+didn't have the .m3u extension WinAmp wouldn't recognize it as a playlist.
+* The temporary file _$$f4mtmplist$$.m3u_ is __not__ deleted directly after use to avoid
+problems with slow programs. It is deleted when __F4MiniMenu__ starts or closes.
 
 ## Setup
 
@@ -95,18 +120,17 @@ __Editor configuration__
 
 ## TODO - Known issues
 
-1. TOFIX: During manual sort or after a "Set as Default" in the Configure editors Gui, the icon in the listview  does not change which is confusing.
+1. TOFIX: During manual sort or after a "Set as Default" in the Configure editors Gui, the icon in the listview does not change which is confusing.
 2. TOFIX: If you change the order of the editors first and then add a new one, the order is set back to the initial order.
 3. INFO: Delay (in miliseconds) is only applicable to Drag & Drop method.
-4. TODO: "Open Mode" not implemented yet (unsure if it will).
-5. TODO: Unicode support for the Drag & Drop feature so it can be run using the AutoHotkey Unicode version.
-6. TODO: Process entire file list first, sort files by program, open files per program.
-7. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
+4. TODO: Unicode support for the Drag & Drop feature so it can be run using the AutoHotkey Unicode version.
+5. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
 
 ## Benefits
 
 * Open source
-* Supports Drag & Drop (for AutoHotkey 1.1+ Ansi)
+* Supports [Drag & Drop](#dragdrop) (for AutoHotkey 1.1+ Ansi)
+* Supports [Filelist](#filelist) method (Similar to %L in TC) as of v0.5
 
 ## Credits
 
@@ -122,6 +146,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20130330 - v0.5 a) Process entire file list first and open per program; b) Introduced [Filelist](#filelist) method; c) Removed "Open Mode".
 * 20121117 - v0.4 Configuration GUIs, tray menu. First editor now considered default editor.
 * 20121111 - v0.3 Added menu for "foreground" feature - open all selected files with specific editor (its behaviour may change in future).
 * 20121108 - v0.2 Added 0 (zero) entry in XML as default editor.
