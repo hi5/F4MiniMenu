@@ -155,11 +155,16 @@ XA_InvalidTag(Tag) {
 	 Return 0
 	}
 
-XA_XMLEncode(Text) {
-	 StringReplace, Text, Text, &, &, All
-	 StringReplace, Text, Text, <, <, All
-	 StringReplace, Text, Text, >, >, All
-	 StringReplace, Text, Text, ", ", All
-	 StringReplace, Text, Text, ', ', All
+; XA_XMLEncode references:
+; https://en.wikipedia.org/wiki/XML#Escaping
+; https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references#Predefined_entities_in_XML
+; added again as original source code posted at forum was lost due to forum upgrade 
+
+XA_XMLEncode(Text) { 
+	 StringReplace, Text, Text, &, &amp;, All
+	 StringReplace, Text, Text, <, &lt;, All
+	 StringReplace, Text, Text, >, &gt, All
+	 StringReplace, Text, Text, ", &quot;, All
+	 StringReplace, Text, Text, ', &apos;, All
 	 Return Text
 	}	

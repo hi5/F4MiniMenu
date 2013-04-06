@@ -25,9 +25,9 @@ or by preparing a [Filelist](#filelist).
 
 __F4MiniMenu__ will open a file in the __first__ editor it can find a match for based on the
 __extension__. If it can not find a match it will open the file(s) in the default editor.
-The default editor is the first editor listed in the *Configure editors* (see below) 
+The default editor is the first editor listed in the [*Configure editors*](#screenshots) 
 window. If you look in the configuration XML it will be the first editor there.
-If you want to open the file(s) in another program you can use the Foreground menu option,
+If you want to open the file(s) in another program you can use the [*Foreground* menu](#screenshots) option.
 see below.
 
 *Tip(s)*
@@ -36,8 +36,8 @@ In principle you can run F4Menu and F4MiniMenu side by side as long as you do no
 use conflicting keyboard shortcuts. If you use same hotkey setup F4MiniMenu will take precedence.
 You can set the F4MiniMenu shortcuts via the tray menu, right click, Settings option.
 
-In general: be careful opening with opening large numbers of files at once, program can crash
-and your computer can become unstable requiring a reboot.
+In general: be careful opening with opening large numbers of files at once, programs can crash
+and your computer could become unstable requiring a reboot.
 
 *Disclaimer*
 
@@ -84,8 +84,8 @@ __Install__
 
 *Script*
 
-Download the source as a ZIP from GitHub here https://github.com/hi5/F4MiniMenu/archive/master.zip
-and unpack. To start it simply run F4MiniMenu.ahk - You can now setup F4MiniMenu using 
+Download the source as a ZIP from GitHub here <https://github.com/hi5/F4MiniMenu/archive/master.zip>
+and unpack. To start it simply run F4MiniMenu.ahk. You can now setup F4MiniMenu using 
 the tray menu options for *Settings* and *Configure editors*.
 
 Once you have setup your shortcuts you can also access *Settings* and *Configure editors* 
