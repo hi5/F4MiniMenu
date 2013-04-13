@@ -163,7 +163,7 @@ XA_InvalidTag(Tag) {
 XA_XMLEncode(Text) { 
 	 StringReplace, Text, Text, &, &amp;, All
 	 StringReplace, Text, Text, <, &lt;, All
-	 StringReplace, Text, Text, >, &gt, All
+	 StringReplace, Text, Text, >, &gt;, All
 	 StringReplace, Text, Text, ", &quot;, All
 	 StringReplace, Text, Text, ', &apos;, All
 	 Return Text
