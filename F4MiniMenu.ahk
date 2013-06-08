@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi)
-Version     : 0.5
+Version     : 0.51
 Author      : hi5
-Last update : 30 March 2013
+Last update : 7 June 2013
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -21,7 +21,10 @@ global AllExtensions:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
-F4Version:="v0.5"
+F4Version:="v0.51"
+; http://en.wikipedia.org/wiki/List_of_archive_formats
+ArchiveExtentions:="\.(a|ar|cpio|shar|LBR|iso|lbr|mar|tar|bz2|F|gz|lz|lzma|lzo|rz|sfark|xz|z|infl|7z|s7z|ace|afa|alz|apk|arc|arj|ba|bh|cab|cfs|cpt|dar|dd|dgc|dmg|gca|ha|hki|ice|j|kgb|lzh|lha|lzx|pak|partimg|paq6|paq7|paq8|pea|pim|pit|qda|rar|rk|sda|sea|sen|sfx|sit|sitx|sqx|tar\.gz|tgz|tar\.Z|tar\.bz2|tbz2|tar\.lzma|tlz|uc|uc0|uc2|ucn|ur2|ue2|uca|uha|wim|xar|xp3|yz1|zip|zipx|zoo|zz)\\"
+
 
 FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u
 
@@ -73,6 +76,19 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 	 Done:=[]
 	 Stop:=0
      Files:=GetFiles() ; Get list of selected files in TC, one per line
+	 ; Check if we possibly have selected file(s) from an archive
+	 If RegExMatch(Files,"iUm)" ArchiveExtentions )
+		{
+		 If InStr(Files,"`n")
+			Check:=SubStr(Files,1,InStr(Files,"`n")-2)
+		 Else
+			Check:=Files
+		 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
+			{                ; therefore we resort to the internal TC Edit command - added for v0.51
+			 SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD
+			 Return	
+			} 
+		}
 	 SelectedFiles:=CountFiles(Files)
 	 If (SelectedFiles > MatchList[0].MaxFiles)
 		{

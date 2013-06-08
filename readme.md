@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.5
+# F4MiniMenu - v0.51
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -38,6 +38,9 @@ You can set the F4MiniMenu shortcuts via the tray menu, right click, Settings op
 
 In general: be careful opening with opening large numbers of files at once, programs can crash
 and your computer could become unstable requiring a reboot.
+
+Do not edit the F4MiniMenu.xml file while the script is running, any changes you make will be
+overwritten when the script exits.
 
 *Disclaimer*
 
@@ -146,6 +149,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20130607 - v0.51 Check if selected file(s) are archived, if so bypass F4MiniMenu all together and use internal TC Edit command to open file, this will only use the file under the cursor, not all selected files.
 * 20130330 - v0.5 a) Process entire file list first and open per program; b) Introduced [Filelist](#filelist) method; c) Removed "Open Mode".
 * 20121117 - v0.4 Configuration GUIs, tray menu. First editor now considered default editor.
 * 20121111 - v0.3 Added menu for "foreground" feature - open all selected files with specific editor (its behaviour may change in future).
