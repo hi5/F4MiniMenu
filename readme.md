@@ -63,15 +63,15 @@ _$$f4mtmplist$$.m3u_ is created which is passed on to the target program.
 *Example Filelist usage:*
 
     Program: C:\Program Files\XnView\xnview.exe
-    Parameters: -filelist  
+    Parameters: -filelist
     Method: 3 - Filelist
 
 Result: Selected files will now be opened in the XnView browser.
 
 *Notes:*
 
-* The reason for the .m3u extension is simple: it enables playlist support for WinAmp: Select 
-multiple music files and press the hotkey to play the selected files. If the temporary file 
+* The reason for the .m3u extension is simple: it enables playlist support for WinAmp: Select
+multiple music files and press the hotkey to play the selected files. If the temporary file
 didn't have the .m3u extension WinAmp wouldn't recognize it as a playlist.
 * The temporary file _$$f4mtmplist$$.m3u_ is __not__ deleted directly after use to avoid
 problems with slow programs. It is deleted when __F4MiniMenu__ starts or closes.
@@ -123,11 +123,10 @@ __Editor configuration__
 
 ## TODO - Known issues
 
-1. TOFIX: During manual sort or after a "Set as Default" in the Configure editors Gui, the icon in the listview does not change which is confusing.
-2. TOFIX: If you change the order of the editors first and then add a new one, the order is set back to the initial order.
-3. INFO: Delay (in miliseconds) is only applicable to Drag & Drop method.
-4. TODO: Unicode support for the Drag & Drop feature so it can be run using the AutoHotkey Unicode version.
-5. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
+1. TOFIX: If you change the order of the editors first and then add a new one, the order is set back to the initial order.
+2. INFO: Delay (in miliseconds) is only applicable to Drag & Drop method.
+3. TODO: Unicode support for the Drag & Drop feature so it can be run using the AutoHotkey Unicode version.
+4. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
 
 ## Benefits
 
@@ -139,9 +138,10 @@ __Editor configuration__
 
 ### Used AHK Functions & Libraries
 
-* [XA Save / Load Arrays to/from XML Functions - trueski](http://www.autohotkey.com/board/topic/85461-ahk-l-saveload-arrays/)
-* [DropFilesA - SKAN](http://www.autohotkey.com/board/topic/41467-make-ahk-drop-files-into-other-applications/#entry258810)
-* [LV_MoveRow() - diebagger/Obi-Wahn](http://www.autohotkey.com/board/topic/56396-techdemo-move-rows-in-a-listview/)
+
+* [Class LV_Rows](http://www.autohotkey.com/board/topic/94364-class-lv-rows-copy-cut-paste-and-drag-listviews/) - by [Pulover](https://github.com/Pulover/)
+* [XA Save / Load Arrays to/from XML Functions - trueski](http://www.autohotkey.com/board/topic/85461-ahk-l-saveload-arrays/) - using a 'fixed' version as forum post is messed up
+* [DropFilesA - SKAN](http://www.autohotkey.com/board/topic/41467-make-ahk-drop-files-into-other-applications/#entry258810) - this needs to be updated to include Unicode support.
 
 ### Original idea
 
@@ -149,6 +149,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20130707 - v0.6 Class LV_Rows by Pulover replaces [LV_MoveRow()](http://www.autohotkey.com/board/topic/56396-techdemo-move-rows-in-a-listview/). This resolves the problem with the listview not updating icons while moving the editors in the settings Gui.
 * 20130607 - v0.51 Check if selected file(s) are archived, if so bypass F4MiniMenu all together and use internal TC Edit command to open file, this will only use the file under the cursor, not all selected files.
 * 20130330 - v0.5 a) Process entire file list first and open per program; b) Introduced [Filelist](#filelist) method; c) Removed "Open Mode".
 * 20121117 - v0.4 Configuration GUIs, tray menu. First editor now considered default editor.

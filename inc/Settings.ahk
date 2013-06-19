@@ -7,6 +7,9 @@ Include for F4MiniMenu.ahk
 
 Settings:
 
+Gui, Browse:Destroy
+
+
 ; Variables
 SelectMenuPos:=MatchList[0].MenuPos
 Checked:=MatchList[0].TCStart

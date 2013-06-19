@@ -24,15 +24,19 @@ infotext=
 (join`n
 Important:
 1 - The first editor will be considered to the default editor.
-2 - Sort using Ctrl+UP / Ctrl+DOWN (manual sort, see (1) below).
 
-Known issues:
-1 - During manual sort, the icon does not change which is confusing.
-2 - Delay (in miliseconds) is only applicable to Drag && Drop method.
+Info:
+1 - Delay (in miliseconds) is only applicable to Drag && Drop method.
+2 - Sort using Ctrl+UP / Ctrl+DOWN or use Edit menu.
 )
 
+Menu, EditMenu, Add, Move Up`tCtrl+Up, MoveUp
+Menu, EditMenu, Add, Move Down`tCtrl+Down, MoveDown
+Menu, MenuBar, Add, %A_Space%Edit, :EditMenu
+Gui, Browse:Menu, MenuBar
+
 ; INI Gui
-Gui, Browse:Add, ListView, x6 y5 w850 h285 grid , Exe|Parameters|Start Dir.|Window|Extensions|Method|Open|Delay|Editor
+Gui, Browse:Add, ListView, x6 y5 w850 h285 grid hwndhLV vLV gLVLabel, Exe|Parameters|Start Dir.|Window|Extensions|Method|Open|Delay|Editor
 Gui, Browse:Add, GroupBox, x6 yp+290 w360 h120, Comments
 Gui, Browse:Add, Text,   x16 yp+20 w340, %infotext%
 Gui, Browse:Add, Button, xp+370   yp w70 h24 gSettings, &Settings
@@ -43,6 +47,7 @@ Gui, Browse:Add, Button, xp-240   yp+40 w150 h24 gOK, &OK
 Gui, Browse:Add, Button, xp+160   yp w150 h24 gCancel, &Cancel
 Gui, Browse:Add, Link,   xp-160   yp+40 w300 h16, F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 Gosub, UpdateListview
+LvHandle := New LV_Rows(hLV)
 Gui, Browse:Show, x261 y211 h427 w760 center, F4MiniMenu - Editor Settings
 
 Sleep 100
@@ -274,7 +279,7 @@ UpdateListview:
 Gui, Browse:Default
 IL_Destroy(ImageListID1)
 ; Create an ImageList so that the ListView can display some icons:
-ImageListID1 := IL_Create(10, 10, IconSize)
+ImageListID1 := IL_Create(65, 10, IconSize)
 ; Attach the ImageLists to the ListView so that it can later display the icons:
 LV_SetImageList(ImageListID1)
 LV_Delete()
@@ -295,38 +300,20 @@ Return
 ; Hotkeys & Functions to move a listview row
 ; TODO: Fix icon which does not move with the listview row
 
-#IfWinActive F4MiniMenu - Editor Settings
-$^Up::LV_MoveRow()
-$^Down::LV_MoveRow(false)
-#IfWinActive
+; ListViews G-Label.
+LVLabel:
+; Detect Drag event.
+If A_GuiEvent = D
+LvHandle.Drag() ; Call Drag function using the Handle.
+return
 
-LV_MoveRow(moveup = true) {
-	; Original by diebagger (Guest) from:
-	; http://de.autohotkey.com/forum/viewtopic.php?p=58526#58526
-	; Slightly Modifyed by Obi-Wahn
-	; http://www.autohotkey.com/board/topic/56396-techdemo-move-rows-in-a-listview/
-	If moveup not in 1,0
-		Return	; If direction not up or down (true or false)
-	Gui, Browse:Default
-	While x := LV_GetNext(x)	; Get selected lines
-		i := A_Index, i%i% := x
-	If (!i) || ((i1 < 2) && moveup) || ((i%i% = LV_GetCount()) && !moveup)
-		Return	; Break Function if: nothing selected, (first selected < 2 AND moveup = true) [header bug]
-				; OR (last selected = LV_GetCount() AND moveup = false) [delete bug]
-	cc := LV_GetCount("Col"), fr := LV_GetNext(0, "Focused"), d := moveup ? -1 : 1
-	; Count Columns, Query Line Number of next selected, set direction math.
-	Loop, %i% {	; Loop selected lines
-		r := moveup ? A_Index : i - A_Index + 1, ro := i%r%, rn := ro + d
-		; Calculate row up or down, ro (current row), rn (target row)
-		Loop, %cc% {	; Loop through header count
-			LV_GetText(to, ro, A_Index), LV_GetText(tn, rn, A_Index)
-			; Query Text from Current and Targetrow
-			LV_Modify(rn, "Col" A_Index, to), LV_Modify(ro, "Col" A_Index, tn)
-			; Modify Rows (switch text)
-		}
-		LV_Modify(ro, "-select -focus"), LV_Modify(rn, "select vis")
-		If (ro = fr)
-			LV_Modify(rn, "Focus")
-	}
-}
+MoveUp:
+LvHandle.Move(1) ; Move selected rows up.
+return
+ 
+MoveDown:
+LvHandle.Move() ; Move selected rows down.
+return
+
+#include <class_lv_rows>
 
