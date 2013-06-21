@@ -1,4 +1,4 @@
-
+﻿
 /*
 
 GetPos() for Menu X,Y co-ordinates from Listbox position with alternatives

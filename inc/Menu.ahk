@@ -1,4 +1,4 @@
-/*
+﻿/*
 
 Foreground menu - uses lib\GetPos.ahk
 Include for F4MiniMenu.ahk

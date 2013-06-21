@@ -1,4 +1,4 @@
-/*
+﻿/*
 
 General program settings GUI
 Include for F4MiniMenu.ahk

@@ -1,4 +1,4 @@
-; Source: https://gist.github.com/Pulover/5759637
+﻿; Source: https://gist.github.com/Pulover/5759637
 ; Forum : http://www.autohotkey.com/board/topic/94364-class-lv-rows-copy-cut-paste-and-drag-listviews/
 
 ;=======================================================================================

@@ -1,4 +1,4 @@
-/*
+﻿/*
 
 Gui for managing Editors
 Include for F4MiniMenu.ahk
@@ -277,6 +277,13 @@ Return
 
 UpdateListview:
 Gui, Browse:Default
+
+; Icon wizardry comes directly from AutoHotkey Listview documentation 
+; It works with both Ansi & Unicode versions
+; Calculate buffer size required for SHFILEINFO structure.
+sfi_size := A_PtrSize + 8 + (A_IsUnicode ? 680 : 340)
+VarSetCapacity(sfi, sfi_size)
+
 IL_Destroy(ImageListID1)
 ; Create an ImageList so that the ListView can display some icons:
 ImageListID1 := IL_Create(65, 10, IconSize)
@@ -286,11 +293,56 @@ LV_Delete()
 Count=0
 Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Mode|Delay|Editor ; %
 	{
-	 Count++
-	 hIcon := DllCall("Shell32\ExtractAssociatedIconA", UInt, 0, Str, MatchList[A_Index].exe, UShortP, iIndex)
-	 DllCall("ImageList_ReplaceIcon", UInt, ImageListID1, Int, -1, UInt, hIcon)
-	 DllCall("DestroyIcon", Uint, hIcon)
-	 LV_Add("Icon" Count, MatchList[A_Index].Exe, MatchList[A_Index].Parameters, MatchList[A_Index].StartDir, MatchList[A_Index].WindowMode, MatchList[A_Index].ext, MatchList[A_Index].Method, MatchList[A_Index].Mode, MatchList[A_Index].Delay,A_Index)
+    FileName := MatchList[A_Index].Exe  ; Must save it to a writable variable for use below.
+
+    ; Build a unique extension ID to avoid characters that are illegal in variable names,
+    ; such as dashes.  This unique ID method also performs better because finding an item
+    ; in the array does not require search-loop.
+    SplitPath, FileName,,, FileExt  ; Get the file's extension.
+    if FileExt in EXE,ICO,ANI,CUR
+    {
+        ExtID := FileExt  ; Special ID as a placeholder.
+        IconNumber = 0  ; Flag it as not found so that these types can each have a unique icon.
+    }
+    else  ; Some other extension/file-type, so calculate its unique ID.
+    {
+        ExtID = 0  ; Initialize to handle extensions that are shorter than others.
+        Loop 7     ; Limit the extension to 7 characters so that it fits in a 64-bit value.
+        {
+            StringMid, ExtChar, FileExt, A_Index, 1
+            if not ExtChar  ; No more characters.
+                break
+            ; Derive a Unique ID by assigning a different bit position to each character:
+            ExtID := ExtID | (Asc(ExtChar) << (8 * (A_Index - 1)))
+        }
+        ; Check if this file extension already has an icon in the ImageLists. If it does,
+        ; several calls can be avoided and loading performance is greatly improved,
+        ; especially for a folder containing hundreds of files:
+        IconNumber := IconArray%ExtID%
+    }
+    if not IconNumber  ; There is not yet any icon for this extension, so load it.
+    {
+        ; Get the high-quality small-icon associated with this file extension:
+        if not DllCall("Shell32\SHGetFileInfo" . (A_IsUnicode ? "W":"A"), "str", FileName
+            , "uint", 0, "ptr", &sfi, "uint", sfi_size, "uint", 0x101)  ; 0x101 is SHGFI_ICON+SHGFI_SMALLICON
+            IconNumber = 9999999  ; Set it out of bounds to display a blank icon.
+        else ; Icon successfully loaded.
+        {
+            ; Extract the hIcon member from the structure:
+            hIcon := NumGet(sfi, 0)
+            ; Add the HICON directly to the small-icon and large-icon lists.
+            ; Below uses +1 to convert the returned index from zero-based to one-based:
+            IconNumber := DllCall("ImageList_ReplaceIcon", "ptr", ImageListID1, "int", -1, "ptr", hIcon) + 1
+            DllCall("ImageList_ReplaceIcon", "ptr", ImageListID2, "int", -1, "ptr", hIcon)
+            ; Now that it's been copied into the ImageLists, the original should be destroyed:
+            DllCall("DestroyIcon", "ptr", hIcon)
+            ; Cache the icon to save memory and improve loading performance:
+            IconArray%ExtID% := IconNumber
+        }
+    }
+
+    ; Create the new row in the ListView and assign it the icon number determined above:
+	 LV_Add("Icon" IconNumber, MatchList[A_Index].Exe, MatchList[A_Index].Parameters, MatchList[A_Index].StartDir, MatchList[A_Index].WindowMode, MatchList[A_Index].ext, MatchList[A_Index].Method, MatchList[A_Index].Mode, MatchList[A_Index].Delay,A_Index)
 	} 
 LV_ModifyCol(1, 250), LV_ModifyCol(2, 70), LV_ModifyCol(3, 70)
 LV_ModifyCol(4, 60), LV_ModifyCol(5, 165), LV_ModifyCol(6, 70)
