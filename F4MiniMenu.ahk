@@ -1,6 +1,6 @@
 ﻿/*
 
-Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi)
+Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
 Version     : 0.6
 Author      : hi5
 Last update : 1 July 2013
