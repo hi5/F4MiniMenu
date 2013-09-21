@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.6
+# F4MiniMenu - v0.61
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -42,8 +42,8 @@ You can set the F4MiniMenu shortcuts via the tray menu, right click, Settings op
 In general: be careful opening with opening large numbers of files at once, programs can crash
 and your computer could become unstable requiring a reboot.
 
-Do not edit the F4MiniMenu.xml file while the script is running, any changes you make will be
-overwritten when the script exits.
+Do not edit the "F4MiniMenu.xml" settings file while the script is running, any changes you make will be
+overwritten when the script exits. As of v0.61 a backup is made at startup and saved as "F4MiniMenu.xml.bak"
 
 *Disclaimer*
 
@@ -150,6 +150,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20130731 - v0.61 added rudimentary backup & safety feature in case of a faulty/missing settings XML
 * 20130701 - v0.6 a) [Class LV_Rows](http://www.autohotkey.com/board/topic/94364-class-lv-rows-copy-cut-paste-and-drag-listviews/) by [Pulover](https://github.com/Pulover/) replaces [LV_MoveRow()](http://www.autohotkey.com/board/topic/56396-techdemo-move-rows-in-a-listview/). 
                      This resolves the problem with the listview not updating icons while moving the editors in the settings Gui;
                   b) Added Unicode support for drag & drop method so F4MiniMenu should now be compatible with both Ansi and Unicode versions of AutoHotkey.
