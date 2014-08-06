@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.61
+# F4MiniMenu - v0.7
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
