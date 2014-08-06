@@ -150,6 +150,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20140806 - v0.7 replaced Loop, object.MaxIndex() with proper for-loop to parse each key-value pair in the MatchList object; Added &letter to foreground menu options (program names)
 * 20130731 - v0.61 added rudimentary backup & safety feature in case of a faulty/missing settings XML
 * 20130701 - v0.6 a) [Class LV_Rows](http://www.autohotkey.com/board/topic/94364-class-lv-rows-copy-cut-paste-and-drag-listviews/) by [Pulover](https://github.com/Pulover/) replaces [LV_MoveRow()](http://www.autohotkey.com/board/topic/56396-techdemo-move-rows-in-a-listview/). 
                      This resolves the problem with the listview not updating icons while moving the editors in the settings Gui;

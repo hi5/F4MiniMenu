@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.61
+Version     : 0.7
 Author      : hi5
-Last update : 31 July 2013
+Last update : 6 August 2014
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -14,14 +14,14 @@ Note        : ; % used to resolve syntax highlighting feature bug of N++
 #SingleInstance, Force
 #UseHook
 SetBatchlines, -1
-
+SetWorkingDir, %A_ScriptDir%
 ; Setup variables, menu, hotkeys etc
 
 global AllExtensions:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
-F4Version:="v0.61"
+F4Version:="v0.7"
 Error:=0
 ; http://en.wikipedia.org/wiki/List_of_archive_formats
 ArchiveExtentions:="\.(a|ar|cpio|shar|iso|lbr|mar|tar|bz2|F|gz|lz|lzma|lzo|rz|sfark|xz|z|infl|7z|s7z|ace|afa|alz|apk|arc|arj|ba|bh|cab|cfs|cpt|dar|dd|dgc|dmg|gca|ha|hki|ice|j|kgb|lzh|lha|lzx|pak|partimg|paq6|paq7|paq8|pea|pim|pit|qda|rar|rk|sda|sea|sen|sfx|sit|sitx|sqx|tar\.gz|tgz|tar\.Z|tar\.bz2|tbz2|tar\.lzma|tlz|uc|uc0|uc2|ucn|ur2|ue2|uca|uha|wim|xar|xp3|yz1|zip|zipx|zoo|zz)\\"
@@ -76,10 +76,10 @@ If (Error = 1)
 ; Create backup file
 FileCopy, F4MiniMenu.xml, F4MiniMenu.xml.bak, 1
 
-If (MatchList[0].TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
+If (MatchList.settings.TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
 	{
- 	 If FileExist(MatchList[0].TCPath)
-		Run % MatchList[0].TCPath ; %
+ 	 If FileExist(MatchList.settings.TCPath)
+		Run % MatchList.settings.TCPath ; %
 	}
 
 ; Build master list to quickly open in default program if not found
@@ -118,11 +118,11 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			} 
 		}
 	 SelectedFiles:=CountFiles(Files)
-	 If (SelectedFiles > MatchList[0].MaxFiles)
+	 If (SelectedFiles > MatchList.settings.MaxFiles)
 		{
 		 ; Technique from http://www.autohotkey.com/docs/scripts/MsgBoxButtonNames.htm	
 		 SetTimer, ChangeButtonNames, 10
-		 MsgBox, 4150, Maximum files, % "Number of selected files: [" SelectedFiles "]`nDo wish to process them all`nor stop at the maximum?: [" MatchList[0].MaxFiles "]" ; %
+		 MsgBox, 4150, Maximum files, % "Number of selected files: [" SelectedFiles "]`nDo wish to process them all`nor stop at the maximum?: [" MatchList.settings.MaxFiles "]" ; %
 		 IfMsgBox, Cancel
 			Return
 		 else IfMsgBox, Continue
@@ -130,11 +130,12 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 		}
 	 Loop, parse, Files, `n, `r
 		{
-		 If (Stop = 1) and (A_Index > Matchlist[0].MaxFiles)
+		 If (Stop = 1) and (A_Index > Matchlist.settings.MaxFiles)
 			Break
 		 open:=A_LoopField
 		 SplitPath, A_LoopField, , , OutExtension
-		 Loop % MatchList.MaxIndex() ; %
+		 ; Loop % MatchList.MaxIndex() ; %
+		 for k, v in MatchList
 			{
 			 Index:=A_Index
 	 		 If CheckFile(done,open) ; safety check - otherwise each file would be processed for all editors
@@ -146,7 +147,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 					 FileList1 .= open "`n"
 					 Done.Insert(open)
 					} 
-				 Else If OutExtension in % MatchList[Index].ext ; Open in defined program %
+				 Else If OutExtension in % v.ext ; Open in defined program %
 					{
 					 FileList%Index% .= open "`n"
 					 Done.Insert(open)
@@ -160,25 +161,26 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			}
 		}
 
-	 Loop % MatchList.MaxIndex() ; %
+	 ; Loop % MatchList.MaxIndex() ; %
+	 for k, v in MatchList
 		{
 		 Index:=A_Index
 		 list:=Trim(FileList%Index%,"`n")
 		 If (list = "")
 			Continue
-		 If (MatchList[Index].Method = "FileList")
+		 If (v.Method = "FileList")
 			{
 			 FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u
 			 FileAppend, %list%, %A_ScriptDir%\$$f4mtmplist$$.m3u
-			 OpenFile(MatchList[Index], A_ScriptDir "\$$f4mtmplist$$.m3u")
+			 OpenFile(v, A_ScriptDir "\$$f4mtmplist$$.m3u")
 			}
-		 Else If (MatchList[Index].Method <> "Files")
+		 Else If (v.Method <> "Files")
 			{
 			 Loop, parse, list, `n
 				{
 				 If (A_LoopField = "")
 					Continue
-				 OpenFile(MatchList[Index],A_LoopField)
+				 OpenFile(v,A_LoopField)
 				} 
 			} 
 		}
@@ -271,13 +273,20 @@ Hotkey, IfWinActive, ahk_class TTOTAL_CMD
 ; $ prefix forces the keyboard hook to be used to implement this hotkey
 
 hk_prefix:="$"
-If (RegExMatch(MatchList[0].ForegroundHotkey,"[\^\+\!\# \&]"))
+If (RegExMatch(MatchList.settings.ForegroundHotkey,"[\^\+\!\# \&]"))
 	hk_prefix:="~"
-Hotkey, % hk_prefix . MatchList[0].ForegroundHotkey, ShowMenu,  %HotKeyState%  ; %
+FGHKey:=MatchList.settings.ForegroundHotkey
+StringReplace, FGHKey, FGHKey, &amp`;amp`;, & , All
+StringReplace, FGHKey, FGHKey, &amp`;, &, All
+	 	
+Hotkey, % hk_prefix . FGHKey, ShowMenu,  %HotKeyState%  ; %
 hk_prefix:="$"
-If (RegExMatch(MatchList[0].BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in inplace rename (shift-f6) operations in a panel, or at least that is my experience.
+If (RegExMatch(MatchList.settings.BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in inplace rename (shift-f6) operations in a panel, or at least that is my experience.
 	hk_prefix:="~"
-Hotkey, % hk_prefix . MatchList[0].BackgroundHotkey, Process, %HotKeyState%  ; %
+BGHKey:=MatchList.settings.BackgroundHotkey
+StringReplace, BGHKey, BGHKey, &amp`;amp`;, & , All
+StringReplace, BGHKey, BGHKey, &amp`;, &, All
+Hotkey, % hk_prefix . BGHKey, Process, %HotKeyState%  ; %
 Hotkey, IfWinActive
 Return	
 	
@@ -292,7 +301,7 @@ FileAppend,
 (
 <?xml version="1.0" encoding="UTF-8"?>
 <MatchList>
-	<Invalid_Name  id="0" ahk="True">
+	<Invalid_Name  id="settings" ahk="True">
 		<BackgroundHotkey>F4</BackgroundHotkey>
 		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
 		<MaxFiles>30</MaxFiles>
@@ -325,13 +334,14 @@ Return
 
 GetAllExtensions:
 AllExtensions:=""
-Loop % MatchList.MaxIndex() ; %
-	AllExtensions .= MatchList[A_Index].ext ","
+; Loop % MatchList.MaxIndex() ; %
+for k, v in MatchList
+	AllExtensions .= v.ext ","
 AllExtensions:=Trim(AllExtensions,",")
 Return
 
 ; Includes
 
-#include inc\Menu.ahk
-#include inc\Settings.ahk
-#include inc\Editors.ahk
+#include %A_ScriptDir%\inc\Menu.ahk
+#include %A_ScriptDir%\inc\Settings.ahk
+#include %A_ScriptDir%\inc\Editors.ahk

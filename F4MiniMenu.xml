@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MatchList>
-	<Invalid_Name id="0" ahk="True">
+	<Invalid_Name id="settings" ahk="True">
 		<BackgroundHotkey>F4</BackgroundHotkey>
 		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
 		<MaxFiles>30</MaxFiles>

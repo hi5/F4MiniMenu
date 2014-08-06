@@ -28,14 +28,16 @@ Catch
 Menu, MyMenu, Add
 
 ; Build menu based on defined editors
-Loop % MatchList.MaxIndex() ; %
+; Loop % MatchList.MaxIndex() ; %
+for k, v in MatchList
 	{
-	 If (A_Index = 1)
+	 If (k = 1) or (k = "settings")
 		Continue ; skip default
-     Name:=MatchList[A_Index].exe
+     Name:=v.exe
      SplitPath, Name, ShortName
-	 ShortName:=MenuPadding ShortName
+	 ShortName:=MenuPadding "&" ShortName
 	 Menu, MyMenu, Add, %ShortName%, MenuHandler
+	 
 	 Try
 	 	{
 	 	  Menu, MyMenu, Icon, %ShortName%, %name%
@@ -58,7 +60,7 @@ Menu, MyMenu, Add,  %MenuPadding%Exit,              MenuHandler
 Menu, MyMenu, Icon, %MenuPadding%Exit,              shell32.dll, 132
 	
 CoordMode, Menu, Client
-Coord:=GetPos(MatchList[0].MenuPos,MatchList.MaxIndex())
+Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
 Menu, MyMenu, Show, % Coord["x"], % Coord["y"] 
 Return
 
@@ -111,13 +113,14 @@ Else If (A_ThisMenuItem = "   Settings")
 ; Now we need to find the selected editor
 
 Selected:=1
-Loop % MatchList.MaxIndex() ; %
+; Loop % MatchList.MaxIndex() ; %
+for k, v in MatchList
 	{
-	 If (A_Index = 1)
+	 If (k = 1) or (k = "settings")
 		Continue ; skip default
-	 Name:=MatchList[A_Index].exe
+	 Name:=v.exe
      SplitPath, Name, ShortName
-	 If (A_ThisMenuItem = MenuPadding ShortName)
+	 If (A_ThisMenuItem = MenuPadding "&" ShortName)
 		{
 		 Selected:=A_Index
 		 Break

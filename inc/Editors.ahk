@@ -76,9 +76,9 @@ Return
 ; Approved chances, read ListView to store new or changed data
 Ok:
 Backup:=[]
-Backup:=MatchList[0]
+Backup:=MatchList.settings
 MatchList:=[]
-MatchList[0]:=Backup
+MatchList.settings:=Backup
 Gui, Browse:Default
 Loop, % LV_GetCount() ; %
 	{
@@ -291,9 +291,12 @@ ImageListID1 := IL_Create(65, 10, IconSize)
 LV_SetImageList(ImageListID1)
 LV_Delete()
 Count=0
-Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Mode|Delay|Editor ; %
+; Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Mode|Delay|Editor ; %
+for k, v in MatchList
 	{
-    FileName := MatchList[A_Index].Exe  ; Must save it to a writable variable for use below.
+	If (k = "settings")
+		continue
+    FileName := v.Exe  ; Must save it to a writable variable for use below.
 
     ; Build a unique extension ID to avoid characters that are illegal in variable names,
     ; such as dashes.  This unique ID method also performs better because finding an item
@@ -342,7 +345,7 @@ Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Mode
     }
 
     ; Create the new row in the ListView and assign it the icon number determined above:
-	 LV_Add("Icon" IconNumber, MatchList[A_Index].Exe, MatchList[A_Index].Parameters, MatchList[A_Index].StartDir, MatchList[A_Index].WindowMode, MatchList[A_Index].ext, MatchList[A_Index].Method, MatchList[A_Index].Mode, MatchList[A_Index].Delay,A_Index)
+	 LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Mode, v.Delay,A_Index)
 	} 
 LV_ModifyCol(1, 250), LV_ModifyCol(2, 70), LV_ModifyCol(3, 70)
 LV_ModifyCol(4, 60), LV_ModifyCol(5, 165), LV_ModifyCol(6, 70)

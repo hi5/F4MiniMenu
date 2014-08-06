@@ -11,10 +11,10 @@ Gui, Browse:Destroy
 
 
 ; Variables
-SelectMenuPos:=MatchList[0].MenuPos
-Checked:=MatchList[0].TCStart
-FGHKey:=MatchList[0].ForegroundHotkey
-BGHKey:=MatchList[0].BackgroundHotkey 
+SelectMenuPos:=MatchList.settings.MenuPos
+Checked:=MatchList.settings.TCStart
+FGHKey:=MatchList.settings.ForegroundHotkey
+BGHKey:=MatchList.settings.BackgroundHotkey 
 
 ; Turn hotkeys off to be sure
 HotKeyState:="Off"
@@ -27,12 +27,12 @@ Gui, Add, DropDownList, x328 y20 w219 h25 r4 Choose%SelectMenuPos% vMenuPos AltS
 
 Gui, Add, GroupBox, x16 yp+40 w540 h45 , Files
 Gui, Add, Text, x25 yp+20 w309 h16 , &Maximum number of files to be opened
-Gui, Add, Edit, x328 yp-5 w219 h21 Number vMaxFiles, % MatchList[0].Maxfiles ; %
+Gui, Add, Edit, x328 yp-5 w219 h21 Number vMaxFiles, % MatchList.settings.Maxfiles ; %
 	
 Gui, Add, GroupBox, x16 yp+40 w540 h45 , Total Commander
 Gui, Add, Checkbox, x25 yp+20 w200 h16 Checked%checked% vTCStart, Start Total Commander if not Running
 Gui, Add, Text, xp+250 yp w50 h16 , TC Path
-If !FileExist(MatchList[0].TCPath)
+If !FileExist(MatchList.settings.TCPath)
 	{
 	 RegRead TCPath, HKEY_CURRENT_USER, Software\Ghisler\Total Commander, InstallDir
 	 TCPath = %TCPath%\TotalCmd.exe
@@ -40,7 +40,7 @@ If !FileExist(MatchList[0].TCPath)
 		MatchList[0,"TCPath"]:=TCPath
 	 TCPath:=""	
 	}
-Gui, Add, Edit, xp+53  yp-5 w180 h21 vTCPath, % MatchList[0].TCPath ; %
+Gui, Add, Edit, xp+53  yp-5 w180 h21 vTCPath, % MatchList.settings.TCPath ; %
 Gui, Add, Button, xp+187  yp   w30  h20 gSelectExe, >>
 
 Gui, Add, GroupBox, x16 yp+40 w395 h90 , Hotkeys
@@ -99,16 +99,16 @@ Return
 
 ButtonOK:
 Gui, Submit, NoHide
-MatchList[0].MenuPos:=MenuPos
+MatchList.settings.MenuPos:=MenuPos
 If (MaxFiles > 50)
 	{
 	 MsgBox, 36, Confirm, Are you sure you want to`nset the maximum at %MaxFiles% files?`n(No will set the maximum to 50)
 	 IfMsgBox, No
 		MaxFiles:=50
 	}
-MatchList[0].MaxFiles:=MaxFiles
-MatchList[0].TCStart:=TCStart
-MatchList[0].TCPath:=TCPath
+MatchList.settings.MaxFiles:=MaxFiles
+MatchList.settings.TCStart:=TCStart
+MatchList.settings.TCPath:=TCPath
 
 GuiControlGet, EscFG, , FEsc
 GuiControlGet, WinFG, , FWin
@@ -125,8 +125,8 @@ If WinBG
 If (EscBG = 1) and (RegExMatch(BGHKey,"[\^\+\!\#]") = 0)
 	BGHKey:="Esc & " BGHKey
 
-MatchList[0].ForegroundHotkey:=FGHKey
-MatchList[0].BackgroundHotkey:=BGHKey
+MatchList.settings.ForegroundHotkey:=FGHKey
+MatchList.settings.BackgroundHotkey:=BGHKey
 
 HotKeyState:="On"
 Gosub, SetHotkeys
