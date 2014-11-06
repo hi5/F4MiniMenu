@@ -202,6 +202,8 @@ GetFiles()
 	 If WinActive("ahk_class TFindFile")
 		{
 		 ControlGet, Files, Choice,, TWidthListBox1, ahk_class TFindFile
+		 If (ErrorLevel = 1) or (Files = "")
+		 	ControlGet, Files, Choice,, LCLListbox2, ahk_class TFindFile
 		 IfNotInString, Files,[ ; make sure you haven't selected a directory or the first line
 			Return Files
 		}
