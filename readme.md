@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.7
+# F4MiniMenu - v0.8
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -150,6 +150,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20141107 - v0.8 Added F4 functions to Lister (grabbing the filename from the Window title) and the search results in the Find Files dialog. Comment: if you have use Esc & Key as Foreground menu option it will fail as pressing Esc will close Lister and the Find Files dialog. The Winkey & Key combination does work and the menu will appear at the top of the window.
 * 20140806 - v0.7 replaced Loop, object.MaxIndex() with proper for-loop to parse each key-value pair in the MatchList object; Added &letter to foreground menu options (program names)
 * 20130731 - v0.61 added rudimentary backup & safety feature in case of a faulty/missing settings XML
 * 20130701 - v0.6 a) [Class LV_Rows](http://www.autohotkey.com/board/topic/94364-class-lv-rows-copy-cut-paste-and-drag-listviews/) by [Pulover](https://github.com/Pulover/) replaces [LV_MoveRow()](http://www.autohotkey.com/board/topic/56396-techdemo-move-rows-in-a-listview/). 

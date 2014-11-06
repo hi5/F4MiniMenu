@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.7
+Version     : 0.8
 Author      : hi5
-Last update : 6 August 2014
+Last update : 7 November 2014
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -21,10 +21,14 @@ global AllExtensions:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
-F4Version:="v0.7"
+F4Version:="v0.8"
 Error:=0
 ; http://en.wikipedia.org/wiki/List_of_archive_formats
 ArchiveExtentions:="\.(a|ar|cpio|shar|iso|lbr|mar|tar|bz2|F|gz|lz|lzma|lzo|rz|sfark|xz|z|infl|7z|s7z|ace|afa|alz|apk|arc|arj|ba|bh|cab|cfs|cpt|dar|dd|dgc|dmg|gca|ha|hki|ice|j|kgb|lzh|lha|lzx|pak|partimg|paq6|paq7|paq8|pea|pim|pit|qda|rar|rk|sda|sea|sen|sfx|sit|sitx|sqx|tar\.gz|tgz|tar\.Z|tar\.bz2|tbz2|tar\.lzma|tlz|uc|uc0|uc2|ucn|ur2|ue2|uca|uha|wim|xar|xp3|yz1|zip|zipx|zoo|zz)\\"
+
+GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD
+GroupAdd, TCF4Windows, ahk_class TLister
+GroupAdd, TCF4Windows, ahk_class TFindFile
 
 FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u
 
@@ -189,6 +193,18 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 ; Get a list of selected files using internal TC commands (see totalcmd.inc for references)
 GetFiles()
 	{
+	 If WinActive("ahk_class TLister")
+		{
+		 WinGetActiveTitle, Files
+		 Files:=RegExReplace(Files,"^.*\[(.*)\]","$1")
+		 Return Files
+		}
+	 If WinActive("ahk_class TFindFile")
+		{
+		 ControlGet, Files, Choice,, TWidthListBox1, ahk_class TFindFile
+		 IfNotInString, Files,[ ; make sure you haven't selected a directory or the first line
+			Return Files
+		}
 	 ClipboardSave:=ClipboardAll
 	 Clipboard:=""
 	 PostMessage 1075, 2018, 0, , ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
@@ -267,7 +283,7 @@ CountFiles(Files)
 	}
 
 SetHotkeys:
-Hotkey, IfWinActive, ahk_class TTOTAL_CMD 
+Hotkey, IfWinActive, ahk_group TCF4Windows
 
 ; ~ native function will not be blocked 
 ; $ prefix forces the keyboard hook to be used to implement this hotkey
