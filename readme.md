@@ -165,5 +165,3 @@ __Editor configuration__
 * 20121108 - v0.2 Added 0 (zero) entry in XML as default editor.
 * 20121101 - v0.1 Initial very basic version.
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a957ceab41dd2a966b307f9e6e3cdb90 "githalytics.com")](http://githalytics.com/hi5/F4MiniMenu)
-
