@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.8
+Version     : 0.81
 Author      : hi5
-Last update : 7 November 2014
+Last update : 3 November 2015
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -48,6 +48,9 @@ Menu, tray, Add, Settings,            Settings
 Menu, tray, Add, Configure editors,   ConfigEditors
 Menu, tray, Add, 
 Menu, tray, Add, Exit, 				  SaveSettings
+
+IfNotExist, F4MiniMenu.xml
+	Gosub, CreateNewXML
 
 ; Load settings on MatchList Object
 Try
@@ -314,28 +317,9 @@ If (A_ExitReason <> "Exit") ; to prevent saving it twice
 FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u	
 If (Error = 1)
 	{
-FileDelete, F4MiniMenu.xml
-FileAppend,
-(
-<?xml version="1.0" encoding="UTF-8"?>
-<MatchList>
-	<Invalid_Name  id="settings" ahk="True">
-		<BackgroundHotkey>F4</BackgroundHotkey>
-		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
-		<MaxFiles>30</MaxFiles>
-		<MenuPos>3</MenuPos>
-		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
-		<TCStart>1</TCStart>
-	</Invalid_Name>
-	<Invalid_Name id="1" ahk="True">
-		<Exe>c:\WINDOWS\notepad.exe</Exe>
-		<Ext>txt,xml</Ext>
-		<Method>Normal</Method>
-		<WindowMode>1</WindowMode>
-	</Invalid_Name>
-</MatchList>
-), F4MiniMenu.xml, UTF-8
-}
+	 FileDelete, F4MiniMenu.xml
+	 Gosub, CreateNewXML
+	}
 
 ExitApp	
 Return	
@@ -356,6 +340,29 @@ AllExtensions:=""
 for k, v in MatchList
 	AllExtensions .= v.ext ","
 AllExtensions:=Trim(AllExtensions,",")
+Return
+
+CreateNewXML:
+FileAppend,
+(
+<?xml version="1.0" encoding="UTF-8"?>
+<MatchList>
+	<Invalid_Name  id="settings" ahk="True">
+		<BackgroundHotkey>F4</BackgroundHotkey>
+		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
+		<MaxFiles>30</MaxFiles>
+		<MenuPos>3</MenuPos>
+		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
+		<TCStart>1</TCStart>
+	</Invalid_Name>
+	<Invalid_Name id="1" ahk="True">
+		<Exe>c:\WINDOWS\notepad.exe</Exe>
+		<Ext>txt,xml</Ext>
+		<Method>Normal</Method>
+		<WindowMode>1</WindowMode>
+	</Invalid_Name>
+</MatchList>
+), F4MiniMenu.xml, UTF-8
 Return
 
 ; Includes
