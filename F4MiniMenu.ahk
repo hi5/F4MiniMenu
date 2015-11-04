@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.81
+Version     : 0.82
 Author      : hi5
-Last update : 3 November 2015
+Last update : 4 November 2015
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -21,7 +21,7 @@ global AllExtensions:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
-F4Version:="v0.8"
+F4Version:="v0.82"
 Error:=0
 ; http://en.wikipedia.org/wiki/List_of_archive_formats
 ArchiveExtentions:="\.(a|ar|cpio|shar|iso|lbr|mar|tar|bz2|F|gz|lz|lzma|lzo|rz|sfark|xz|z|infl|7z|s7z|ace|afa|alz|apk|arc|arj|ba|bh|cab|cfs|cpt|dar|dd|dgc|dmg|gca|ha|hki|ice|j|kgb|lzh|lha|lzx|pak|partimg|paq6|paq7|paq8|pea|pim|pit|qda|rar|rk|sda|sea|sen|sfx|sit|sitx|sqx|tar\.gz|tgz|tar\.Z|tar\.bz2|tbz2|tar\.lzma|tlz|uc|uc0|uc2|ucn|ur2|ue2|uca|uha|wim|xar|xp3|yz1|zip|zipx|zoo|zz)\\"
@@ -49,7 +49,7 @@ Menu, tray, Add, Configure editors,   ConfigEditors
 Menu, tray, Add, 
 Menu, tray, Add, Exit, 				  SaveSettings
 
-IfNotExist, F4MiniMenu.xml
+If !FileExist("F4MiniMenu.xml") and !FileExist("F4MiniMenu.xml.bak") ; most likely first run, no need to show error message
 	Gosub, CreateNewXML
 
 ; Load settings on MatchList Object
