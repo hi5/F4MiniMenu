@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.82
+# F4MiniMenu - v0.83
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -150,6 +150,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20160616 - v0.83 Adding specific #include path for lib files to avoid possible error for portable users when compiling. HT [Ovg](ghisler.ch/board/viewtopic.php?p=310187#310187)
 * 20151104 - v0.82 Further refinement of confusing error message at very first startup (missing configuration XML) - now also checks if BAK is present.
 * 20151103 - v0.81 Fixed confusing error message at very first startup (missing configuration XML)
 * 20141107 - v0.8 Added F4 functions to Lister (grabbing the filename from the Window title) and the search results in the Find Files dialog. Comment: if you use the Esc & Key as Foreground menu option it will fail as pressing Esc will close Lister and the Find Files dialog. The Winkey & Key combination does work - the menu will appear at the top of the window.
