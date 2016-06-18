@@ -132,11 +132,11 @@ __Editor configuration__
 
 ## TODO - Known issues
 
-1. TOFIX: If you change the order of the editors first and then add a new one, the order is set back to the initial order.
+1. TOFIX: If you change the order of the editors first and then add a new one, the order is set back to the initial order.  
 <strike>2. INFO: Delay (in milliseconds) is only applicable to Drag & Drop method.</strike>
 2. INFO: Two options for delay (as of v0.9):  
-   2.1 Drag & Drop delay gives program to start up before trying to drop the files - you may need to apply trail and error.
-   2.2 Open delay, pauses X ms to open next file. 
+   2.1 Drag & Drop delay gives program to start up before trying to drop the files - you may need to apply trail and error.  
+   2.2 Open delay, pauses X ms to open next file.  
 3. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
 
 ## Benefits
