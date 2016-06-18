@@ -11,6 +11,7 @@ Include for F4MiniMenu.ahk
 ConfigEditorsNew:
 New:=1
 
+
 ConfigEditors:
 
 ; Variables
@@ -45,7 +46,7 @@ Gui, Browse:Add, Button, xp+80    yp w70 h24 gModify, &Modify
 Gui, Browse:Add, Button, xp+80    yp w70 h24 gRemove, &Remove
 Gui, Browse:Add, Button, xp-240   yp+40 w150 h24 gOK, &OK
 Gui, Browse:Add, Button, xp+160   yp w150 h24 gCancel, &Cancel
-Gui, Browse:Add, Link,   xp-160   yp+40 w300 h16, F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
+Gui, Browse:Add, Link,   xp-160   yp+40 w310 h16, F4MiniMenu %F4Version% -- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 Gosub, UpdateListview
 LvHandle := New LV_Rows(hLV)
 Gui, Browse:Show, x261 y211 h427 w790 center, F4MiniMenu - Editor Settings
@@ -96,7 +97,7 @@ Loop, % LV_GetCount() ; %
 	}
 
 Backup:=""
-XA_Save("MatchList","F4MiniMenu.xml")
+%F4Save%("MatchList",F4ConfigFile)
 Gui, Browse:Destroy
 Gosub, GetAllExtensions
 Return
@@ -195,7 +196,7 @@ Gui, Modify:Add, DropDownList, x89 y127 w438 h21 R3 Choose%WindowMode% vWindowMo
 Gui, Modify:Add, Text,         x10 y160 w77  h16, Ex&tensions
 Gui, Modify:Add, Edit,         x89 y158 w438 h76 vExt, %Ext% 
 
-Gui, Modify:Add, Link,         x10 y250 w300 h16, F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
+Gui, Modify:Add, Link,         x10 y250 w310 h16, F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 
 
 Gui, Modify:Add, Button,       x340 y245 w90 h24, &OK

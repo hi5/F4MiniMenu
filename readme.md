@@ -159,6 +159,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20160618 - v0.91 Fix for INI Editors include (save to INI not XML when making backup). Refinement of regulars expression for wildcards - HT [Ovg](http://ghisler.ch/board/viewtopic.php?p=310538#310538)
 * 20160618 - v0.9 Added support for wildcards (? and *) in extensions #6 https://github.com/hi5/F4MiniMenu/issues/6. Added open delay (delay in ms between opening files)
 * 20160617 - v0.83 Adding specific #include path for lib files to avoid possible error for portable users when compiling. HT [Ovg](ghisler.ch/board/viewtopic.php?p=310187#310187)
 * 20151104 - v0.82 Further refinement of confusing error message at very first startup (missing configuration XML) - now also checks if BAK is present.

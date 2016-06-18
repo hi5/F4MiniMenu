@@ -1,7 +1,7 @@
 ﻿/*
 
 Script      : F4MiniMenui.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode) - INI format
-Version     : 0.9-i
+Version     : 0.91-i
 Author      : hi5
 Last update : 18 June 2016
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -21,7 +21,23 @@ global AllExtensions:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
-F4Version:="v0.9-i"
+
+If (A_ScriptName = "F4MiniMenu.ahk")
+	{
+	 F4Version:="v0.91"
+	 F4ConfigFile:="F4MiniMenu.xml"
+	 F4Load:="XA_Load"
+	 F4Save:="XA_Save"
+	}
+else If (A_ScriptName = "F4MiniMenui.ahk")
+	{
+	 F4Version:="v0.91-i"
+	 F4ConfigFile:="F4MiniMenu.ini"
+	 F4Load:="iob"
+	 F4Save:="iob_save"
+	}
+
+
 Error:=0
 ; http://en.wikipedia.org/wiki/List_of_archive_formats
 ArchiveExtentions:="\.(a|ar|cpio|shar|iso|lbr|mar|tar|bz2|F|gz|lz|lzma|lzo|rz|sfark|xz|z|infl|7z|s7z|ace|afa|alz|apk|arc|arj|ba|bh|cab|cfs|cpt|dar|dd|dgc|dmg|gca|ha|hki|ice|j|kgb|lzh|lha|lzx|pak|partimg|paq6|paq7|paq8|pea|pim|pit|qda|rar|rk|sda|sea|sen|sfx|sit|sitx|sqx|tar\.gz|tgz|tar\.Z|tar\.bz2|tbz2|tar\.lzma|tlz|uc|uc0|uc2|ucn|ur2|ue2|uca|uha|wim|xar|xp3|yz1|zip|zipx|zoo|zz)\\"
@@ -49,13 +65,13 @@ Menu, tray, Add, Configure editors,   ConfigEditors
 Menu, tray, Add, 
 Menu, tray, Add, Exit, 				  SaveSettings
 
-If !FileExist("F4MiniMenu.ini") and !FileExist("F4MiniMenu.ini.bak") ; most likely first run, no need to show error message
+If !FileExist(F4ConfigFile) and !FileExist(F4ConfigFile ".bak") ; most likely first run, no need to show error message
 	Gosub, CreateNewXML
 
 ; Load settings on MatchList Object
 Try
 	{
-	 MatchList:=iob("F4MiniMenu.ini")
+	 %F4Load%(F4ConfigFile)
 	}
 Catch
 	{
@@ -69,9 +85,9 @@ If (Error = 1)
 	{
 	 ErrorText=
 	 (Join`n LTRIM
-	  There seems to be an error with the INI settings file.
+	  There seems to be an error with the settings file.
 	  F4MiniMenu will try to create default configuration and restart.
-	  Be sure to check the last backup of your settings in "F4MiniMenu.ini.bak"
+	  Be sure to check the last backup of your settings in "%F4ConfigFile%"
 	  Be sure to exit F4MiniMenu before trying to restore any backup settings.
 	 )	
 
@@ -81,7 +97,7 @@ If (Error = 1)
 	
 	
 ; Create backup file
-FileCopy, F4MiniMenu.ini, F4MiniMenu.ini.bak, 1
+FileCopy, %F4ConfigFile%, %F4ConfigFile%.bak, 1
 
 If (MatchList.settings.TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
 	{
@@ -145,7 +161,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 		 for k, v in MatchList
 			{
 			 Index:=A_Index
-			 CheckFileExt:="iU)\b(" StrReplace(StrReplace(StrReplace(v.ext,",","|"),"?","."),"*",".*") ")\b"  ; v0.9 allow for wildcards
+			 CheckFileExt:=RegExExtensions(v.ext)
 	 		 If CheckFile(done,open) ; safety check - otherwise each file would be processed for all editors
 				Break
 			 If (SelectedEditor < 0) ; Find out which editor to use, first come first serve
@@ -171,7 +187,6 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			}
 		}
 
-	 ; Loop % MatchList.MaxIndex() ; %
 	 for k, v in MatchList
 		{
 		 Index:=A_Index
@@ -246,7 +261,7 @@ OpenFile(Editor,open)
 		{
 		 WinWait, %title%
 		 WinMinimize, %title%
-		}	
+		}
 	 Sleep % editor.open
 	 Return open	
  	}
@@ -317,11 +332,11 @@ Return
 	
 SaveSettings:
 If (A_ExitReason <> "Exit") ; to prevent saving it twice
-	iob_save("F4MiniMenu.ini")
+	%F4Save%("MatchList", F4ConfigFile)
 FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u	
 If (Error = 1)
 	{
-	 FileDelete, F4MiniMenu.ini
+	 FileDelete, %F4ConfigFile%
 	 Gosub, CreateNewXML
 	}
 
@@ -344,8 +359,13 @@ AllExtensions:=""
 for k, v in MatchList
 	AllExtensions .= v.ext ","
 AllExtensions:=Trim(AllExtensions,",")
-AllExtensions:="iU)\b(" StrReplace(StrReplace(StrReplace(AllExtensions,",","|"),"?","."),"*",".*") ")\b" ; v0.9 allow for wildcards
+AllExtensions:=RegExExtensions(AllExtensions)
 Return
+RegExExtensions(in)
+  {
+   out:="iU)\b(" StrReplace(StrReplace(StrReplace(in,",","|"),"?",".?"),"*",".*") ")\b" ; v0.9 allow for wildcards
+   Return out
+  }
 
 CreateNewXML:
 FileAppend,

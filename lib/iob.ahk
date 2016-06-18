@@ -14,7 +14,7 @@
 
 iob(Filename="")
 	{
-	 MatchList:=[]
+	 Global MatchList:=[]
 	 SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart"
 	 Loop, parse, SectionKeys, CSV
 		{
@@ -37,10 +37,10 @@ iob(Filename="")
 			 MatchList[section,A_LoopField]:=OutputVar
 			}
 		}
-	 Return MatchList
+;	 Return MatchList
 	}
 
-iob_save(Filename="") {
+iob_save(ObjectName,Filename="") { ; Object parameter isn't used but just added to allow same function call as XA_Save
 	global MatchList
 	FileCopy, %Filename%, %Filename%.bak, 1
 	FileDelete, %Filename%
