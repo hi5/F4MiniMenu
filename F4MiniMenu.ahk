@@ -22,7 +22,7 @@ MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
 
-If (A_ScriptName = "F4MiniMenu.ahk") or (A_ScriptName = "F4MiniMenu.ahk")
+If (A_ScriptName = "F4MiniMenu.ahk") or (A_ScriptName = "F4MiniMenu.exe")
 	{
 	 F4Version:="v0.92"
 	 F4ConfigFile:="F4MiniMenu.xml"
