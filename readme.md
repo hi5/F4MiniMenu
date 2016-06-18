@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.83
+# F4MiniMenu - v0.9
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -42,8 +42,9 @@ You can set the F4MiniMenu shortcuts via the tray menu, right click, Settings op
 In general: be careful opening with opening large numbers of files at once, programs can crash
 and your computer could become unstable requiring a reboot.
 
-Do not edit the "F4MiniMenu.xml" settings file while the script is running, any changes you make will be
-overwritten when the script exits. As of v0.61 a backup is made at startup and saved as "F4MiniMenu.xml.bak"
+Do not edit the "F4MiniMenu.xml" or "F4MiniMenu.ini" settings file while the script is running, any 
+changes you make will be overwritten when the script exits. As of v0.61 a backup is made at startup
+and saved as "F4MiniMenu.xml.bak" or "F4MiniMenu.ini.bak"
 
 *Disclaimer*
 
@@ -98,6 +99,11 @@ Once you have setup your shortcuts you can also access *Settings* and *Configure
 via the Foreground menu options by pressing the shortcut (press <kbd>Esc</kbd>+<kbd>F4</kbd> by default).
 See screenshots below.
 
+There are two versions:
+
+1. F4MiniMenu.ahk uses XML to store settings (F4MiniMenu.xml)
+2. F4MiniMenui.ahk uses INI to store settings (F4MiniMenu.ini)
+
 *Executable*
 
 If you wish you can compile the script to a standalone executable using [AHK2Exe](http://l.autohotkey.net/#Get_It)
@@ -127,7 +133,10 @@ __Editor configuration__
 ## TODO - Known issues
 
 1. TOFIX: If you change the order of the editors first and then add a new one, the order is set back to the initial order.
-2. INFO: Delay (in milliseconds) is only applicable to Drag & Drop method.
+<strike>2. INFO: Delay (in milliseconds) is only applicable to Drag & Drop method.</strike>
+2. INFO: Two options for delay (as of v0.9):  
+   2.1 Drag & Drop delay gives program to start up before trying to drop the files - you may need to apply trail and error.
+   2.2 Open delay, pauses X ms to open next file. 
 3. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
 
 ## Benefits
@@ -150,7 +159,8 @@ __Editor configuration__
 
 ## Changelog
 
-* 20160616 - v0.83 Adding specific #include path for lib files to avoid possible error for portable users when compiling. HT [Ovg](ghisler.ch/board/viewtopic.php?p=310187#310187)
+* 20160618 - v0.9 Added support for wildcards (? and *) in extensions #6 https://github.com/hi5/F4MiniMenu/issues/6. Added open delay (delay in ms between opening files)
+* 20160617 - v0.83 Adding specific #include path for lib files to avoid possible error for portable users when compiling. HT [Ovg](ghisler.ch/board/viewtopic.php?p=310187#310187)
 * 20151104 - v0.82 Further refinement of confusing error message at very first startup (missing configuration XML) - now also checks if BAK is present.
 * 20151103 - v0.81 Fixed confusing error message at very first startup (missing configuration XML)
 * 20141107 - v0.8 Added F4 functions to Lister (grabbing the filename from the Window title) and the search results in the Find Files dialog. Comment: if you use the Esc & Key as Foreground menu option it will fail as pressing Esc will close Lister and the Find Files dialog. The Winkey & Key combination does work - the menu will appear at the top of the window.

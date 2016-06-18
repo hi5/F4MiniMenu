@@ -1,7 +1,7 @@
 ﻿/*
 
-Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.9
+Script      : F4MiniMenui.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode) - INI format
+Version     : 0.9-i
 Author      : hi5
 Last update : 18 June 2016
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -21,7 +21,7 @@ global AllExtensions:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
-F4Version:="v0.9"
+F4Version:="v0.9-i"
 Error:=0
 ; http://en.wikipedia.org/wiki/List_of_archive_formats
 ArchiveExtentions:="\.(a|ar|cpio|shar|iso|lbr|mar|tar|bz2|F|gz|lz|lzma|lzo|rz|sfark|xz|z|infl|7z|s7z|ace|afa|alz|apk|arc|arj|ba|bh|cab|cfs|cpt|dar|dd|dgc|dmg|gca|ha|hki|ice|j|kgb|lzh|lha|lzx|pak|partimg|paq6|paq7|paq8|pea|pim|pit|qda|rar|rk|sda|sea|sen|sfx|sit|sitx|sqx|tar\.gz|tgz|tar\.Z|tar\.bz2|tbz2|tar\.lzma|tlz|uc|uc0|uc2|ucn|ur2|ue2|uca|uha|wim|xar|xp3|yz1|zip|zipx|zoo|zz)\\"
@@ -49,13 +49,13 @@ Menu, tray, Add, Configure editors,   ConfigEditors
 Menu, tray, Add, 
 Menu, tray, Add, Exit, 				  SaveSettings
 
-If !FileExist("F4MiniMenu.xml") and !FileExist("F4MiniMenu.xml.bak") ; most likely first run, no need to show error message
+If !FileExist("F4MiniMenu.ini") and !FileExist("F4MiniMenu.ini.bak") ; most likely first run, no need to show error message
 	Gosub, CreateNewXML
 
 ; Load settings on MatchList Object
 Try
 	{
-	 XA_Load("F4MiniMenu.xml")
+	 MatchList:=iob("F4MiniMenu.ini")
 	}
 Catch
 	{
@@ -69,9 +69,9 @@ If (Error = 1)
 	{
 	 ErrorText=
 	 (Join`n LTRIM
-	  There seems to be an error with the XML settings file.
+	  There seems to be an error with the INI settings file.
 	  F4MiniMenu will try to create default configuration and restart.
-	  Be sure to check the last backup of your settings in "F4MiniMenu.xml.bak"
+	  Be sure to check the last backup of your settings in "F4MiniMenu.ini.bak"
 	  Be sure to exit F4MiniMenu before trying to restore any backup settings.
 	 )	
 
@@ -81,7 +81,7 @@ If (Error = 1)
 	
 	
 ; Create backup file
-FileCopy, F4MiniMenu.xml, F4MiniMenu.xml.bak, 1
+FileCopy, F4MiniMenu.ini, F4MiniMenu.ini.bak, 1
 
 If (MatchList.settings.TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
 	{
@@ -246,7 +246,7 @@ OpenFile(Editor,open)
 		{
 		 WinWait, %title%
 		 WinMinimize, %title%
-		}
+		}	
 	 Sleep % editor.open
 	 Return open	
  	}
@@ -317,11 +317,11 @@ Return
 	
 SaveSettings:
 If (A_ExitReason <> "Exit") ; to prevent saving it twice
-	XA_Save("MatchList", "F4MiniMenu.xml")
+	iob_save("F4MiniMenu.ini")
 FileDelete, %A_ScriptDir%\$$f4mtmplist$$.m3u	
 If (Error = 1)
 	{
-	 FileDelete, F4MiniMenu.xml
+	 FileDelete, F4MiniMenu.ini
 	 Gosub, CreateNewXML
 	}
 
@@ -350,24 +350,20 @@ Return
 CreateNewXML:
 FileAppend,
 (
-<?xml version="1.0" encoding="UTF-8"?>
-<MatchList>
-	<Invalid_Name  id="settings" ahk="True">
-		<BackgroundHotkey>F4</BackgroundHotkey>
-		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
-		<MaxFiles>30</MaxFiles>
-		<MenuPos>3</MenuPos>
-		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
-		<TCStart>1</TCStart>
-	</Invalid_Name>
-	<Invalid_Name id="1" ahk="True">
-		<Exe>c:\WINDOWS\notepad.exe</Exe>
-		<Ext>txt,xml</Ext>
-		<Method>Normal</Method>
-		<WindowMode>1</WindowMode>
-	</Invalid_Name>
-</MatchList>
-), F4MiniMenu.xml, UTF-8
+[settings]
+BackgroundHotkey=F4
+ForegroundHotkey=Esc & F4
+MaxFiles=30
+MenuPos=3
+TCPath=c:\totalcmd\TotalCmd.exe
+TCStart=1
+[1]
+delay=0
+exe=c:\WINDOWS\notepad.exe
+ext=txt,xml
+method=Normal
+windowmode=1
+), F4MiniMenu.ini
 Return
 
 ; Includes
@@ -375,7 +371,7 @@ Return
 #include %A_ScriptDir%\inc\Menu.ahk
 #include %A_ScriptDir%\inc\Settings.ahk
 #include %A_ScriptDir%\inc\Editors.ahk
-#include %A_ScriptDir%\lib\XA.ahk
+#include %A_ScriptDir%\lib\iob.ahk
 #include %A_ScriptDir%\lib\class_lv_rows.ahk
 #include %A_ScriptDir%\lib\DropFiles.ahk
 #include %A_ScriptDir%\lib\GetPos.ahk

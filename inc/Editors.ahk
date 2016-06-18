@@ -18,7 +18,7 @@ ConfigEditors:
 ; Backup Object so we can use this for CANCEL
 Backup:=MatchList
 
-GetList:="Exe|Parameters|StartDir|WindowMode|Ext|Method|Mode|Delay|Editor"
+GetList:="Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Open|Editor"
 
 infotext=
 (join`n
@@ -26,7 +26,7 @@ Important:
 1 - The first editor will be considered to the default editor.
 
 Info:
-1 - Delay (in miliseconds) is only applicable to Drag && Drop method.
+1 - Delay (in miliseconds) D&&D = Drag && Drop, Open = between files.
 2 - Sort using Ctrl+UP / Ctrl+DOWN or use Edit menu.
 )
 
@@ -36,7 +36,7 @@ Menu, MenuBar, Add, %A_Space%Edit, :EditMenu
 Gui, Browse:Menu, MenuBar
 
 ; INI Gui
-Gui, Browse:Add, ListView, x6 y5 w850 h285 grid hwndhLV vLV gLVLabel, Exe|Parameters|Start Dir.|Window|Extensions|Method|Open|Delay|Editor
+Gui, Browse:Add, ListView, x6 y5 w780 h285 grid hwndhLV vLV gLVLabel, Program|Parameters|Start Dir.|Window|Extensions|Method|D&D|Open|Editor
 Gui, Browse:Add, GroupBox, x6 yp+290 w360 h120, Comments
 Gui, Browse:Add, Text,   x16 yp+20 w340, %infotext%
 Gui, Browse:Add, Button, xp+370   yp w70 h24 gSettings, &Settings
@@ -48,7 +48,7 @@ Gui, Browse:Add, Button, xp+160   yp w150 h24 gCancel, &Cancel
 Gui, Browse:Add, Link,   xp-160   yp+40 w300 h16, F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 Gosub, UpdateListview
 LvHandle := New LV_Rows(hLV)
-Gui, Browse:Show, x261 y211 h427 w760 center, F4MiniMenu - Editor Settings
+Gui, Browse:Show, x261 y211 h427 w790 center, F4MiniMenu - Editor Settings
 
 Sleep 100
 
@@ -89,10 +89,10 @@ Loop, % LV_GetCount() ; %
 	 MatchList[Row,"Parameters"]:=Parameters
 	 MatchList[Row,"StartDir"]:=StartDir
 	 MatchList[Row,"Method"]:=Method
-	 MatchList[Row,"Delay"]:=Delay
 	 MatchList[Row,"WindowMode"]:=WindowMode
 	 MatchList[Row,"Ext"]:=Ext
 	 MatchList[Row,"Delay"]:=Delay
+	 MatchList[Row,"Open"]:=Open
 	}
 
 Backup:=""
@@ -137,7 +137,7 @@ Loop, parse, GetList, |
 
 If New
 	{
-	 Delay:=750
+	 Delay:=0
 	 Method:="Normal" 
 	 WindowMode:=1
 	}
@@ -179,8 +179,10 @@ Else If (Method = "FileList")
 	Method:=3
 Gui, Modify:Add, DropDownList, x89 y97 w238 h21 R3 Choose%Method% vMethod AltSubmit, 1 - Normal|2 - Drag & Drop|3 - FileList
 
-Gui, Modify:Add, Text,         xp+250 yp+3  h16, Delay for D&&D first run (ms)
-Gui, Modify:Add, Edit,         xp+137 yp-3  h20 w50 vDelay Number, %Delay%
+Gui, Modify:Add, Text,         xp+250 yp+3  h16, [Delays] D&&D:
+Gui, Modify:Add, Edit,         xp+70 yp-3  h20 w40 vDelay Number, %Delay%
+Gui, Modify:Add, Text,         xp+45 yp+3  h16, Open:
+Gui, Modify:Add, Edit,         xp+32 yp-3  h20 w40 vOpen Number, %Open%
 
 Gui, Modify:Add, Text,         x10 y130 w78 h28, &Window
 Gui, Modify:Add, DropDownList, x89 y127 w438 h21 R3 Choose%WindowMode% vWindowMode AltSubmit, 1 - Normal|2 - Maximized|3 - Minimized
@@ -214,6 +216,7 @@ If WinActive("Editor configuration")
 	GuiControl, Modify: ,StartDir,
 	GuiControl, Modify: ,Parameters,
 	GuiControl, Modify: ,Delay,0
+	GuiControl, Modify: ,Open,0
 	}
 Else If WinActive("Settings")	
 	{
@@ -244,7 +247,6 @@ Else If (Method = 2)
 Else If (Method = 3)
 	Method:="FileList"
 MatchList[Editor,"Method"]:=Method
-MatchList[Editor,"Delay"]:=Delay
 MatchList[Editor,"WindowMode"]:=WindowMode
 
 StringReplace, Ext, Ext, `r`n, , All
@@ -253,6 +255,7 @@ StringReplace, Ext, Ext, `r, , All
 MatchList[Editor,"Ext"]:=Ext
 
 MatchList[Editor,"Delay"]:=Delay
+MatchList[Editor,"Open"]:=Open
 MatchList[Editor,"Editor"]:=Editor
 
 Gui, Modify:Destroy
@@ -261,7 +264,7 @@ Gui, Browse:Default
 If (Editor = Matchlist.MaxIndex())
 	Gosub, UpdateListview
 Else
-	LV_Modify(SelItem, "",Exe,Parameters,StartDir,WindowMode,Ext,Method,Mode,Delay,Editor)
+	LV_Modify(SelItem, "",Exe,Parameters,StartDir,WindowMode,Ext,Method,Delay,Open,Editor)
 New:=0
 Return
 
@@ -291,7 +294,7 @@ ImageListID1 := IL_Create(65, 10, IconSize)
 LV_SetImageList(ImageListID1)
 LV_Delete()
 Count=0
-; Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Mode|Delay|Editor ; %
+; Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Editor ; %
 for k, v in MatchList
 	{
 	If (k = "settings")
@@ -345,11 +348,11 @@ for k, v in MatchList
     }
 
     ; Create the new row in the ListView and assign it the icon number determined above:
-	 LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Mode, v.Delay,A_Index)
+	 LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index)
 	} 
 LV_ModifyCol(1, 250), LV_ModifyCol(2, 70), LV_ModifyCol(3, 70)
-LV_ModifyCol(4, 60), LV_ModifyCol(5, 165), LV_ModifyCol(6, 70)
-LV_ModifyCol(7, 0), LV_ModifyCol(8, 40), LV_ModifyCol(9, 0)
+LV_ModifyCol(4, 50), LV_ModifyCol(5, 165), LV_ModifyCol(6, 70)
+LV_ModifyCol(7, 40), LV_ModifyCol(8, 40), LV_ModifyCol(9, 0)
 Return
 
 ; Hotkeys & Functions to move a listview row
