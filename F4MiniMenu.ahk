@@ -250,6 +250,7 @@ OpenFile(Editor,open)
 		%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)
 	 If (Editor.windowmode = 1) ; normal (activate)
 		{
+		 WinWait, %title%
 		 WinActivate, %title%
 		}
 	 Else If (Editor.windowmode = 2) ; maximize
