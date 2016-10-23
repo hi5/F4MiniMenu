@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.92
+Version     : 0.93
 Author      : hi5
-Last update : 18 June 2016
+Last update : 23 October 2016
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -24,14 +24,14 @@ DefaultShortName:=""
 
 If (A_ScriptName = "F4MiniMenu.ahk") or (A_ScriptName = "F4MiniMenu.exe")
 	{
-	 F4Version:="v0.92"
+	 F4Version:="v0.93"
 	 F4ConfigFile:="F4MiniMenu.xml"
 	 F4Load:="XA_Load"
 	 F4Save:="XA_Save"
 	}
 else If (A_ScriptName = "F4MiniMenui.ahk") or (A_ScriptName = "F4MiniMenui.exe")
 	{
-	 F4Version:="v0.92-i"
+	 F4Version:="v0.93-i"
 	 F4ConfigFile:="F4MiniMenu.ini"
 	 F4Load:="iob"
 	 F4Save:="iob_save"
