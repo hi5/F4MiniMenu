@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.92
+# F4MiniMenu - v0.93
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -159,6 +159,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20161023 - v0.93 OpenFile: add WinWait before WinActivate, merge request @nameanyone #10 https://github.com/hi5/F4MiniMenu/issues/10
 * 20160618 - v0.92 Fix error checking on startup in case script is compiled - HT Ovg
 * 20160618 - v0.91 Fix for INI Editors include (save to INI not XML when making backup). Refinement of regulars expression for wildcards - HT [Ovg](http://ghisler.ch/board/viewtopic.php?p=310538#310538)
 * 20160618 - v0.9 Added support for wildcards (? and *) in extensions #6 https://github.com/hi5/F4MiniMenu/issues/6. Added open delay (delay in ms between opening files)
