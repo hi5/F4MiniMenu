@@ -1,11 +1,10 @@
-# F4MiniMenu - v0.93
+# F4MiniMenu - v0.94
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
 Shanny - www.shanny.com.cn (website seems to be offline, see TC forum links below)
 
 If you have any questions or suggestions do feel free to post them at the [F4MiniMenu TC Forum thread](http://ghisler.ch/board/viewtopic.php?t=35721).
-
 
 __Introduction__
 
@@ -32,6 +31,9 @@ The default editor is the first editor listed in the [*Configure editors*](#scre
 window. If you look in the configuration XML it will be the first editor there.
 If you want to open the file(s) in another program you can use the [*Foreground* menu](#screenshots) option.
 see below.
+
+You can add or modify editors via the tray menu or by bringing up the Foreground menu.
+You can use %Commander_Path% in the paths to the editors and icons.
 
 *Tip(s)*
 
@@ -72,6 +74,26 @@ _$$f4mtmplist$$.m3u_ is created which is passed on to the target program.
 
 Result: Selected files will now be opened in the XnView browser.
 
+__cmdline support__<a name="cmdline"></a>
+
+In case you need to pass the selected files to the program on the command line (program.exe file1 file2 etc)
+you can use the cmdline method.
+
+*Examples cmdline usage:*
+
+    Program: C:\Program Files\Meld\Meld.exe
+    Method: 4 - cmdline
+
+Result: Selected files will be opened in Meld (diff program) [Discussion](https://github.com/hi5/F4MiniMenu/issues/14)
+
+    Program: c:\tools\mp3wrap\mp3wrap.exe
+    Parameters: ?output.mp3
+    Startdir: %p
+    Method: 4 - cmdline
+
+Result: Selected MP3 files will be merged into one larger MP3 file asking the user for a filename
+(output.mp3 would be default)
+
 *Notes:*
 
 * The reason for the .m3u extension is simple: it enables playlist support for WinAmp: Select
@@ -102,11 +124,44 @@ See screenshots below.
 There are two versions:
 
 1. F4MiniMenu.ahk uses XML to store settings (F4MiniMenu.xml)
-2. F4MiniMenui.ahk uses INI to store settings (F4MiniMenu.ini)
+2. <strike>F4MiniMenui.ahk uses INI to store settings (F4MiniMenu.ini)</strike> If you want to store your 
+settings in INI format (F4MiniMenu.ini) simply rename the (compiled) script so it ends with an i (letter i)
+so rename or copy F4MiniMenu.ahk to F4MiniMenui.ahk and start that would work, but F4MMi.exe as well.
 
 *Executable*
 
-If you wish you can compile the script to a standalone executable using [AHK2Exe](http://l.autohotkey.net/#Get_It)
+If you wish you can compile the script to a standalone executable using [AHK2Exe](https://autohotkey.com/download/).
+[Documentation](https://autohotkey.com/docs/Scripts.htm#ahk2exe)
+
+# Parameters/Options
+
+|Field|Meaning|
+|-----|-------|
+|%P|causes the source path to be inserted into the command line, including a backslash \ at the end.|
+|%T|inserts the current target path.|
+|%O|places the current filename without extension into the command line.|
+|%E|places the current extension (without leading period) into the command line.|
+|? |as the first parameter causes a Dialog box to be displayed before starting the program, containing the following parameters. You can change the parameters before starting the program. You can even prevent the program's execution.|
+|-----|-------|
+|%f41|placeholder to alter position of filenames on the command line. (see example below)|
+
+Note: More _%f4_ fields may be added in the future.
+
+*Example: %f41*
+
+F4MiniMenu starts programs as follows:
+
+_ProgramName.exe Parameters File(s) Startdir_
+
+But for some programs the _parameter(s)_ - the additional command(s) you want to pass
+on to the program - have the come _AFTER_ the _File(s)_ so by using %f41 as a placeholder
+in the parameters field you can tell F4MiniMenu where to place the files on the 
+"command line"
+
+    Program: pdftk.exe
+    Parameters: %f41 burst
+
+So the program now starts as _pdftk.exe file.pdf burst_ (instead of _pdftk.exe burst file.pdf_)
 
 ## Screenshots
 
@@ -159,9 +214,18 @@ __Editor configuration__
 
 ## Changelog
 
+* 20161231 - v0.94  
+                   a) Added 4th method: cmdline -> program.exe file1 file2 file3 #14 https://github.com/hi5/F4MiniMenu/issues/14  
+                   b) Accept TC Fields %P %T %O %E and ? in Parameters and Startdir. Introduced %f41. #15 https://github.com/hi5/F4MiniMenu/issues/15  
+                   c) Build foreground menu only once vs delete/recreate (updating menu only after editing editors). Refactored menu code.  
+                   d) Now use %TEMP%\$$f4mtmplist$$.m3u instead of ScriptFolder - [requested by Ovg](http://ghisler.ch/board/viewtopic.php?p=319773&sid=2e2472aec32f6906e699d095b4998ea3#319773)  
+                   e) Fixed hotkeys - #12 https://github.com/hi5/F4MiniMenu/issues/12  
+                   f) You can now specify an Icon and Menu name when you configure an Editor. #17 https://github.com/hi5/F4MiniMenu/issues/17  
+                   g) %Commander_Path% now accepted in Editor and Icon paths.
+                   h) Removed F4MiniMenui.ahk - to use INI simply rename/copy the (compiled) script to end with "i".
 * 20161023 - v0.93 OpenFile: add WinWait before WinActivate, merge request @nameanyone #10 https://github.com/hi5/F4MiniMenu/issues/10
 * 20160618 - v0.92 Fix error checking on startup in case script is compiled - HT Ovg
-* 20160618 - v0.91 Fix for INI Editors include (save to INI not XML when making backup). Refinement of regulars expression for wildcards - HT [Ovg](http://ghisler.ch/board/viewtopic.php?p=310538#310538)
+* 20160618 - v0.91 Fix for INI Editors include (save to INI not XML when making backup). Refinement of regular expression for wildcards - HT [Ovg](http://ghisler.ch/board/viewtopic.php?p=310538#310538)
 * 20160618 - v0.9 Added support for wildcards (? and *) in extensions #6 https://github.com/hi5/F4MiniMenu/issues/6. Added open delay (delay in ms between opening files)
 * 20160617 - v0.83 Adding specific #include path for lib files to avoid possible error for portable users when compiling. HT [Ovg](ghisler.ch/board/viewtopic.php?p=310187#310187)
 * 20151104 - v0.82 Further refinement of confusing error message at very first startup (missing configuration XML) - now also checks if BAK is present.
