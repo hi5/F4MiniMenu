@@ -26,7 +26,10 @@ for k, v in MatchList
 	 If (v.name <> "")
 		ShortName:=v.name
 
-	 ShortName:=MenuPadding "&" ShortName
+	 If InStr(ShortName,"&")
+		ShortName:=MenuPadding ShortName
+	 else
+		ShortName:=MenuPadding "&" ShortName
 	 Menu, MyMenu, Add, %ShortName%, MenuHandler
 
 	 Try

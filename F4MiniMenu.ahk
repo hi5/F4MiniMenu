@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.94
+Version     : 0.94a
 Author      : hi5
-Last update : 31 December 2016
+Last update : 5 January 2017
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -33,7 +33,7 @@ If (TmpFileList = "")
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.94"
+F4Version:="v0.94a"
 
 SplitPath, A_ScriptName, , , , OutNameNoExt
 If (SubStr(OutNameNoExt,0) <> "i")
@@ -116,13 +116,13 @@ If (MatchList.settings.TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
 		Run % MatchList.settings.TCPath ; %
 	}
 
+Gosub, BuildMenu
+
 ; Build master list to quickly open in default program if not found
 Gosub, GetAllExtensions
 
 HotKeyState:="On"
 Gosub, SetHotkeys
-
-Gosub, BuildMenu
 
 ; Save Matchlist Object to XML
 OnExit, SaveSettings
@@ -307,7 +307,7 @@ Normal(program,file,delay,parameters,startdir)
 	 if (file = "")
 		Run, %program% %parameters%, %startdir%
 	 else
-		Run, %program% %parameters% "%file%", %startdir%
+		 Run, %program% %parameters% "%file%", %startdir%
 	}
 
 cmdline(program,file,delay,parameters,startdir)
@@ -333,7 +333,7 @@ DragDrop(program,file,delay,parameters,startdir)
 		 ; first startup as some programs are sloooooow and we have to make sure it
 		 ; can accept drag & drop files. It is is only for the first file in the list
 		 Sleep %delay% 
-		 Return
+		 Return 1
 		}
 	
 	 If InStr(title,"Paint Shop Pro.exe") ; Annoying hack but seems to be required for PSP
@@ -341,6 +341,7 @@ DragDrop(program,file,delay,parameters,startdir)
 	 DropFiles(file, title)
 	 If (title = "Jasc Paint Shop Pro")
 		WinActivate, % title
+	 Return 1
 	}
 
 ; Helper functions & Labels
@@ -396,11 +397,11 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 			 Gui, AskInput:Add, Edit, xp yp+20 w400 h20 ReadOnly  , %parameters%
 			}
 
-		 ;if (file <> "")
-			;{
-			; Gui, AskInput:Add, Text, x5 yp+30                       , File(s):
-			; Gui, AskInput:Add, Edit, x5 yp+20 w400 h20              , %file%
-			;}
+;		 if (file <> "")
+;			{
+;			 Gui, AskInput:Add, Text, x5 yp+30                       , File(s):
+;			 Gui, AskInput:Add, Edit, x5 yp+20 w400 h20              , %file%
+;			}
 
 		 if (AskStartDir = 1)
 			{
@@ -413,8 +414,8 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 			 Gui, AskInput:Add, Edit, xp yp+20 w400 h20 ReadOnly  , %startdir%
 			}
 
-		 ;Gui, AskInput:Add, Text, x5 yp+30 w400 h20, Will run as:
-		 ;Gui, AskInput:Add, Edit, x5 yp+20 w400 h50 ReadOnly, %program% %parameters% %file%, %startdir%
+;		 Gui, AskInput:Add, Text, x5 yp+30 w400 h20, Will run as:
+;		 Gui, AskInput:Add, Edit, x5 yp+20 w400 h50 ReadOnly, %program% %parameters% %file%, %startdir%
 
 		 Gui, AskInput:Add, Button, xp+110 yp+60 w100 h25 gAskInputOK Default, &OK
 		 Gui, AskInput:Add, Button, xp+110 yp    w100 h25 gAskInputCancel, &Cancel
