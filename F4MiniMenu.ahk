@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.94a
+Version     : 0.94b
 Author      : hi5
-Last update : 5 January 2017
+Last update : 6 January 2017
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -25,15 +25,13 @@ MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
 
-EnvGet, Commander_Path, Commander_Path
-
 EnvGet, TmpFileList, temp
 If (TmpFileList = "")
 	TmpFileList:=A_ScriptDir
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.94a"
+F4Version:="v0.94b"
 
 SplitPath, A_ScriptName, , , , OutNameNoExt
 If (SubStr(OutNameNoExt,0) <> "i")
@@ -116,6 +114,21 @@ If (MatchList.settings.TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
 		Run % MatchList.settings.TCPath ; %
 	}
 
+; try to get Commander_Path, it will be empty if TC is not running (yet)
+EnvGet, Commander_Path, Commander_Path
+
+If (Commander_Path = "") ; try to read registry
+	 RegRead Commander_Path, HKEY_CURRENT_USER, Software\Ghisler\Total Commander, InstallDir
+
+; Inform user just in case
+If (Commander_Path = "")
+	{
+	 FileRead, check_for_path, %F4ConfigFile%
+	 If InStr(check_for_path,"%Commander_Path%")
+	 	MsgBox, 16, F4MiniMenu: Not found, F4MiniMenu:`nThe Commander_Path environment variable can not be found.`nStarting applications may not work in some cases.`nStart TC first.
+	 check_for_path:=""	
+	}
+
 Gosub, BuildMenu
 
 ; Build master list to quickly open in default program if not found
@@ -134,7 +147,7 @@ Process:
 ProcessFiles(MatchList)
 Return
 
-; Function excetued by background hotkey (open directly)
+; Function executed by background hotkey (open directly)
 ProcessFiles(MatchList, SelectedEditor = "-1")
 	{
 	 Done:=[]

@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.94a
+# F4MiniMenu - v0.94b
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -214,6 +214,7 @@ __Editor configuration__
 
 ## Changelog
 
+* 20170106 - v0.94b Minor fix to ensure Commander_Path is not empty
 * 20170105 - v0.94a Minor fix for launching via Drag&Drop (no longer worked correctly/reliably in v0.94)
 * 20161231 - v0.94  
                    a) Added 4th method: cmdline -> program.exe file1 file2 file3 #14 https://github.com/hi5/F4MiniMenu/issues/14  
