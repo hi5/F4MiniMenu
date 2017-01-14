@@ -19,7 +19,7 @@ ConfigEditors:
 ; Backup Object so we can use this for CANCEL
 Backup:=MatchList
 
-GetList:="Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Open|Editor"
+GetList:="Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Open|Editor|Icon|Name"
 
 infotext=
 (join`n
@@ -37,7 +37,7 @@ Menu, MenuBar, Add, %A_Space%Edit, :EditMenu
 Gui, Browse:Menu, MenuBar
 
 ; INI Gui
-Gui, Browse:Add, ListView, x6 y5 w780 h285 grid hwndhLV vLV gLVLabel, Program|Parameters|Start Dir.|Window|Extensions|Method|D&D|Open|Editor
+Gui, Browse:Add, ListView, x6 y5 w780 h285 grid hwndhLV vLV gLVLabel, Program|Parameters|Start Dir.|Window|Extensions|Method|D&D|Open|Editor|Icon|Name
 Gui, Browse:Add, GroupBox, x6 yp+290 w360 h120, Comments
 Gui, Browse:Add, Text,   x16 yp+20 w340, %infotext%
 Gui, Browse:Add, Button, xp+370   yp w70 h24 gSettings, &Settings
@@ -94,11 +94,14 @@ Loop, % LV_GetCount() ; %
 	 MatchList[Row,"Ext"]:=Ext
 	 MatchList[Row,"Delay"]:=Delay
 	 MatchList[Row,"Open"]:=Open
+	 MatchList[Row,"Icon"]:=Icon
+	 MatchList[Row,"Name"]:=Name
 	}
 
 Backup:=""
 %F4Save%("MatchList",F4ConfigFile)
 Gui, Browse:Destroy
+Gosub, BuildMenu
 Gosub, GetAllExtensions
 Return
 
@@ -122,6 +125,7 @@ IfMsgBox, Yes
 	 LV_Delete(SelItem)	
 	 MatchList.Remove(Editor)
 	}
+Gosub, BuildMenu
 Return
 
 ; We can use the same Gui to ADD or MODIFY an editor we only need 
@@ -164,45 +168,61 @@ Gui, Modify:Add, Edit,         x89  y8  w290 h20 vExe, %Exe%
 Gui, Modify:Add, Button,       x386 y8  w30  h20 gSelectExe, >>
 Gui, Modify:Add, Checkbox,     x426 y8  w200 h20 vDefault, Set as &Default
                         
-Gui, Modify:Add, Text,         x10 y40 w77  h16, Para&meters
-Gui, Modify:Add, Edit,         x89 y38 w438 h20 vParameters, %Parameters% 
+Gui, Modify:Add, Text,         x10  yp+32 w77  h18, &Icon
+Gui, Modify:Add, Edit,         x89  yp-2 w170 h20 vIcon, %Icon%
+Gui, Modify:Add, Button,       x266 yp  w30  h20 gSelectIcon, >>
+Gui, Modify:Add, Text,         xp+41 yp+2 w60  h18, Menu &Name
+Gui, Modify:Add, Edit,         xp+70 yp-2 w150 h20 vName, %Name%
                         
-Gui, Modify:Add, Text,         x10 y70 w77  h16, &Start Dir
-Gui, Modify:Add, Edit,         x89 y68 w323 h20 vStartDir, %StartDir% 
+Gui, Modify:Add, Text,         x10 yp+32 w77  h16, Para&meters
+Gui, Modify:Add, Edit,         x89 yp-2 w438 h20 vParameters, %Parameters% 
+                        
+Gui, Modify:Add, Text,         x10 yp+32 w77  h16, &Start Dir
+Gui, Modify:Add, Edit,         x89 yp-2 w323 h20 vStartDir, %StartDir% 
 Gui, Modify:Add, Button,       xp+328 yp h20 w110  gCopyPath, Copy path from Exe.
 
-Gui, Modify:Add, Text,         x10 y100 w78 h28, &Method
+Gui, Modify:Add, Text,         x10 yp+32 w78 h28, &Method
 If (Method = "Normal")
 	Method:=1
 Else If (Method = "DragDrop")
 	Method:=2
 Else If (Method = "FileList")
 	Method:=3
-Gui, Modify:Add, DropDownList, x89 y97 w238 h21 R3 Choose%Method% vMethod AltSubmit, 1 - Normal|2 - Drag & Drop|3 - FileList
+Else If (Method = "cmdline")
+	Method:=4
+Gui, Modify:Add, DropDownList, x89 yp-3 w238 h21 R4 Choose%Method% vMethod AltSubmit, 1 - Normal|2 - Drag & Drop|3 - FileList|4 - cmdline
 
 Gui, Modify:Add, Text,         xp+250 yp+3  h16, [Delays] D&&D:
 Gui, Modify:Add, Edit,         xp+70 yp-3  h20 w40 vDelay Number, %Delay%
 Gui, Modify:Add, Text,         xp+45 yp+3  h16, Open:
 Gui, Modify:Add, Edit,         xp+32 yp-3  h20 w40 vOpen Number, %Open%
 
-Gui, Modify:Add, Text,         x10 y130 w78 h28, &Window
-Gui, Modify:Add, DropDownList, x89 y127 w438 h21 R3 Choose%WindowMode% vWindowMode AltSubmit, 1 - Normal|2 - Maximized|3 - Minimized
+Gui, Modify:Add, Text,         x10 yp+32 w78 h28, &Window
+Gui, Modify:Add, DropDownList, x89 yp-3 w438 h21 R3 Choose%WindowMode% vWindowMode AltSubmit, 1 - Normal|2 - Maximized|3 - Minimized
 
 ;Gui, Modify:Add, Text,         x10 y160 w78  h16, &Open Mode
 ;Gui, Modify:Add, DropDownList, x89 y158 w438 h21 Choose%Mode% vMode AltSubmit, (not yet implemented)|
 ;Gui, Modify:Default
 ;GuiControl, Disable, Mode
 
-Gui, Modify:Add, Text,         x10 y160 w77  h16, Ex&tensions
-Gui, Modify:Add, Edit,         x89 y158 w438 h76 vExt, %Ext% 
+Gui, Modify:Add, Text,         x10 yp+32 w77  h16, Ex&tensions
+Gui, Modify:Add, Edit,         x89 yp-2 w438 h76 vExt, %Ext% 
 
-Gui, Modify:Add, Link,         x10 y250 w310 h16, F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
+Gui, Modify:Add, Link,         x10 yp+100 w310 h16, F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 
 
-Gui, Modify:Add, Button,       x340 y245 w90 h24, &OK
-Gui, Modify:Add, Button,       x437 y245 w90 h24, &Cancel
+Gui, Modify:Add, Button,       x340 yp-5 w90 h24, &OK
+Gui, Modify:Add, Button,       x437 yp   w90 h24, &Cancel
 
-Gui, Modify:Show,              x239 y179 h280 w542, Editor configuration
+Gui, Modify:Show,              x239 y179 w542, Editor configuration
+Return
+
+SelectIcon:
+FileSelectFile, Icon, 3, , Select Icon, Icon (*.ico)
+if (Icon = "")
+    Return
+GuiControl, Modify: ,Icon,%Icon%
+  
 Return
 
 SelectExe:
@@ -214,6 +234,8 @@ If WinActive("Editor configuration")
 	{
 	; New program so no doubt new StartDir and Parameters, clear Gui controls
 	GuiControl, Modify: ,Exe, %Exe%
+	GuiControl, Modify: ,Icon,%Icon%
+	GuiControl, Modify: ,Name,%Name%
 	GuiControl, Modify: ,StartDir,
 	GuiControl, Modify: ,Parameters,
 	GuiControl, Modify: ,Delay,0
@@ -239,6 +261,8 @@ If (Editor = "") ; we have a new editor
 	Editor:=MatchList.MaxIndex() + 1
 
 MatchList[Editor,"Exe"]:=Exe
+MatchList[Editor,"Icon"]:=Icon
+MatchList[Editor,"Name"]:=Name
 MatchList[Editor,"Parameters"]:=Parameters
 MatchList[Editor,"StartDir"]:=StartDir
 If (Method = 1)
@@ -247,6 +271,8 @@ Else If (Method = 2)
 	Method:="DragDrop"
 Else If (Method = 3)
 	Method:="FileList"
+Else If (Method = 4)
+	Method:="cmdline"
 MatchList[Editor,"Method"]:=Method
 MatchList[Editor,"WindowMode"]:=WindowMode
 
@@ -265,8 +291,9 @@ Gui, Browse:Default
 If (Editor = Matchlist.MaxIndex())
 	Gosub, UpdateListview
 Else
-	LV_Modify(SelItem, "",Exe,Parameters,StartDir,WindowMode,Ext,Method,Delay,Open,Editor)
+	LV_Modify(SelItem, "",Exe,Parameters,StartDir,WindowMode,Ext,Method,Delay,Open,Editor,Icon,Name)
 New:=0
+Gosub, BuildMenu
 Return
 
 ModifyButtonCancel:
@@ -295,12 +322,14 @@ ImageListID1 := IL_Create(65, 10, IconSize)
 LV_SetImageList(ImageListID1)
 LV_Delete()
 Count=0
-; Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Editor ; %
+; Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Editor|Icon|Name ; %
 for k, v in MatchList
 	{
 	If (k = "settings")
 		continue
     FileName := v.Exe  ; Must save it to a writable variable for use below.
+    If (v.Icon <> "")
+    	FileName := StrReplace(v.Icon,"%Commander_Path%",Commander_Path)
 
     ; Build a unique extension ID to avoid characters that are illegal in variable names,
     ; such as dashes.  This unique ID method also performs better because finding an item
@@ -349,11 +378,12 @@ for k, v in MatchList
     }
 
     ; Create the new row in the ListView and assign it the icon number determined above:
-	 LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index)
+	 LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index, v.Icon, v.Name)
 	} 
 LV_ModifyCol(1, 250), LV_ModifyCol(2, 70), LV_ModifyCol(3, 70)
 LV_ModifyCol(4, 50), LV_ModifyCol(5, 165), LV_ModifyCol(6, 70)
 LV_ModifyCol(7, 40), LV_ModifyCol(8, 40), LV_ModifyCol(9, 0)
+LV_ModifyCol(10, 0), LV_ModifyCol(11, 0) ; icon, name
 Return
 
 ; Hotkeys & Functions to move a listview row

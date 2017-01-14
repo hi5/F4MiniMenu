@@ -9,12 +9,17 @@ Settings:
 
 Gui, Browse:Destroy
 
-
 ; Variables
 SelectMenuPos:=MatchList.settings.MenuPos
 Checked:=MatchList.settings.TCStart
 FGHKey:=MatchList.settings.ForegroundHotkey
-BGHKey:=MatchList.settings.BackgroundHotkey 
+BGHKey:=MatchList.settings.BackgroundHotkey
+;SettingsFormat:=MatchList.settings.SettingsFormat
+
+;If (SettingsFormat = "")
+;	SettingsFormat:=1
+
+;OldSettingsFormat:=SettingsFormat
 
 ; Turn hotkeys off to be sure
 HotKeyState:="Off"
@@ -37,7 +42,7 @@ If !FileExist(MatchList.settings.TCPath)
 	 RegRead TCPath, HKEY_CURRENT_USER, Software\Ghisler\Total Commander, InstallDir
 	 TCPath = %TCPath%\TotalCmd.exe
 	 If FileExist(TCPath)
-		MatchList[0,"TCPath"]:=TCPath
+		MatchList["settings","TCPath"]:=TCPath
 	 TCPath:=""	
 	}
 Gui, Add, Edit, xp+53  yp-5 w180 h21 vTCPath, % MatchList.settings.TCPath ; %
@@ -87,14 +92,21 @@ If InStr(FGHKey,"Esc &")
 	
 Gui, Add, Hotkey, xp+50 yp-3 w140 h20 vFGHKey  , %FGHKey% 
 
-
 Gui, Add, Button, xp+177 yp-48 w120 h25 gButtonOK, OK
 Gui, Add, Button, xp     yp+30 w120 h25 gButtonClear, Clear Hotkeys
 Gui, Add, Button, xp     yp+30 w120 h25 gGuiClose, Cancel
 
-Gui, Add, Link,   x25 yp+35, F4MiniMenu %F4Version%: Minimalistic clone of the F4 Menu program for TC. More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
+;Gui, Add, GroupBox, x16 yp+40 w395 h60 , Misc.
+;perhaps in future versions
+;Gui, Add, Text, x25 yp+25 w150 h16 , Store set&tings in:
+;Gui, Add, DropDownList, xp+225 yp-5 w140 h25 r2 Choose%SettingsFormat% vSettingsFormat AltSubmit, 1 - XML Format|2 - INI format
 
-Gui, Show, center w570 h295, Settings
+Gui, Add, Link,   x25 yp+45, F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
+
+;Gui, Add, GroupBox, xp+400 yp-85 w122 h60
+;Gui, Add, Link,   xp+5 yp+13, Feedback welcome at`n<a href="http://ghisler.ch/board/viewtopic.php?t=35721">Total Commander forum</a>`nor <a href="https://github.com/hi5/F4MiniMenu">GitHub Issues</a>.
+
+Gui, Show, center w570 h315 , Settings
 Return
 
 ButtonOK:
@@ -109,6 +121,7 @@ If (MaxFiles > 50)
 MatchList.settings.MaxFiles:=MaxFiles
 MatchList.settings.TCStart:=TCStart
 MatchList.settings.TCPath:=TCPath
+; MatchList.settings.SettingsFormat:=SettingsFormat
 
 GuiControlGet, EscFG, , FEsc
 GuiControlGet, WinFG, , FWin
@@ -130,8 +143,8 @@ MatchList.settings.BackgroundHotkey:=BGHKey
 
 HotKeyState:="On"
 Gosub, SetHotkeys
-
 Gui, Destroy
+
 Return
 
 ButtonClear:

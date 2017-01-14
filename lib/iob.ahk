@@ -21,7 +21,7 @@ iob(Filename="")
 		 IniRead, OutputVar, %Filename%, Settings, %A_LoopField%
 		 MatchList["Settings",A_LoopField]:=OutputVar
 		}
-	 SectionKeys:="Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters"
+	 SectionKeys:="Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"
 	 IniRead, OutputVarSectionNames, %Filename%
 	 StringReplace,OutputVarSectionNames,OutputVarSectionNames,Settings,,All
 	 StringReplace,OutputVarSectionNames,OutputVarSectionNames,`n,`,,All
@@ -47,13 +47,13 @@ iob_save(ObjectName,Filename="") { ; Object parameter isn't used but just added 
 	SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart"
 	Loop, parse, SectionKeys, CSV
 		IniWrite, % MatchList["Settings",A_LoopField], %Filename%, Settings, %A_LoopField%
-	SectionKeys:="Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters"
+	SectionKeys:="Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"
 	Loop
 		{
 		 Index:=A_Index
 		 If !MatchList.HasKey(Index)
 			Break
 		 Loop, parse, SectionKeys, CSV
-			 IniWrite, % MatchList[Index,A_LoopField], %Filename%, %Index%, %A_LoopField%
+			IniWrite, % MatchList[Index,A_LoopField], %Filename%, %Index%, %A_LoopField%
 		}
 	}
