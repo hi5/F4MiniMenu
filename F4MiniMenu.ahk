@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.94b
+Version     : 0.94c
 Author      : hi5
-Last update : 6 January 2017
+Last update : 7 June 2017
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -26,12 +26,13 @@ MenuPadding:="   "
 DefaultShortName:=""
 
 EnvGet, TmpFileList, temp
+EnvGet, MyComSpec, ComSpec
 If (TmpFileList = "")
 	TmpFileList:=A_ScriptDir
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.94b"
+F4Version:="v0.94c"
 
 SplitPath, A_ScriptName, , , , OutNameNoExt
 If (SubStr(OutNameNoExt,0) <> "i")
@@ -450,8 +451,9 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 		AskInputOK:
 		Gui, AskInput:Default
 		GuiControlGet, parameters, , Edit1
-		GuiControlGet, file      , , Edit2
-		GuiControlGet, startdir  , , Edit3
+;		GuiControlGet, file      , , Edit2
+		GuiControlGet, startdir  , , Edit2 ; edit3 if file is uncommented above
+		StringReplace, startdir, startdir,",,All ; remove quotes just to be sure
 		Gui, AskInput:Destroy
 		execute:=1
 		Return
@@ -474,7 +476,10 @@ CountFiles(Files)
 
 GetTCCommander_Path(editor)
 	{
-	 Return StrReplace(editor,"%Commander_Path%",Commander_Path)
+	 global MyComSpec
+	 editor:=StrReplace(editor,"%Commander_Path%",Commander_Path)
+	 editor:=StrReplace(editor,"%ComSpec%",MyComSpec)
+	 Return editor
 	}
 
 GetTCFields(opt,file="")

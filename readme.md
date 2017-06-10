@@ -1,8 +1,8 @@
-# F4MiniMenu - v0.94b
+# F4MiniMenu - v0.94c
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
-Shanny - www.shanny.com.cn (website seems to be offline, see TC forum links below)
+Shanny - www [.] shanny [.] com [.] cn (website seems to be offline, see TC forum links below)
 
 If you have any questions or suggestions do feel free to post them at the [F4MiniMenu TC Forum thread](http://ghisler.ch/board/viewtopic.php?t=35721).
 
@@ -210,10 +210,11 @@ __Editor configuration__
 
 ### Original idea
 
-* Based on original idea from [F4Menu - Shao Shanny](http://www.shanny.com.cn/) - Backup links for the program can be found on the [Total Commander forum](http://ghisler.ch/board/viewtopic.php?t=17003)
+* Based on original idea from F4Menu by Shao Shanny - Backup links for the program can be found on the [Total Commander forum](http://ghisler.ch/board/viewtopic.php?t=17003)
 
 ## Changelog
 
+* 20170607 - v0.94c Minor fix to prevent empty file and quoted startdir variables in GetInput(). Fix for %ComSpec% in Program names.
 * 20170106 - v0.94b Minor fix to ensure Commander_Path is not empty
 * 20170105 - v0.94a Minor fix for launching via Drag&Drop (no longer worked correctly/reliably in v0.94)
 * 20161231 - v0.94  
