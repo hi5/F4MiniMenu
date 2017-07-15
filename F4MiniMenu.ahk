@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.94c
+Version     : 0.95
 Author      : hi5
-Last update : 7 June 2017
+Last update : 10 July 2017
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -32,25 +32,10 @@ If (TmpFileList = "")
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.94c"
+F4Version:="v0.95"
 
-SplitPath, A_ScriptName, , , , OutNameNoExt
-If (SubStr(OutNameNoExt,0) <> "i")
-	{
-	 F4ConfigFile:="F4MiniMenu.xml"
-	 F4Load:="XA_Load"
-	 F4Save:="XA_Save"
-	}
-else
-	{
-	 F4ConfigFile:="F4MiniMenu.ini"
-	 F4Load:="iob"
-	 F4Save:="iob_save"
-	}
-
-Error:=0
-; http://en.wikipedia.org/wiki/List_of_archive_formats
-ArchiveExtentions:="\.(a|ar|cpio|shar|iso|lbr|mar|tar|bz2|F|gz|lz|lzma|lzo|rz|sfark|xz|z|infl|7z|s7z|ace|afa|alz|apk|arc|arj|ba|bh|cab|cfs|cpt|dar|dd|dgc|dmg|gca|ha|hki|ice|j|kgb|lzh|lha|lzx|pak|partimg|paq6|paq7|paq8|pea|pim|pit|qda|rar|rk|sda|sea|sen|sfx|sit|sitx|sqx|tar\.gz|tgz|tar\.Z|tar\.bz2|tbz2|tar\.lzma|tlz|uc|uc0|uc2|ucn|ur2|ue2|uca|uha|wim|xar|xp3|yz1|zip|zipx|zoo|zz)\\"
+; shared with F4TCIE
+#Include %A_ScriptDir%\inc\LoadSettings1.ahk
 
 GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD
 GroupAdd, TCF4Windows, ahk_class TLister
@@ -65,32 +50,23 @@ Menu, tray, NoStandard
 Menu, tray, Add, F4MiniMenu - %F4Version%, DoubleTrayClick
 Menu, tray, Default, F4MiniMenu - %F4Version%
 Menu, tray, Add, 
-Menu, tray, Add, &Reload this script, MenuHandler
-Menu, tray, Add, &Edit this script,   MenuHandler
+Menu, tray, Add, &Reload this script,     MenuHandler
+Menu, tray, Add, &Edit this script,       MenuHandler
 Menu, tray, Add, 
-Menu, tray, Add, &Suspend Hotkeys,    MenuHandler
-Menu, tray, Add, &Pause Script, 	    MenuHandler
+Menu, tray, Add, &Suspend Hotkeys,        MenuHandler
+Menu, tray, Add, &Pause Script,           MenuHandler
 Menu, tray, Add, 
-Menu, tray, Add, Settings,            Settings
-Menu, tray, Add, Configure editors,   ConfigEditors
+Menu, tray, Add, Settings,                Settings
+Menu, tray, Add, Configure editors,       ConfigEditors
+Menu, tray, Add, Scan Document Templates, DocumentTemplatesScan
 Menu, tray, Add, 
 Menu, tray, Add, Exit, 				        SaveSettings
 
 If !FileExist(F4ConfigFile) and !FileExist(F4ConfigFile ".bak") ; most likely first run, no need to show error message
 	Gosub, CreateNewConfig
 
-; Load settings on MatchList Object
-Try
-	{
-	 %F4Load%(F4ConfigFile)
-	}
-Catch
-	{
-	 Error:=1
-	}
-
-If ((MatchList.MaxIndex() = 0) or (MatchList.MaxIndex() = ""))
-	Error:=1
+; shared with F4TCIE
+#Include %A_ScriptDir%\inc\LoadSettings2.ahk
 
 If (Error = 1)
 	{
@@ -115,20 +91,10 @@ If (MatchList.settings.TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
 		Run % MatchList.settings.TCPath ; %
 	}
 
-; try to get Commander_Path, it will be empty if TC is not running (yet)
-EnvGet, Commander_Path, Commander_Path
+; shared with F4MM
+#Include %A_ScriptDir%\inc\TotalCommanderPath.ahk
 
-If (Commander_Path = "") ; try to read registry
-	 RegRead Commander_Path, HKEY_CURRENT_USER, Software\Ghisler\Total Commander, InstallDir
-
-; Inform user just in case
-If (Commander_Path = "")
-	{
-	 FileRead, check_for_path, %F4ConfigFile%
-	 If InStr(check_for_path,"%Commander_Path%")
-	 	MsgBox, 16, F4MiniMenu: Not found, F4MiniMenu:`nThe Commander_Path environment variable can not be found.`nStarting applications may not work in some cases.`nStart TC first.
-	 check_for_path:=""	
-	}
+Gosub, DocumentTemplatesScan
 
 Gosub, BuildMenu
 
@@ -206,7 +172,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 					{
 					 FileList%Index% .= open "`n"
 					 Done.Insert(open)
-					} 
+					}
 				}
 			 Else If (SelectedEditor > 0) ; Use selected editor from the Menu (Foreground option)
 				{
@@ -228,7 +194,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 Loop, parse, list, `n, `r
 			 	cmdfiles .= """" A_LoopField """" A_Space
 			 OpenFile(v, cmdfiles)
-			 cmdfiles:=""	
+			 cmdfiles:=""
 			}
 		 else If (v.Method = "FileList")
 			{
@@ -474,14 +440,6 @@ CountFiles(Files)
 	 Return ErrorLevel+1
 	}
 
-GetTCCommander_Path(editor)
-	{
-	 global MyComSpec
-	 editor:=StrReplace(editor,"%Commander_Path%",Commander_Path)
-	 editor:=StrReplace(editor,"%ComSpec%",MyComSpec)
-	 Return editor
-	}
-
 GetTCFields(opt,file="")
 	{
 	 ; %P causes the source path to be inserted into the command line, including a backslash (\) at the end.
@@ -589,12 +547,6 @@ AllExtensions:=Trim(AllExtensions,",")
 AllExtensions:=RegExExtensions(AllExtensions)
 Return
 
-RegExExtensions(in)
-	{
-	 out:="iU)\b(" StrReplace(StrReplace(StrReplace(in,",","|"),"?",".?"),"*",".*") ")\b" ; v0.9 allow for wildcards
-	 Return out
-	}
-
 CreateNewConfig:
 if InStr(F4ConfigFile,"xml")
 {
@@ -642,13 +594,31 @@ windowmode=1
 }
 Return
 
+
+; Check DocumentTemplates\ - this setting can be used in F4TCIE.ahk (not required)
+DocumentTemplatesScan:
+If (FileExist(A_ScriptDir "\DocumentTemplates\") = "D")
+	{
+	 Loop, %A_ScriptDir%\DocumentTemplates\template.*
+		{
+		 SplitPath, A_LoopFileName, , , TemplatesOutExtension
+		 templatesExt .= TemplatesOutExtension ","
+		}
+	 MatchList.Settings["templatesExt"]:=Trim(templatesExt,",")
+	 TemplatesOutExtension:=""
+	 templatesExt:=""
+	 %F4Save%("MatchList", F4ConfigFile)
+	}
+Return
+
 ; Includes
 
 #include %A_ScriptDir%\inc\Menu.ahk
 #include %A_ScriptDir%\inc\Settings.ahk
 #include %A_ScriptDir%\inc\Editors.ahk
-#include %A_ScriptDir%\lib\XA.ahk
-#include %A_ScriptDir%\lib\iob.ahk
+#include %A_ScriptDir%\inc\HelperFunctions.ahk ; shared with F4TCIE
+#include %A_ScriptDir%\lib\XA.ahk              ; shared with F4TCIE
+#include %A_ScriptDir%\lib\iob.ahk             ; shared with F4TCIE
 #include %A_ScriptDir%\lib\class_lv_rows.ahk
 #include %A_ScriptDir%\lib\DropFiles.ahk
 #include %A_ScriptDir%\lib\GetPos.ahk

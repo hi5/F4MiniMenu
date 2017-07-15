@@ -1,4 +1,4 @@
-# F4MiniMenu - v0.94c
+# F4MiniMenu - v0.95
 
 A minimalistic clone of the F4Menu program for Total Commander (open selected files
 in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
@@ -19,9 +19,13 @@ types. Several tools have been made to solve this problem, these include:
 * and of course [F4Menu](http://ghisler.ch/board/viewtopic.php?t=17003) - TC Forum thread
 
 While the original F4Menu has quite a few options, this minimalistic "clone" only has the
-basic functionality: opening multiple file types in various editors. An additional feature
-is that it can open selected files using a "[Drag & Drop](#dragdrop)" method (a personal requirement)
-or by preparing a [Filelist](#filelist).
+basic functionality: opening multiple file types in various editors. There are various
+methods to open selected files: regular, "[Drag & Drop](#dragdrop)", [Filelist](#filelist)
+or by making use of a [cmdline](#cmdline) option.
+
+As of v0.95 you can make use a helper script to use F4MiniMenu settings as the "internal
+editor" defined in Total Commander and use so called **DocumentTemplates** for creating
+new files. See [F4TCIE](#f4tcie).
 
 *First come, first serve*
 
@@ -30,7 +34,7 @@ __extension__. If it can not find a match it will open the file(s) in the defaul
 The default editor is the first editor listed in the [*Configure editors*](#screenshots) 
 window. If you look in the configuration XML it will be the first editor there.
 If you want to open the file(s) in another program you can use the [*Foreground* menu](#screenshots) option.
-see below.
+See screenshot below.
 
 You can add or modify editors via the tray menu or by bringing up the Foreground menu.
 You can use %Commander_Path% in the paths to the editors and icons.
@@ -121,17 +125,48 @@ Once you have setup your shortcuts you can also access *Settings* and *Configure
 via the Foreground menu options by pressing the shortcut (press <kbd>Esc</kbd>+<kbd>F4</kbd> by default).
 See screenshots below.
 
-There are two versions:
+**XML or INI** - There are two versions:
 
 1. F4MiniMenu.ahk uses XML to store settings (F4MiniMenu.xml)
 2. <strike>F4MiniMenui.ahk uses INI to store settings (F4MiniMenu.ini)</strike> If you want to store your 
 settings in INI format (F4MiniMenu.ini) simply rename the (compiled) script so it ends with an i (letter i)
-so rename or copy F4MiniMenu.ahk to F4MiniMenui.ahk and start that would work, but F4MMi.exe as well.
+so rename or copy F4MiniMenu.ahk to F4MiniMenui.ahk and start. That would work, but F4MMi.exe as well.
 
 *Executable*
 
 If you wish you can compile the script to a standalone executable using [AHK2Exe](https://autohotkey.com/download/).
 [Documentation](https://autohotkey.com/docs/Scripts.htm#ahk2exe)
+
+## Helper script: F4TCIE.ahk <a name='f4tcie'></a>
+
+If you want to make use of your preferred editor(s) when the active panel
+is in an Archived file (ZIP panel) or FTP connection you can make use of
+a helper script called F4TCIE. If you are using the INI format to store
+your settings be sure to rename the script to end with an "i" (see 'XML or INI' above)
+
+**Setup F4TCIE**
+
+When F4MiniMenu sees the files you have selected are in an archive or in an
+FTP panel, it uses the default Total Commander Edit command. It will only
+use the first file if you had selected multiple files in the archive or FTP.
+
+So we need to configure Total Commander to use F4TCIE.ahk like so:
+
+    TC, Configuration, Edit/View, Editor:
+    drive:\path-to\F4TCIE.ahk "%1"
+
+If for some reason it can't open the configuration file it will try to start the editor for the
+file type associated in Windows (so for txt -> notepad, for bmp,jpg -> MS Paint etc) - if there
+is no editor for the file type it would start notepad.exe as a final resort.
+
+Reference: see also [#13](https://github.com/hi5/F4MiniMenu/issues/13)
+
+## DocumentTemplates
+
+F4TCIE can also make use of DocumentTemplates when creating New files in 
+Total Commander using the <kbd>shift</kbd>+<kbd>f4</kbd> shortcut.
+
+More information can be found in the [DocumentTemplates README](DocumentTemplates/readme.md)
 
 # Parameters/Options
 
@@ -214,7 +249,9 @@ __Editor configuration__
 
 ## Changelog
 
-* 20170607 - v0.94c Minor fix to prevent empty file and quoted startdir variables in GetInput(). Fix for %ComSpec% in Program names.
+* 20170710 - v0.95 Added F4TCIE and introduced DocumentTemplates. #13 https://github.com/hi5/F4MiniMenu/issues/13  
+             New icon :-)
+* 20170607 - v0.94c Minor fix to empty file and quoted startdir variables in GetInput(). Fix for %ComSpec% in Editor names.
 * 20170106 - v0.94b Minor fix to ensure Commander_Path is not empty
 * 20170105 - v0.94a Minor fix for launching via Drag&Drop (no longer worked correctly/reliably in v0.94)
 * 20161231 - v0.94  

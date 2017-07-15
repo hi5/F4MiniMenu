@@ -96,17 +96,26 @@ Gui, Add, Button, xp+177 yp-48 w120 h25 gButtonOK, OK
 Gui, Add, Button, xp     yp+30 w120 h25 gButtonClear, Clear Hotkeys
 Gui, Add, Button, xp     yp+30 w120 h25 gGuiClose, Cancel
 
+Gui, Add, GroupBox, x16 yp+35 w540 h70 , Currently Available Document Templates:
+Gui, Add, Edit, x25 yp+20 ReadOnly h40 w385 vDocumentTemplates, % MatchList.Settings.templatesExt
+Gui, Add, Button, xp+402 yp w120 h25 gButtonDocumentTemplates, Update (scan)
+
 ;Gui, Add, GroupBox, x16 yp+40 w395 h60 , Misc.
 ;perhaps in future versions
 ;Gui, Add, Text, x25 yp+25 w150 h16 , Store set&tings in:
 ;Gui, Add, DropDownList, xp+225 yp-5 w140 h25 r2 Choose%SettingsFormat% vSettingsFormat AltSubmit, 1 - XML Format|2 - INI format
 
-Gui, Add, Link,   x25 yp+45, F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
+Gui, Add, Link,   x25 yp+65, F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
 
 ;Gui, Add, GroupBox, xp+400 yp-85 w122 h60
 ;Gui, Add, Link,   xp+5 yp+13, Feedback welcome at`n<a href="http://ghisler.ch/board/viewtopic.php?t=35721">Total Commander forum</a>`nor <a href="https://github.com/hi5/F4MiniMenu">GitHub Issues</a>.
 
-Gui, Show, center w570 h315 , Settings
+Gui, Show, center w570 h390 , Settings
+Return
+
+ButtonDocumentTemplates:
+Gosub, DocumentTemplatesScan
+GuiControl,,DocumentTemplates, % MatchList.Settings.templatesExt
 Return
 
 ButtonOK:

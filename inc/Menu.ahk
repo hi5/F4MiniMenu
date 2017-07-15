@@ -55,6 +55,9 @@ Menu, MyMenu, Add,  %MenuPadding%Settings,          MenuHandler
 Menu, MyMenu, Icon, %MenuPadding%Settings,          shell32.dll, 170
 Menu, MyMenu, Add,  %MenuPadding%Configure Editors, ConfigEditors
 Menu, MyMenu, Icon, %MenuPadding%Configure Editors, shell32.dll, 70
+Menu, MyMenu, Add,  %MenuPadding%Scan Document Templates, DocumentTemplatesScan
+Menu, MyMenu, Icon, %MenuPadding%Scan Document Templates, shell32.dll, 172
+
 Menu, MyMenu, Add,  %MenuPadding%Exit,              MenuHandler
 Menu, MyMenu, Icon, %MenuPadding%Exit,              shell32.dll, 132
 
