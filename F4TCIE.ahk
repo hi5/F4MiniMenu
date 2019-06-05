@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4TCIE.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.4
+Version     : 0.41
 Author      : hi5
-Last update : 10 July 2017
+Last update : 1 October 2017
 Purpose     : Helper script for F4MiniMenu program to allow internal editor to function
               now you can edit files from within Archives and FTP (and have TC update/upload them)
 Notes       : It will always use the "normal" method to open programs, so the "drag & drop", "filelist" 
@@ -19,8 +19,6 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
               This will copy the template.ext to the panel with the new name so you can work on it the
               defined editor. Not all programs allow empty files at start up so this will resolve that
               problem for say Office applications or Graphics programs. 
-              For testing purposes the variable "templateExt" below needs to be modified, this will
-              be automatically done when integrating F4TCIE into the F4MM repo.
               See DocumentTemplates\readme.md for more info.
 
 */

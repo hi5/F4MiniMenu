@@ -64,15 +64,22 @@ Menu, MyMenu, Icon, %MenuPadding%Exit,              shell32.dll, 132
 Return
 
 ; If the tray icon is double click we do not actually want to do anything
-DoubleTrayClick:
+DoubleTrayClick: 
+Send {rbutton} ; show tray menu
 Return
+
 
 ; Tray menu
 MenuHandler:
 ; MsgBox % A_ThisMenuItemPos-1 ":" MatchList[A_ThisMenuItemPos-1].exe ; debug
 
 ; Easy & Quick options first
-If (A_ThisMenuItem = "&Reload this script")
+If (A_ThisMenuItem = "&Open")
+	{
+	 ListHotkeys
+	 Return
+	}
+Else If (A_ThisMenuItem = "&Reload this script")
 	{
 	 Reload
 	 Return

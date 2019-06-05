@@ -11,8 +11,8 @@ editor.
 
 By setting F4TCIE.ahk as editor:
 
-   TC, Configuration, Edit/View, Editor:
-   drive:\path-to\F4TCIE.ahk "%1"
+    TC, Configuration, Edit/View, Editor:
+    drive:\path-to\F4TCIE.ahk "%1"
 
 you can extend this functionality to the programs you defined in F4MiniMenu.
 
@@ -35,6 +35,8 @@ You can find two examples in DocumentTemplatesExamples.zip to illustrate how it
 works (RTF, PNG) - you can of course replace these with your own Template files.
 
 ## Limitation(s)
+
+In versions prior to Total Commander 9.10:
 
 * It won't work in/with ZIP files (but will copy file to Active panel)
 * Shift+F4 doesn't work in FTP panels (default TC behaviour)

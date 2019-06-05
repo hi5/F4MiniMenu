@@ -1,15 +1,19 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.95
+Version     : 0.96
 Author      : hi5
-Last update : 10 July 2017
+Last update : 27 May 2019
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
 Note        : ; % used to resolve syntax highlighting feature bug of N++
 
 */
+
+;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
+;@Ahk2Exe-SetVersion 0.96.0.0
+;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
 
 #SingleInstance, Force
 #UseHook
@@ -32,7 +36,7 @@ If (TmpFileList = "")
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.95"
+F4Version:="v0.96"
 
 ; shared with F4TCIE
 #Include %A_ScriptDir%\inc\LoadSettings1.ahk
@@ -48,19 +52,34 @@ Menu, tray, icon, res\f4.ico
 Menu, tray, Tip , F4MiniMenu - %F4Version%
 Menu, tray, NoStandard
 Menu, tray, Add, F4MiniMenu - %F4Version%, DoubleTrayClick
+Menu, tray, icon, F4MiniMenu - %F4Version%, res\f4.ico
 Menu, tray, Default, F4MiniMenu - %F4Version%
-Menu, tray, Add, 
+Menu, tray, Click, 1 ; this will show the tray menu because we send {rbutton} at the DoubleTrayClick label
+Menu, tray, Add,
+Menu, tray, Add, &Open,                   MenuHandler
 Menu, tray, Add, &Reload this script,     MenuHandler
+Menu, tray, Icon,&Reload this script,     shell32.dll, 239
+
 Menu, tray, Add, &Edit this script,       MenuHandler
+Menu, tray, Icon,&Edit this script,       comres.dll, 7
+If A_IsCompiled
+	Menu, tray,Disable, &Edit this script
+
 Menu, tray, Add, 
 Menu, tray, Add, &Suspend Hotkeys,        MenuHandler
+Menu, tray, Icon,&Suspend Hotkeys,        %A_AhkPath%, 3
 Menu, tray, Add, &Pause Script,           MenuHandler
+Menu, tray, Icon,&Pause Script,           %A_AhkPath%, 4
 Menu, tray, Add, 
 Menu, tray, Add, Settings,                Settings
+Menu, tray, Icon, Settings,               shell32.dll, 170
 Menu, tray, Add, Configure editors,       ConfigEditors
+Menu, tray, Icon, Configure Editors,      shell32.dll, 70
 Menu, tray, Add, Scan Document Templates, DocumentTemplatesScan
+Menu, tray, Icon, Scan Document Templates, shell32.dll, 172
 Menu, tray, Add, 
-Menu, tray, Add, Exit, 				        SaveSettings
+Menu, tray, Add, Exit,                    SaveSettings
+Menu, tray, Icon, Exit,                   shell32.dll, 132
 
 If !FileExist(F4ConfigFile) and !FileExist(F4ConfigFile ".bak") ; most likely first run, no need to show error message
 	Gosub, CreateNewConfig
@@ -85,7 +104,13 @@ If (Error = 1)
 ; Create backup file
 FileCopy, %F4ConfigFile%, %F4ConfigFile%.bak, 1
 
-If (MatchList.settings.TCStart = 1) and !WinExist("ahk_class TTOTAL_CMD")
+If (MatchList.settings.TCStart = 2) and !WinExist("ahk_class TTOTAL_CMD")
+	{
+	 If FileExist(MatchList.settings.TCPath)
+		Run % MatchList.settings.TCPath ; %
+	}
+
+If (MatchList.settings.TCStart = 3)
 	{
 	 If FileExist(MatchList.settings.TCPath)
 		Run % MatchList.settings.TCPath ; %
@@ -108,6 +133,11 @@ Gosub, SetHotkeys
 OnExit, SaveSettings
 
 ; End of Auto-execute section
+If Matchlist.settings.F4MMClose
+	{
+	 WinWaitClose, ahk_class TTOTAL_CMD
+	 ExitApp
+	}
 Return
 
 Process:
@@ -419,7 +449,7 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 		GuiControlGet, parameters, , Edit1
 ;		GuiControlGet, file      , , Edit2
 		GuiControlGet, startdir  , , Edit2 ; edit3 if file is uncommented above
-		StringReplace, startdir, startdir,",,All ; remove quotes just to be sure
+		StringReplace, startdir, startdir,",,All ; remove quotes just to be sure ;"
 		Gui, AskInput:Destroy
 		execute:=1
 		Return
@@ -516,17 +546,24 @@ Hotkey, IfWinActive
 Return
 
 SaveSettings:
+Gosub, SaveSetup
+ExitApp
+Return
+
+SaveSetup:
 If (A_ExitReason <> "Exit") ; to prevent saving it twice
-	%F4Save%("MatchList", F4ConfigFile)
+	{
+	 if (MatchListStart <> MatchList) ; only save changes no need to save settings otherwise
+		%F4Save%("MatchList", F4ConfigFile)
+	}
 FileDelete, % TmpFileList
 If (Error = 1)
 	{
 	 FileDelete, %F4ConfigFile%
 	 Gosub, CreateNewConfig
 	}
-
-ExitApp
 Return
+
 
 ; Used in ProcessFiles() - Technique from http://www.autohotkey.com/docs/scripts/MsgBoxButtonNames.htm	
 ChangeButtonNames:
@@ -560,6 +597,7 @@ FileAppend,
 		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
 		<MaxFiles>30</MaxFiles>
 		<MenuPos>3</MenuPos>
+		<F4MMClose>0</F4MMClose>
 		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
 		<TCStart>1</TCStart>
 	</Invalid_Name>
@@ -622,3 +660,4 @@ Return
 #include %A_ScriptDir%\lib\class_lv_rows.ahk
 #include %A_ScriptDir%\lib\DropFiles.ahk
 #include %A_ScriptDir%\lib\GetPos.ahk
+#include %A_ScriptDir%\lib\dpi.ahk
