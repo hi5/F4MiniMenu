@@ -1,7 +1,7 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.96
+Version     : 0.96.1
 Author      : hi5
 Last update : 27 May 2019
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -12,7 +12,7 @@ Note        : ; % used to resolve syntax highlighting feature bug of N++
 */
 
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
-;@Ahk2Exe-SetVersion 0.96.0.0
+;@Ahk2Exe-SetVersion 0.96.1.0
 ;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
 
 #SingleInstance, Force
@@ -36,7 +36,7 @@ If (TmpFileList = "")
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.96"
+F4Version:="v0.96.1"
 
 ; shared with F4TCIE
 #Include %A_ScriptDir%\inc\LoadSettings1.ahk
@@ -133,7 +133,7 @@ Gosub, SetHotkeys
 OnExit, SaveSettings
 
 ; End of Auto-execute section
-If Matchlist.settings.F4MMClose
+If (Matchlist.settings.F4MMClose = 1)
 	{
 	 WinWaitClose, ahk_class TTOTAL_CMD
 	 ExitApp

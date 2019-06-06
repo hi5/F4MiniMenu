@@ -15,7 +15,7 @@
 iob(Filename="")
 	{
 	 Global MatchList:=[]
-	 SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart"
+	 SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart,F4MMClose"
 	 Loop, parse, SectionKeys, CSV
 		{
 		 IniRead, OutputVar, %Filename%, Settings, %A_LoopField%
@@ -44,7 +44,7 @@ iob_save(ObjectName,Filename="") { ; Object parameter isn't used but just added 
 	global MatchList
 	FileCopy, %Filename%, %Filename%.bak, 1
 	FileDelete, %Filename%
-	SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart"
+	SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart,F4MMClose"
 	Loop, parse, SectionKeys, CSV
 		IniWrite, % MatchList["Settings",A_LoopField], %Filename%, Settings, %A_LoopField%
 	SectionKeys:="Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"

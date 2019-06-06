@@ -1,9 +1,10 @@
 ## Changelog
 
+* 20190606 - v0.96.1 - Fix: adding close F4MiniMenu setting to INI version (iob.ahk) https://www.ghisler.ch/board/viewtopic.php?p=355998#p355998  
 * 20190527 - v0.96  
                    a) Added options to "Total Commander" startup settings on request https://www.ghisler.ch/board/viewtopic.php?p=355595#p355595 (always start, close F4MiniMenu)  
                    b) dpi + fix to avoid Gui error when calling New editor from menu while Browse Gui was active.  
-                   c) tray menu: icons, right click opens tray menu, added "Open" to check keyhistory etc  
+                   c) tray menu: icons, left click opens tray menu, added "Open" to check keyhistory etc  
 * 20170710 - v0.95 Added F4TCIE and introduced DocumentTemplates. #13 https://github.com/hi5/F4MiniMenu/issues/13  
              New icon :-)
 * 20170607 - v0.94c Minor fix to empty file and quoted startdir variables in GetInput(). Fix for %ComSpec% in Editor names.
