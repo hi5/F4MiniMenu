@@ -1,5 +1,6 @@
 ## Changelog
 
+* 20190607 - v0.96.2 - Fix: adding Try to all Menu, tray, icons to avoid startup error for compiled scripts and autohotkey.exe is not installed. https://www.ghisler.ch/board/viewtopic.php?p=356022#p356022  
 * 20190606 - v0.96.1 - Fix: adding close F4MiniMenu setting to INI version (iob.ahk) https://www.ghisler.ch/board/viewtopic.php?p=355998#p355998  
 * 20190527 - v0.96  
                    a) Added options to "Total Commander" startup settings on request https://www.ghisler.ch/board/viewtopic.php?p=355595#p355595 (always start, close F4MiniMenu)  

@@ -1,7 +1,7 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.96.1
+Version     : 0.96.2
 Author      : hi5
 Last update : 27 May 2019
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -11,9 +11,11 @@ Note        : ; % used to resolve syntax highlighting feature bug of N++
 
 */
 
+; <for compiled scripts>
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
-;@Ahk2Exe-SetVersion 0.96.1.0
+;@Ahk2Exe-SetVersion 0.96.2.0
 ;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
+; </for compiled scripts>
 
 #SingleInstance, Force
 #UseHook
@@ -21,6 +23,12 @@ Note        : ; % used to resolve syntax highlighting feature bug of N++
 SetBatchlines, -1
 SetWorkingDir, %A_ScriptDir%
 ; Setup variables, menu, hotkeys etc
+
+; <for compiled scripts>
+IfNotExist, %A_ScriptDir%\res
+	FileCreateDir, %A_ScriptDir%\res
+FileInstall, res\f4.ico, %A_ScriptDir%\res\f4.ico
+; </for compiled scripts>
 
 global AllExtensions:=""
 global TmpFileList:=""
@@ -36,7 +44,7 @@ If (TmpFileList = "")
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.96.1"
+F4Version:="v0.96.2"
 
 ; shared with F4TCIE
 #Include %A_ScriptDir%\inc\LoadSettings1.ahk
@@ -48,11 +56,13 @@ GroupAdd, TCF4Windows, ahk_class TQUICKSEARCH
 
 FileDelete, % TmpFileList
 
-Menu, tray, icon, res\f4.ico
+Try
+	Menu, tray, icon, res\f4.ico
 Menu, tray, Tip , F4MiniMenu - %F4Version%
 Menu, tray, NoStandard
 Menu, tray, Add, F4MiniMenu - %F4Version%, DoubleTrayClick
-Menu, tray, icon, F4MiniMenu - %F4Version%, res\f4.ico
+Try
+	Menu, tray, icon, F4MiniMenu - %F4Version%, res\f4.ico
 Menu, tray, Default, F4MiniMenu - %F4Version%
 Menu, tray, Click, 1 ; this will show the tray menu because we send {rbutton} at the DoubleTrayClick label
 Menu, tray, Add,
@@ -61,25 +71,32 @@ Menu, tray, Add, &Reload this script,     MenuHandler
 Menu, tray, Icon,&Reload this script,     shell32.dll, 239
 
 Menu, tray, Add, &Edit this script,       MenuHandler
-Menu, tray, Icon,&Edit this script,       comres.dll, 7
+Try
+	Menu, tray, Icon,&Edit this script,       comres.dll, 7
 If A_IsCompiled
 	Menu, tray,Disable, &Edit this script
 
 Menu, tray, Add, 
 Menu, tray, Add, &Suspend Hotkeys,        MenuHandler
-Menu, tray, Icon,&Suspend Hotkeys,        %A_AhkPath%, 3
+Try
+	Menu, tray, Icon,&Suspend Hotkeys,        %A_AhkPath%, 3
 Menu, tray, Add, &Pause Script,           MenuHandler
-Menu, tray, Icon,&Pause Script,           %A_AhkPath%, 4
+Try
+	Menu, tray, Icon,&Pause Script,           %A_AhkPath%, 4
 Menu, tray, Add, 
 Menu, tray, Add, Settings,                Settings
-Menu, tray, Icon, Settings,               shell32.dll, 170
+Try
+	Menu, tray, Icon, Settings,               shell32.dll, 170
 Menu, tray, Add, Configure editors,       ConfigEditors
-Menu, tray, Icon, Configure Editors,      shell32.dll, 70
+Try
+	Menu, tray, Icon, Configure Editors,      shell32.dll, 70
 Menu, tray, Add, Scan Document Templates, DocumentTemplatesScan
-Menu, tray, Icon, Scan Document Templates, shell32.dll, 172
+Try
+	Menu, tray, Icon, Scan Document Templates, shell32.dll, 172
 Menu, tray, Add, 
 Menu, tray, Add, Exit,                    SaveSettings
-Menu, tray, Icon, Exit,                   shell32.dll, 132
+Try
+	Menu, tray, Icon, Exit,                   shell32.dll, 132
 
 If !FileExist(F4ConfigFile) and !FileExist(F4ConfigFile ".bak") ; most likely first run, no need to show error message
 	Gosub, CreateNewConfig
@@ -622,6 +639,7 @@ MaxFiles=30
 MenuPos=3
 TCPath=c:\totalcmd\TotalCmd.exe
 TCStart=1
+F4MMClose=0
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe
