@@ -1,6 +1,7 @@
 ﻿/*
 
 Foreground menu - uses lib\GetPos.ahk
+FilteredMenu.ahk makes use of various labels in Menu.ahk
 Include for F4MiniMenu.ahk
 
 */
@@ -9,6 +10,7 @@ ShowMenu:
 CoordMode, Menu, Client
 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
 Menu, MyMenu, Show, % Coord["x"], % Coord["y"] 
+MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 Return
 
 ; Build menu based on defined editors
@@ -17,9 +19,11 @@ BuildMenu:
 Menu, MyMenu, Add,
 Menu, MyMenu, DeleteAll
 
+MenuName:="MyMenu"
+
 for k, v in MatchList
 	{
-	 If (k = "settings")
+	 If (k = "settings") or (k = "temp")
 		Continue ; skip settings
 	 ExeName:=v.exe
 	 SplitPath, ExeName, ShortName
@@ -30,36 +34,12 @@ for k, v in MatchList
 		ShortName:=MenuPadding ShortName
 	 else
 		ShortName:=MenuPadding "&" ShortName
-	 Menu, MyMenu, Add, %ShortName%, MenuHandler
 
-	 Try
-		{
-		 If (v.icon = "")
-			Menu, MyMenu, Icon, %ShortName%, % StrReplace(ExeName,"%Commander_Path%",Commander_Path)
-		 Else
-			Menu, MyMenu, Icon, %ShortName%, % StrReplace(v.icon,"%Commander_Path%",Commander_Path)
-		}
-	 Catch ; it is not an EXE 
-		{
-		 Menu, MyMenu, Icon, %ShortName%, shell32.dll, 3
-		}
-	 If (k = 1) ; Add line after default editors
-		Menu, MyMenu, Add
+	 Gosub, AddMenuEntry
+
 	}
 
-; Program options
-Menu, MyMenu, Add
-Menu, MyMenu, Add,  %MenuPadding%Add new Editor,    ConfigEditorsNew
-Menu, MyMenu, Icon, %MenuPadding%Add new Editor,    shell32.dll, 176
-Menu, MyMenu, Add,  %MenuPadding%Settings,          MenuHandler
-Menu, MyMenu, Icon, %MenuPadding%Settings,          shell32.dll, 170
-Menu, MyMenu, Add,  %MenuPadding%Configure Editors, ConfigEditors
-Menu, MyMenu, Icon, %MenuPadding%Configure Editors, shell32.dll, 70
-Menu, MyMenu, Add,  %MenuPadding%Scan Document Templates, DocumentTemplatesScan
-Menu, MyMenu, Icon, %MenuPadding%Scan Document Templates, shell32.dll, 172
-
-Menu, MyMenu, Add,  %MenuPadding%Exit,              MenuHandler
-Menu, MyMenu, Icon, %MenuPadding%Exit,              shell32.dll, 132
+Gosub, AddMenuProgramOptions
 
 Return
 
@@ -71,7 +51,7 @@ Return
 
 ; Tray menu
 MenuHandler:
-; MsgBox % A_ThisMenuItemPos-1 ":" MatchList[A_ThisMenuItemPos-1].exe ; debug
+; MsgBox % A_ThisMenu ":" A_ThisMenuItemPos-1 ":" MatchList[A_ThisMenuItemPos-1].exe ; debug
 
 ; Easy & Quick options first
 If (A_ThisMenuItem = "&Open")
@@ -114,6 +94,57 @@ Else If (A_ThisMenuItemPos = 1) ; Default editor
 	 Return
 	}
 Else
-	ProcessFiles(Matchlist, A_ThisMenuItemPos-1) ; proceed with the selected editor. Menu order = editor order.
+	If (MatchList.Temp.SelectedExtensions = "") or (A_ThisMenu = "MyMenu") ; entire Foreground menu
+		{
+		 ProcessFiles(Matchlist, A_ThisMenuItemPos-1) ; proceed with the selected editor. Menu order = editor order.
+		 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp"),MatchListReference:=""
+		}
+	else                         ; filtered Foreground menu
+		{
+		 ProcessFiles(Matchlist, MatchListReference[A_ThisMenuItemPos])
+		 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp"),MatchListReference:=""
+		}
+
+Return
+
+AddMenuEntry:
+
+	 Menu, %MenuName%, Add, %ShortName%, MenuHandler
+
+	 Try
+		{
+		 If (v.icon = "")
+			Menu, %MenuName%, Icon, %ShortName%, % StrReplace(ExeName,"%Commander_Path%",Commander_Path)
+		 Else
+			Menu, %MenuName%, Icon, %ShortName%, % StrReplace(v.icon,"%Commander_Path%",Commander_Path)
+		}
+	 Catch ; it is not an EXE
+		{
+		 Menu, %MenuName%, Icon, %ShortName%, shell32.dll, 3
+		}
+	 If (k = 1) ; Add line after default editors
+		Menu, %MenuName%, Add
+
+If debug
+	{
+	 debug_menu .= MenuCounter " : " ShortName "`n"
+	}
+Return
+
+AddMenuProgramOptions:
+
+; Program options
+Menu, %MenuName%, Add
+Menu, %MenuName%, Add,  %MenuPadding%Add new Editor,    ConfigEditorsNew
+Menu, %MenuName%, Icon, %MenuPadding%Add new Editor,    shell32.dll, 176
+Menu, %MenuName%, Add,  %MenuPadding%Settings,          MenuHandler
+Menu, %MenuName%, Icon, %MenuPadding%Settings,          shell32.dll, 170
+Menu, %MenuName%, Add,  %MenuPadding%Configure Editors, ConfigEditors
+Menu, %MenuName%, Icon, %MenuPadding%Configure Editors, shell32.dll, 70
+Menu, %MenuName%, Add,  %MenuPadding%Scan Document Templates, DocumentTemplatesScan
+Menu, %MenuName%, Icon, %MenuPadding%Scan Document Templates, shell32.dll, 172
+
+Menu, %MenuName%, Add,  %MenuPadding%Exit,              MenuHandler
+Menu, %MenuName%, Icon, %MenuPadding%Exit,              shell32.dll, 132
 
 Return

@@ -26,6 +26,12 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 #NoTrayIcon
 #NoEnv
 
+; <for compiled scripts>
+;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
+;@Ahk2Exe-SetVersion 0.97.0.0
+;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
+; </for compiled scripts>
+
 SetWorkingDir, %A_ScriptDir%
 
 File=%1% ; cmd line parameter "%1" it receives from TC

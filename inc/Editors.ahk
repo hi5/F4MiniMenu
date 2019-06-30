@@ -5,7 +5,7 @@ Include for F4MiniMenu.ahk
 
 */
 
-; This label is used when "Add new Editor" is selected in the foreground menu, 
+; This label is used when "Add new Editor" is selected in the foreground menu,
 ; we only need to set a variable and the proceed with the regular editor Gui
 
 ConfigEditorsNew:
@@ -17,7 +17,7 @@ ConfigEditors:
 ; Variables
 
 ; Backup Object so we can use this for CANCEL
-Backup:=MatchList
+Backup:=MatchList.Clone()
 
 GetList:="Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Open|Editor|Icon|Name"
 
@@ -64,23 +64,23 @@ Sleep 100
 
 NewEditor:
 If (New = 1) ; we choose "Add new Editor in foreground menu"
-   {
-	Gosub, Add
-	; get list of selected files so we can set the Extensions automatically
-	SelectedExtensions:=""
-	Files:=GetFiles()
-	Loop, parse, Files, `n, `r
+	{
+	 Gosub, Add
+	 ; get list of selected files so we can set the Extensions automatically
+	 SelectedExtensions:=""
+	 Files:=GetFiles()
+	 Loop, parse, Files, `n, `r
 		{
 		 SplitPath, A_LoopField, , , OutExtension
 		 If OutExtension not in %SelectedExtensions%
 			SelectedExtensions .= OutExtension ","
 		}
-	SelectedExtensions:=Rtrim(SelectedExtensions,",")
-	GuiControl,Modify: , Ext, %SelectedExtensions%
-	SelectedExtensions:=""
-	Files:=""
-   }
-   
+	 SelectedExtensions:=Rtrim(SelectedExtensions,",")
+	 GuiControl,Modify: , Ext, %SelectedExtensions%
+	 SelectedExtensions:=""
+	 Files:=""
+	}
+
 New:=0
 Return
 
@@ -95,7 +95,7 @@ Loop, % LV_GetCount() ; %
 	{
 	 Row:=A_Index
 	 Loop, parse, GetList, |
-	 	LV_GetText(%A_LoopField%, Row, A_Index)
+		LV_GetText(%A_LoopField%, Row, A_Index)
 	 MatchList[Row,"Exe"]:=Exe
 	 MatchList[Row,"Parameters"]:=Parameters
 	 MatchList[Row,"StartDir"]:=StartDir
@@ -116,8 +116,10 @@ Gosub, GetAllExtensions
 Return
 
 Cancel:
+MatchList:=[]
 MatchList:=Backup
 Backup:=""
+Gosub, BuildMenu
 Gosub, BrowseGuiClose
 Return
 
@@ -128,17 +130,17 @@ Gui, Browse:Submit, NoHide
 SelItem := LV_GetNext()
 If (SelItem = 0)
 	SelItem = 1
-LV_GetText(Ask, SelItem, 1)   	
+LV_GetText(Ask, SelItem, 1)
 MsgBox, 52, Remove editor, Do you want to remove:`n%Ask%?
 IfMsgBox, Yes
 	{
-	 LV_Delete(SelItem)	
+	 LV_Delete(SelItem)
 	 MatchList.Remove(Editor)
 	}
 Gosub, BuildMenu
 Return
 
-; We can use the same Gui to ADD or MODIFY an editor we only need 
+; We can use the same Gui to ADD or MODIFY an editor we only need
 ; to set a variable and the proceed with the regular Modify Gui
 
 Add:
@@ -153,43 +155,43 @@ Loop, parse, GetList, |
 If New
 	{
 	 Delay:=0
-	 Method:="Normal" 
+	 Method:="Normal"
 	 WindowMode:=1
 	}
-	
-; We want to modify existing entry, get info from listview and set variables for use in Gui	
+
+; We want to modify existing entry, get info from listview and set variables for use in Gui
 If !New
 	{
 	 Gui, Browse:Default
 	 Gui, Browse:Submit, NoHide
 	 SelItem := LV_GetNext()
 	 If (SelItem = 0)
-	    SelItem = 1
+		SelItem = 1
 	 Loop, parse, GetList, |
 		{
 		 LV_GetText(%A_LoopField%, SelItem, A_Index)
 		}
-	} 
+	}
 
 
 Gui, Modify:+Owner
 Gui, Modify:font,              % dpi("s8")
 Gui, Modify:Add, Text,         % dpi("x10  y10 w77  h18"), &Exe
-Gui, Modify:Add, Edit,         % dpi("x89  y8  w290 h20 vExe"), %Exe% 
+Gui, Modify:Add, Edit,         % dpi("x89  y8  w290 h20 vExe"), %Exe%
 Gui, Modify:Add, Button,       % dpi("x386 y8  w30  h20 gSelectExe"), >>
 Gui, Modify:Add, Checkbox,     % dpi("x426 y8  w200 h20 vDefault"), Set as &Default
-                        
+
 Gui, Modify:Add, Text,         % dpi("x10  yp+32 w77  h18"), &Icon
 Gui, Modify:Add, Edit,         % dpi("x89  yp-2 w170 h20 vIcon"), %Icon%
 Gui, Modify:Add, Button,       % dpi("x266 yp  w30  h20 gSelectIcon"), >>
 Gui, Modify:Add, Text,         % dpi("xp+41 yp+2 w60  h18"), Menu &Name
 Gui, Modify:Add, Edit,         % dpi("xp+70 yp-2 w150 h20 vName"), %Name%
-                        
+
 Gui, Modify:Add, Text,         % dpi("x10 yp+32 w77 h16"), Para&meters
-Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w438 h20 vParameters"), %Parameters% 
-                        
+Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w438 h20 vParameters"), %Parameters%
+
 Gui, Modify:Add, Text,         % dpi("x10 yp+32 w77 h16"), &Start Dir
-Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w323 h20 vStartDir"), %StartDir% 
+Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w323 h20 vStartDir"), %StartDir%
 Gui, Modify:Add, Button,       % dpi("xp+328 yp h20 w110 gCopyPath"), Copy path from Exe.
 
 Gui, Modify:Add, Text,         % dpi("x10 yp+32 w78 h28"), &Method
@@ -217,7 +219,7 @@ Gui, Modify:Add, DropDownList, % dpi("x89 yp-3 w438 h21 R3 Choose" WindowMode " 
 ;GuiControl, Disable, Mode
 
 Gui, Modify:Add, Text,         % dpi("x10 yp+32 w77 h16"), Ex&tensions
-Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w438 h76 vExt"), %Ext% 
+Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w438 h76 vExt"), %Ext%
 
 Gui, Modify:Add, Link,         % dpi("x10 yp+100 w310 h16"), F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 
@@ -231,9 +233,9 @@ Return
 SelectIcon:
 FileSelectFile, Icon, 3, , Select Icon, Icon (*.ico)
 if (Icon = "")
-    Return
+	Return
 GuiControl, Modify: ,Icon,%Icon%
-  
+
 Return
 
 SelectExe:
@@ -252,7 +254,7 @@ If WinActive("Editor configuration")
 	GuiControl, Modify: ,Delay,0
 	GuiControl, Modify: ,Open,0
 	}
-Else If WinActive("Settings")	
+Else If WinActive("Settings")
 	{
 	 GuiControl, ,TCPath, %Exe%
 	}
@@ -269,7 +271,7 @@ ModifyButtonOK:
 Gui, Modify:Default
 Gui, Submit, NoHide
 If (Editor = "") ; we have a new editor
-	Editor:=MatchList.MaxIndex() + 1
+	 Editor:=MatchList.MaxIndex() + 1
 
 MatchList[Editor,"Exe"]:=Exe
 MatchList[Editor,"Icon"]:=Icon
@@ -296,14 +298,24 @@ MatchList[Editor,"Delay"]:=Delay
 MatchList[Editor,"Open"]:=Open
 MatchList[Editor,"Editor"]:=Editor
 
+If Default
+	{
+	 DefaultMatchEditor:=[]
+	 DefaultMatchEditor:=MatchList[Editor]
+	 DefaultMatchEditor["Editor"]:=""
+	 MatchList.Remove(Editor)
+	 MatchList.InsertAt(1,DefaultMatchEditor)
+	 DefaultMatchEditor:=""
+	}
+	
 Gui, Modify:Destroy
 Gui, Browse:Default
 
-If (Editor = Matchlist.MaxIndex())
+If (Editor = Matchlist.MaxIndex()) or (Default)
 	Gosub, UpdateListview
 Else
 	LV_Modify(SelItem, "",Exe,Parameters,StartDir,WindowMode,Ext,Method,Delay,Open,Editor,Icon,Name)
-New:=0
+New:=0,Default:=0
 Gosub, BuildMenu
 Return
 
@@ -320,7 +332,7 @@ Return
 UpdateListview:
 Gui, Browse:Default
 
-; Icon wizardry comes directly from AutoHotkey Listview documentation 
+; Icon wizardry comes directly from AutoHotkey Listview documentation
 ; It works with both Ansi & Unicode versions
 ; Calculate buffer size required for SHFILEINFO structure.
 sfi_size := A_PtrSize + 8 + (A_IsUnicode ? 680 : 340)
@@ -335,61 +347,66 @@ LV_Delete()
 Count=0
 ; Loop % MatchList.MaxIndex() ; Exe|Parameters|StartDir|WindowMode|Ext|Method|Delay|Editor|Icon|Name ; %
 for k, v in MatchList
-	{
-	If (k = "settings")
-		continue
-    FileName := v.Exe  ; Must save it to a writable variable for use below.
-    If (v.Icon <> "")
-    	FileName := StrReplace(v.Icon,"%Commander_Path%",Commander_Path)
-
+  {
+   If (k = "settings") or (k = "temp")
+      Continue
+   FileName := v.Exe  ; Must save it to a writable variable for use below.
+   If (FileName = "")
+      Continue
+   If (v.Icon <> "")
+      FileName := StrReplace(v.Icon,"%Commander_Path%",Commander_Path)
+   
+   If InStr(FileName,"%Commander_Path%")
+      FileName := StrReplace(FileName,"%Commander_Path%",Commander_Path)
+   
     ; Build a unique extension ID to avoid characters that are illegal in variable names,
     ; such as dashes.  This unique ID method also performs better because finding an item
     ; in the array does not require search-loop.
     SplitPath, FileName,,, FileExt  ; Get the file's extension.
     if FileExt in EXE,ICO,ANI,CUR
-    {
+      {
         ExtID := FileExt  ; Special ID as a placeholder.
         IconNumber = 0  ; Flag it as not found so that these types can each have a unique icon.
-    }
+      }
     else  ; Some other extension/file-type, so calculate its unique ID.
-    {
-        ExtID = 0  ; Initialize to handle extensions that are shorter than others.
-        Loop 7     ; Limit the extension to 7 characters so that it fits in a 64-bit value.
-        {
+      {
+       ExtID = 0  ; Initialize to handle extensions that are shorter than others.
+       Loop 7     ; Limit the extension to 7 characters so that it fits in a 64-bit value.
+           {
             StringMid, ExtChar, FileExt, A_Index, 1
             if not ExtChar  ; No more characters.
-                break
+               break
             ; Derive a Unique ID by assigning a different bit position to each character:
             ExtID := ExtID | (Asc(ExtChar) << (8 * (A_Index - 1)))
-        }
-        ; Check if this file extension already has an icon in the ImageLists. If it does,
-        ; several calls can be avoided and loading performance is greatly improved,
-        ; especially for a folder containing hundreds of files:
-        IconNumber := IconArray%ExtID%
-    }
+           }
+       ; Check if this file extension already has an icon in the ImageLists. If it does,
+       ; several calls can be avoided and loading performance is greatly improved,
+       ; especially for a folder containing hundreds of files:
+       IconNumber := IconArray%ExtID%
+      }
     if not IconNumber  ; There is not yet any icon for this extension, so load it.
-    {
-        ; Get the high-quality small-icon associated with this file extension:
-        if not DllCall("Shell32\SHGetFileInfo" . (A_IsUnicode ? "W":"A"), "str", FileName
-            , "uint", 0, "ptr", &sfi, "uint", sfi_size, "uint", 0x101)  ; 0x101 is SHGFI_ICON+SHGFI_SMALLICON
-            IconNumber = 9999999  ; Set it out of bounds to display a blank icon.
-        else ; Icon successfully loaded.
-        {
-            ; Extract the hIcon member from the structure:
-            hIcon := NumGet(sfi, 0)
-            ; Add the HICON directly to the small-icon and large-icon lists.
-            ; Below uses +1 to convert the returned index from zero-based to one-based:
-            IconNumber := DllCall("ImageList_ReplaceIcon", "ptr", ImageListID1, "int", -1, "ptr", hIcon) + 1
-            DllCall("ImageList_ReplaceIcon", "ptr", ImageListID2, "int", -1, "ptr", hIcon)
-            ; Now that it's been copied into the ImageLists, the original should be destroyed:
-            DllCall("DestroyIcon", "ptr", hIcon)
-            ; Cache the icon to save memory and improve loading performance:
-            IconArray%ExtID% := IconNumber
-        }
-    }
+      {
+       ; Get the high-quality small-icon associated with this file extension:
+       if not DllCall("Shell32\SHGetFileInfo" . (A_IsUnicode ? "W":"A"), "str", FileName
+           , "uint", 0, "ptr", &sfi, "uint", sfi_size, "uint", 0x101)  ; 0x101 is SHGFI_ICON+SHGFI_SMALLICON
+           IconNumber = 9999999  ; Set it out of bounds to display a blank icon.
+       else ; Icon successfully loaded.
+          {
+           ; Extract the hIcon member from the structure:
+           hIcon := NumGet(sfi, 0)
+           ; Add the HICON directly to the small-icon and large-icon lists.
+           ; Below uses +1 to convert the returned index from zero-based to one-based:
+           IconNumber := DllCall("ImageList_ReplaceIcon", "ptr", ImageListID1, "int", -1, "ptr", hIcon) + 1
+           DllCall("ImageList_ReplaceIcon", "ptr", ImageListID2, "int", -1, "ptr", hIcon)
+           ; Now that it's been copied into the ImageLists, the original should be destroyed:
+           DllCall("DestroyIcon", "ptr", hIcon)
+           ; Cache the icon to save memory and improve loading performance:
+           IconArray%ExtID% := IconNumber
+          }
+      }
 
     ; Create the new row in the ListView and assign it the icon number determined above:
-	 LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index, v.Icon, v.Name)
+	  LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index, v.Icon, v.Name)
 	}
 dpifactor:=dpi()
 LV_ModifyCol(1, dpifactor*250), LV_ModifyCol(2, dpifactor*70), LV_ModifyCol(3, dpifactor*70)
@@ -411,7 +428,7 @@ return
 MoveUp:
 LvHandle.Move(1) ; Move selected rows up.
 return
- 
+
 MoveDown:
 LvHandle.Move() ; Move selected rows down.
 return

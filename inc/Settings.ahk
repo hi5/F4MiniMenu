@@ -12,9 +12,9 @@ Gui, Browse:Destroy
 ; Variables
 SelectMenuPos:=MatchList.settings.MenuPos
 SelectTCStart:=MatchList.settings.TCStart
-Checked:=MatchList.settings.F4MMClose
 FGHKey:=MatchList.settings.ForegroundHotkey
 BGHKey:=MatchList.settings.BackgroundHotkey
+TMHKey:=MatchList.settings.FilteredHotkey
 ;SettingsFormat:=MatchList.settings.SettingsFormat
 
 ;If (SettingsFormat = "")
@@ -27,12 +27,15 @@ HotKeyState:="Off"
 Gosub, SetHotkeys
 
 ; Gui for general program settings
+Gui, +OwnDialogs
 Gui, font,              % dpi("s8")
-Gui, Add, GroupBox,     % dpi("x16 y7 w540 h45"), Menu
+Gui, Add, GroupBox,     % dpi("x16 y7 w540 h70"), Menu
 Gui, Add, Text,         % dpi("x25 y25 w309 h16"), &Selection menu appears
 Gui, Add, DropDownList, % dpi("x328 y20 w219 h25 r4 Choose" SelectMenuPos " vMenuPos AltSubmit"), 1 - At Mouse cursor|2 - Centered in window|3 - Right next to current file|4 - Docked next to current file (opposite panel)
+Gui, Add, Text,         % dpi("x25 yp+35 w309 h16"), &Accelerator key for full menu (for use in filtered menu, 1 char.)
+Gui, Add, Edit,         % dpi("x328 yp-5 w219 h21 vFullMenu"), % MatchList.settings.FullMenu ; %
 
-Gui, Add, GroupBox,     % dpi("x16 yp+40 w540 h45"), Files
+Gui, Add, GroupBox,     % dpi("x16 yp+60 w540 h45"), Files
 Gui, Add, Text,         % dpi("x25 yp+20 w309 h16"), &Maximum number of files to be opened
 Gui, Add, Edit,         % dpi("x328 yp-5 w219 h21 Number vMaxFiles"), % MatchList.settings.Maxfiles ; %
 	
@@ -50,9 +53,14 @@ If !FileExist(MatchList.settings.TCPath)
 Gui, Add, Edit  ,       % dpi("xp+53  yp-5 w180 h21 vTCPath"), % MatchList.settings.TCPath ; %
 Gui, Add, Button,       % dpi("xp+187  yp   w30  h20 gSelectExe"), >>
 
-Gui, Add, Checkbox,     % dpi("x25 yp+30 w400 h16 Checked" checked " vF4MMClose"), Close F4MiniMenu when you close Total Commander. (experiment)
-
-Gui, Add, GroupBox,     % dpi("x16 yp+35 w395 h90"), Hotkeys
+Checked:=MatchList.settings.F4MMCloseAll
+Gui, Add, Checkbox,     % dpi("x25 yp+30  w250 h16 Checked" checked " vF4MMCloseAll"), Close F4MM when all copies of TC close
+Checked:=MatchList.settings.F4MMClosePID
+Gui, Add, Checkbox,     % dpi("xp+250 yp  w250 h16 Checked" checked " vF4MMClosePID"), Close F4MM when TC closes started by F4MM
+Gui, Font, cGreen
+Gui, Add, Text,         % dpi("xp+250 yp gFMMCloseHelpText"), (?)
+Gui, Font, cBlack
+Gui, Add, GroupBox,     % dpi("x16 yp+35 w395 h120"), Hotkeys
 
 Gui, Add, Text,         % dpi("x25 yp+25 w150 h16"), &Background mode (direct)
 Gui, Add, Radio,        % dpi("xp+130 yp w45 h16 vBesc"), Esc
@@ -96,11 +104,32 @@ If InStr(FGHKey,"Esc &")
 	
 Gui, Add, Hotkey, % dpi("xp+50 yp-3 w140 h20 vFGHKey"), %FGHKey% 
 
-Gui, Add, Button, % dpi("xp+177 yp-48 w120 h25 gButtonOK"), OK
-Gui, Add, Button, % dpi("xp     yp+30 w120 h25 gButtonClear"), Clear Hotkeys
-Gui, Add, Button, % dpi("xp     yp+30 w120 h25 gGuiClose"), Cancel
+Gui, Add, Text, % dpi("x25 yp+35 w150 h16"), Fil&tered mode (menu)
+Gui, Add, Radio, % dpi("xp+130 yp w45 h16 vTesc"), Esc
+Gui, Add, Radio, % dpi("xp+45  yp w45 h16 vTWin"), Win
 
-Gui, Add, GroupBox, % dpi("x16 yp+35 w540 h70"), Currently Available Document Templates:
+If InStr(TMHKey,"#")
+	{
+	 StringReplace, TMHKey, TMHKey, #, , All
+	 GuiControl, ,TWin, 1
+	}
+
+If InStr(TMHKey,"Esc &")
+	{
+	 StringReplace, TMHKey, TMHKey, Esc &, , All
+	 StringReplace, TMHKey, TMHKey, Esc &amp`;, , All
+	 StringReplace, TMHKey, TMHKey, Esc &amp;, , All
+	 StringReplace, TMHKey, TMHKey, %A_Space%, , All
+	 GuiControl, , TEsc, 1
+	}
+	
+Gui, Add, Hotkey, % dpi("xp+50 yp-3 w140 h20 vTMHKey"), %TMHKey% 
+
+Gui, Add, Button, % dpi("xp+177 yp-78 w120 h25 gButtonOK"), OK
+Gui, Add, Button, % dpi("xp     yp+40 w120 h25 gButtonClear"), Clear Hotkeys
+Gui, Add, Button, % dpi("xp     yp+40 w120 h25 gGuiClose"), Cancel
+
+Gui, Add, GroupBox, % dpi("x16 yp+40 w540 h70"), Currently Available Document Templates:
 Gui, Add, Edit, % dpi("x25 yp+20 ReadOnly h40 w385 vDocumentTemplates"), % MatchList.Settings.templatesExt
 Gui, Add, Button, % dpi("xp+402 yp w120 h25 gButtonDocumentTemplates"), Update (scan)
 
@@ -114,7 +143,7 @@ Gui, Add, Link,   % dpi("x25 yp+65"), F4MiniMenu %F4Version%: Open selected file
 ;Gui, Add, GroupBox, xp+400 yp-85 w122 h60
 ;Gui, Add, Link,   xp+5 yp+13, Feedback welcome at`n<a href="http://ghisler.ch/board/viewtopic.php?t=35721">Total Commander forum</a>`nor <a href="https://github.com/hi5/F4MiniMenu">GitHub Issues</a>.
 
-Gui, Show, % dpi("center w570 h410"), Settings
+Gui, Show, % dpi("center w570"), Settings
 Return
 
 ButtonDocumentTemplates:
@@ -134,12 +163,16 @@ If (MaxFiles > 50)
 MatchList.settings.MaxFiles:=MaxFiles
 MatchList.settings.TCStart:=TCStart
 MatchList.settings.TCPath:=TCPath
-MatchList.settings.F4MMClose:=F4MMClose
+MatchList.settings.F4MMCloseAll:=F4MMCloseAll
+MatchList.settings.F4MMClosePID:=F4MMClosePID
+MatchList.settings.FullMenu:=trim(SubStr(FullMenu,1,1)," `t&")
 
 GuiControlGet, EscFG, , FEsc
 GuiControlGet, WinFG, , FWin
 GuiControlGet, EscBG, , BEsc
 GuiControlGet, WinBG, , BWin
+GuiControlGet, EscTM, , TEsc
+GuiControlGet, WinTM, , TWin
 
 ; Revert the boxes to the Hotkey def.
 If WinFG
@@ -150,15 +183,22 @@ If WinBG
 	BGHKey:="#" BGHKey
 If (EscBG = 1) and (RegExMatch(BGHKey,"[\^\+\!\#]") = 0)
 	BGHKey:="Esc & " BGHKey
+If WinTM
+	TMHKey:="#" TMHKey
+If (EscTM = 1) and (RegExMatch(TMHKey,"[\^\+\!\#]") = 0)
+	TMHKey:="Esc & " TMHKey
 
 MatchList.settings.ForegroundHotkey:=FGHKey
 MatchList.settings.BackgroundHotkey:=BGHKey
+MatchList.settings.FilteredHotkey:=TMHKey
 
 HotKeyState:="On"
 Gosub, SetHotkeys
 Gui, Destroy
-Gosub, SaveSetup
+Gosub, SaveSettings
+Sleep 500
 Reload ; v0.96 we may have changed F4MMClose so we need to reload the script to (de)activate the WinWait in F4MiniMenu.ahk
+Sleep 500
 Return
 
 ButtonClear:
@@ -166,8 +206,11 @@ GuiControl, , FEsc, 0
 GuiControl, , FWin, 0
 GuiControl, , BEsc, 0
 GuiControl, , BWin, 0
-GuiControl, , BGHKey, 
-GuiControl, , FGHKey, 
+GuiControl, , TEsc, 0
+GuiControl, , TWin, 0
+GuiControl, , BGHKey,
+GuiControl, , FGHKey,
+GuiControl, , TMHKey,
 Return
 
 GuiEscape:
@@ -176,4 +219,18 @@ Gui, Destroy
 
 HotKeyState:="On"
 Gosub, SetHotkeys
+Return
+
+FMMCloseHelpText:
+MsgBox, 32, F4MMClose (experimental),
+(join`n
+F4MiniMenu - %F4Version% can automatically exit from memory using the following rules:
+
+[1] Close F4MM when all copies of TC close:
+waits until all running copies of Total Commander are closed.
+
+[2] Close F4MM when TC closes started by F4MM:
+If you have started (a new) Total Commander via F4MiniMenu, wait until that specific Total Commander closes,
+
+)
 Return

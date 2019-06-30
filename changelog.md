@@ -1,5 +1,11 @@
 ## Changelog
 
+* 20190622 - v0.97  
+                   a) New option for filtered foreground menu: only show programs that match selected extensions. See Settings for setup. https://github.com/hi5/F4MiniMenu/issues/21  
+                   b) Fix: correctly use %commander_path% in Editor listview IL_Add routine (if v.Icon isn't set)  
+                   c) Fix: Editor - Set as Default should now work correctly  
+                   d) Fix: Editor - cancel should now work more reliably by using .clone()  
+                   e) Only save settings when actually changing them e.g. no longer at each start/exit of the script  
 * 20190607 - v0.96.2 - Fix: adding Try to all Menu, tray, icons to avoid startup error for compiled scripts and autohotkey.exe is not installed. https://www.ghisler.ch/board/viewtopic.php?p=356022#p356022  
 * 20190606 - v0.96.1 - Fix: adding close F4MiniMenu setting to INI version (iob.ahk) https://www.ghisler.ch/board/viewtopic.php?p=355998#p355998  
 * 20190527 - v0.96  
@@ -18,7 +24,7 @@
                    d) Now use %TEMP%\$$f4mtmplist$$.m3u instead of ScriptFolder - [requested by Ovg](http://ghisler.ch/board/viewtopic.php?p=319773&sid=2e2472aec32f6906e699d095b4998ea3#319773)  
                    e) Fixed hotkeys - #12 https://github.com/hi5/F4MiniMenu/issues/12  
                    f) You can now specify an Icon and Menu name when you configure an Editor. #17 https://github.com/hi5/F4MiniMenu/issues/17  
-                   g) %Commander_Path% now accepted in Editor and Icon paths.
+                   g) %Commander_Path% now accepted in Editor and Icon paths.  
                    h) Removed F4MiniMenui.ahk - to use INI simply rename/copy the (compiled) script to end with "i".
 * 20161023 - v0.93 OpenFile: add WinWait before WinActivate, merge request @nameanyone #10 https://github.com/hi5/F4MiniMenu/issues/10
 * 20160618 - v0.92 Fix error checking on startup in case script is compiled - HT Ovg
@@ -36,7 +42,7 @@
 * 20130607 - v0.51 Check if selected file(s) are archived, if so bypass F4MiniMenu all together and use internal TC Edit command to open file, this will only use the file under the cursor, not all selected files.
 * 20130330 - v0.5 a) Process entire file list first and open per program; 
                   b) Introduced [Filelist](#filelist) method; 
-				  c) Removed "Open Mode".
+                  c) Removed "Open Mode".
 * 20121117 - v0.4 Configuration GUIs, tray menu. First editor now considered default editor.
 * 20121111 - v0.3 Added menu for "foreground" feature - open all selected files with specific editor (its behaviour may change in future).
 * 20121108 - v0.2 Added 0 (zero) entry in XML as default editor.

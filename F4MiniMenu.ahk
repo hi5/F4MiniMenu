@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.96.2
+Version     : 0.97
 Author      : hi5
-Last update : 27 May 2019
+Last update : 30 June 2019
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -13,7 +13,7 @@ Note        : ; % used to resolve syntax highlighting feature bug of N++
 
 ; <for compiled scripts>
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
-;@Ahk2Exe-SetVersion 0.96.2.0
+;@Ahk2Exe-SetVersion 0.97.0.0
 ;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
 ; </for compiled scripts>
 
@@ -44,7 +44,7 @@ If (TmpFileList = "")
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.96.2"
+F4Version:="v0.97"
 
 ; shared with F4TCIE
 #Include %A_ScriptDir%\inc\LoadSettings1.ahk
@@ -94,7 +94,7 @@ Menu, tray, Add, Scan Document Templates, DocumentTemplatesScan
 Try
 	Menu, tray, Icon, Scan Document Templates, shell32.dll, 172
 Menu, tray, Add, 
-Menu, tray, Add, Exit,                    SaveSettings
+Menu, tray, Add, Exit,                    ExitSettings
 Try
 	Menu, tray, Icon, Exit,                   shell32.dll, 132
 
@@ -124,13 +124,13 @@ FileCopy, %F4ConfigFile%, %F4ConfigFile%.bak, 1
 If (MatchList.settings.TCStart = 2) and !WinExist("ahk_class TTOTAL_CMD")
 	{
 	 If FileExist(MatchList.settings.TCPath)
-		Run % MatchList.settings.TCPath ; %
+		Run % MatchList.settings.TCPath,,,TCOutputVarPID ; %
 	}
 
 If (MatchList.settings.TCStart = 3)
 	{
 	 If FileExist(MatchList.settings.TCPath)
-		Run % MatchList.settings.TCPath ; %
+		Run % MatchList.settings.TCPath,,,TCOutputVarPID ; %
 	}
 
 ; shared with F4MM
@@ -146,19 +146,26 @@ Gosub, GetAllExtensions
 HotKeyState:="On"
 Gosub, SetHotkeys
 
-; Save Matchlist Object to XML
-OnExit, SaveSettings
+; Clear tmp file(s)
+OnExit, ExitSettings
 
 ; End of Auto-execute section
-If (Matchlist.settings.F4MMClose = 1)
+If (Matchlist.settings.F4MMCloseAll = 1)
 	{
 	 WinWaitClose, ahk_class TTOTAL_CMD
+	 ExitApp
+	}
+Else If (Matchlist.settings.F4MMClosePID = 1)
+	{
+	 Sleep 5000
+	 WinWaitClose, ahk_pid %TCOutputVarPID%
 	 ExitApp
 	}
 Return
 
 Process:
 ProcessFiles(MatchList)
+MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 Return
 
 ; Function executed by background hotkey (open directly)
@@ -166,7 +173,11 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 	{
 	 Done:=[]
 	 Stop:=0
-	 Files:=GetFiles() ; Get list of selected files in TC, one per line
+	 If (MatchList.Temp.Files = "")
+	 	Files:=GetFiles() ; Get list of selected files in TC, one per line
+	 else
+	 	Files:=MatchList.Temp.Files
+	 MatchList.Temp.Files:=""	
 	 ; Check if we possibly have selected file(s) from an archive
 	 If RegExMatch(Files,"iUm)" ArchiveExtentions )
 		{
@@ -176,7 +187,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			Check:=Files
 		 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
 			{                ; therefore we resort to the internal TC Edit command - added for v0.51
-			 SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD
+			 SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD ; Edit (Notepad)
 			 Return
 			}
 		}
@@ -199,7 +210,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			Break
 		 open:=A_LoopField
 		 SplitPath, A_LoopField, , , OutExtension
-
+		 
 		 for k, v in MatchList
 			{
 			 Index:=A_Index
@@ -259,11 +270,25 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				}
 			}
 		}
+	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
+	}
+
+; Get a list of extensions from selected files we can use to build filtered menu
+GetExt(Files)
+	{
+	 Global MatchList
+	 Loop, parse, files, `n, `r
+		{
+		 SplitPath, A_LoopField,,, OutExtension
+		 Ext .= OutExtension "|"
+		}
+	 MatchList.Temp["SelectedExtensions"]:=Trim(Ext,"|")
 	}
 
 ; Get a list of selected files using internal TC commands (see totalcmd.inc for references)
 GetFiles()
 	{
+	 Global MatchList
 	 If WinActive("ahk_class TLister")
 		{
 		 WinGetActiveTitle, Files
@@ -285,7 +310,8 @@ GetFiles()
 	 Files:=Clipboard
 	 Clipboard:=ClipboardSave
 	 ClipboardSave:=""
-	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
+;	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
+	 MatchList.Temp["Files"]:=Files
 	 Return Files
 	}
 
@@ -400,7 +426,7 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 	 ; %f41 placeholder to alter position of filenames on the command line.
 	 ; 
 	 if InStr(parameters,"%f41")
-	 	{
+		{
 		 parameters:=StrReplace(parameters, "%f41", file)
 		 file:=""
 		}
@@ -417,9 +443,9 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 			{
 			 Gui, AskInput:Add, Text, xp y5                       , Command line parameters:
 			 Gui, AskInput:Add, Edit, xp yp+20 w400 h20           , %parameters%
-		 	}
+			}
 		 if (AskParameters <> 1) and (parameters <> "")
-		 	{
+			{
 			 Gui, AskInput:Add, Text, xp y58                       , Command line parameters:
 			 Gui, AskInput:Add, Edit, xp yp+20 w400 h20 ReadOnly  , %parameters%
 			}
@@ -559,26 +585,35 @@ If (InStr(BGHKey,"ESC"))
 Hotkey, % hk_prefix . BGHKey, Process, %HotKeyState%  ; %
 ; MsgBox % "OpenItDirectly: " hk_prefix . BGHKey ; debug
 
+If (MatchList.settings.FilteredHotkey <> "ERROR") and (MatchList.settings.FilteredHotkey <> "")
+	{
+	 hk_prefix:="$"
+	 TMHKey:=MatchList.settings.FilteredHotkey
+	 StringReplace, TMHKey, TMHKey, &amp`;amp`;, & , All
+	 StringReplace, TMHKey, TMHKey, &amp`;, &, All
+	 If (InStr(TMHKey,"ESC"))
+		hk_prefix:="~"
+
+	 Hotkey, % hk_prefix . TMHKey, FilteredMenu, %HotKeyState%  ; %
+	}
+
 Hotkey, IfWinActive
 Return
 
 SaveSettings:
-Gosub, SaveSetup
-ExitApp
+MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
+%F4Save%("MatchList", F4ConfigFile)
+FileDelete, % TmpFileList
 Return
 
-SaveSetup:
-If (A_ExitReason <> "Exit") ; to prevent saving it twice
-	{
-	 if (MatchListStart <> MatchList) ; only save changes no need to save settings otherwise
-		%F4Save%("MatchList", F4ConfigFile)
-	}
+ExitSettings:
 FileDelete, % TmpFileList
-If (Error = 1)
+If (Error = 1) ; we can't read settings so create a new clean version
 	{
 	 FileDelete, %F4ConfigFile%
 	 Gosub, CreateNewConfig
 	}
+ExitApp
 Return
 
 
@@ -612,11 +647,14 @@ FileAppend,
 	<Invalid_Name id="settings" ahk="True">
 		<BackgroundHotkey>F4</BackgroundHotkey>
 		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
+		<FilteredHotkey></FilteredHotkey>
 		<MaxFiles>30</MaxFiles>
 		<MenuPos>3</MenuPos>
-		<F4MMClose>0</F4MMClose>
 		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
 		<TCStart>1</TCStart>
+		<F4MMCloseAll>0</F4MMCloseAll>
+		<F4MMClosePID>0</F4MMClosePID>
+		<FullMenu>z</FullMenu>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
 		<Exe>c:\WINDOWS\notepad.exe</Exe>
@@ -635,18 +673,21 @@ FileAppend,
 [settings]
 BackgroundHotkey=F4
 ForegroundHotkey=Esc & F4
+FilteredHotkey=
 MaxFiles=30
 MenuPos=3
 TCPath=c:\totalcmd\TotalCmd.exe
 TCStart=1
-F4MMClose=0
+F4MMCloseAll=0
+F4MMClosePID=0
+FullMenu=z
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe
 ext=txt,xml
 method=Normal
 windowmode=1
-), F4MiniMenu.ini
+), F4MiniMenu.ini, UTF-16
 }
 Return
 
@@ -655,21 +696,26 @@ Return
 DocumentTemplatesScan:
 If (FileExist(A_ScriptDir "\DocumentTemplates\") = "D")
 	{
+	 templatesExtBeforeScan:=MatchList.Settings["templatesExt"]
 	 Loop, %A_ScriptDir%\DocumentTemplates\template.*
 		{
 		 SplitPath, A_LoopFileName, , , TemplatesOutExtension
 		 templatesExt .= TemplatesOutExtension ","
 		}
-	 MatchList.Settings["templatesExt"]:=Trim(templatesExt,",")
-	 TemplatesOutExtension:=""
-	 templatesExt:=""
-	 %F4Save%("MatchList", F4ConfigFile)
+	 ; only update when its has been changed
+	 If (templatesExtBeforeScan <> Trim(templatesExt,","))
+		{
+		 MatchList.Settings["templatesExt"]:=Trim(templatesExt,",")
+		 %F4Save%("MatchList", F4ConfigFile)
+		}
+	 templatesExt:="",TemplatesOutExtension:="",templatesExtBeforeScan:=""
 	}
 Return
 
 ; Includes
 
 #include %A_ScriptDir%\inc\Menu.ahk
+#include %A_ScriptDir%\inc\FilteredMenu.ahk
 #include %A_ScriptDir%\inc\Settings.ahk
 #include %A_ScriptDir%\inc\Editors.ahk
 #include %A_ScriptDir%\inc\HelperFunctions.ahk ; shared with F4TCIE
