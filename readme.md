@@ -1,10 +1,21 @@
-# F4MiniMenu - v0.96.1
+# F4MiniMenu - v0.97
 
-A minimalistic clone of the F4Menu program for Total Commander (open selected files
-in editor(s)) just offering the basic functionality. Original F4Menu program by Shao
-Shanny - www [.] shanny [.] com [.] cn (website seems to be offline, see TC forum links below)
+A <kbd>F4</kbd> Menu[1] program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).
 
-If you have any questions or suggestions do feel free to post them at the [F4MiniMenu TC Forum thread](http://ghisler.ch/board/viewtopic.php?t=35721).
+__Features__
+
+* Open selected files in defined Editor(s) - on a first come, first serve basis
+* Optional: Show menu with:
+  a. All Editors (full menu)
+  b. Matching Editors (filtered menu)
+* Various methods to open selected files: regular, "[Drag & Drop](#dragdrop)", [Filelist](#filelist), [cmdline](#cmdline)
+* Document Templates to create new files for file types other than "text" - [DocumentTemplates README](DocumentTemplates/readme.md)
+* Open source - written in [AutoHotkey](https://www.autohotkey.com/)
+
+__Discussion)__
+
+* [F4MiniMenu TC Forum thread](http://ghisler.ch/board/viewtopic.php?t=35721).
+* [GH Issues](https://github.com/hi5/F4MiniMenu/issues)
 
 __Introduction__
 
@@ -18,14 +29,23 @@ types. Several tools have been made to solve this problem, these include:
 * [Total Commander Edit Redirector](http://ghisler.ch/board/viewtopic.php?t=27573)
 * and of course [F4Menu](http://ghisler.ch/board/viewtopic.php?t=17003) - TC Forum thread
 
-While the original F4Menu has quite a few options, this minimalistic "clone" only has the
-basic functionality: opening multiple file types in various editors. There are various
-methods to open selected files: regular, "[Drag & Drop](#dragdrop)", [Filelist](#filelist)
+While the original F4Menu has quite a few options, this "clone" started out as a minimalistic
+program with only the basic functionality: opening multiple file types in various editors.
+
+There are various methods to open selected files: regular, "[Drag & Drop](#dragdrop)", [Filelist](#filelist)
 or by making use of a [cmdline](#cmdline) option.
 
 As of v0.95 you can make use a helper script to use F4MiniMenu settings as the "internal
 editor" defined in Total Commander and use so called **DocumentTemplates** for creating
 new files. See [F4TCIE](#f4tcie).
+
+As of v0.97 there are *two* foreground menus:
+
+1. Show all programs in the menu
+2. Show matching programs (filtered): only show those programs which match the extensions of the
+   selected files. You can still access the full menu by using the 'full menu' option
+   that is shown in this menu. The default editor will remain the first menu entry.
+   If it can't find any matching program, the full menu is shown instead.
 
 *First come, first serve*
 
@@ -41,7 +61,7 @@ You can use %Commander_Path% in the paths to the editors and icons.
 
 *Tip(s)*
 
-In principle you can run F4Menu and F4MiniMenu side by side as long as you do not 
+In principle you can run F4Menu (or other tools) and F4MiniMenu side by side as long as you do not 
 use conflicting keyboard shortcuts. If you use same hotkey setup, F4MiniMenu will take precedence.
 You can set the F4MiniMenu shortcuts via the tray menu, right click, Settings option.
 
@@ -125,17 +145,17 @@ Once you have setup your shortcuts you can also access *Settings* and *Configure
 via the Foreground menu options by pressing the shortcut (press <kbd>Esc</kbd>+<kbd>F4</kbd> by default).
 See screenshots below.
 
+*Executable*
+
+1. If you wish you can compile the script to a standalone executable using [AHK2Exe](https://autohotkey.com/download/).
+[Documentation](https://autohotkey.com/docs/Scripts.htm#ahk2exe)
+2. Or see https://github.com/hi5/F4MiniMenu/releases (32 & 64 bit versions of both F4MiniMenu and F4TCIE)
+
 **XML or INI** - There are two versions:
 
 1. F4MiniMenu.ahk uses XML to store settings (F4MiniMenu.xml)
-2. <strike>F4MiniMenui.ahk uses INI to store settings (F4MiniMenu.ini)</strike> If you want to store your 
-settings in INI format (F4MiniMenu.ini) simply rename the (compiled) script so it ends with an i (letter i)
-so rename or copy F4MiniMenu.ahk to F4MiniMenui.ahk and start. That would work, but F4MMi.exe as well.
-
-*Executable*
-
-If you wish you can compile the script to a standalone executable using [AHK2Exe](https://autohotkey.com/download/).
-[Documentation](https://autohotkey.com/docs/Scripts.htm#ahk2exe)
+2. If you prefer to store your settings in INI format (F4MiniMenu.ini) simply rename the (compiled) script so it ends with an i (letter i)
+so rename or copy F4MiniMenu.ahk to F4MiniMenui.ahk and start it. That would work, but F4MMi.exe as well for example.
 
 ## Helper script: F4TCIE.ahk <a name='f4tcie'></a>
 
@@ -198,6 +218,15 @@ in the parameters field you can tell F4MiniMenu where to place the files on the
 
 So the program now starts as _pdftk.exe file.pdf burst_ (instead of _pdftk.exe burst file.pdf_)
 
+## Closing F4MiniMenu
+
+Use tray menu, exit.
+
+You can also automatically close F4MiniMenu using the following options (available via Settings):
+
+1. Close F4MM when all copies of TC close: this waits until all running copies of Total Commander are closed, then exit F4MiniMenu.
+2. Close F4MM when TC closes started by F4MM: If you have started (a new) Total Commander via F4MiniMenu, wait until that specific Total Commander closes, then exit F4MiniMenu.
+
 ## Screenshots
 
 __Foreground menu__
@@ -227,13 +256,6 @@ __Editor configuration__
 2. INFO: Two options for delay (as of v0.9):  
    2.1 Drag & Drop delay gives program to start up before trying to drop the files - you may need to apply trail and error.  
    2.2 Open delay, pauses X ms to open next file.  
-3. TODO: Change from standalone setup (as it currently is) to #include mode, which will make it easier to #include it in a "always" running AHK script.
-
-## Benefits
-
-* Open source - written in AutoHotkey
-* Supports [Drag & Drop](#dragdrop) (for AutoHotkey 1.1+ Ansi and Unicode)
-* Supports [Filelist](#filelist) method (Similar to %L in TC) as of v0.5
 
 ## Credits
 
@@ -243,10 +265,11 @@ __Editor configuration__
 * [XA Save / Load Arrays to/from XML Functions](https://github.com/hi5/XA)
 * [DropFilesA - SKAN](http://www.autohotkey.com/board/topic/41467-make-ahk-drop-files-into-other-applications/#entry258810) including Unicode version [nimda](http://www.autohotkey.com/board/topic/79145-help-converting-ahk-ahk-l/#entry502676)
 
-### Original idea
-
-* Based on original idea from F4Menu by Shao Shanny - Backup links for the program can be found on the [Total Commander forum](http://ghisler.ch/board/viewtopic.php?t=17003)
-
 ## Changelog
 
 * See [changelog.md](changelog.md)
+
+### Notes
+
+[1] Based on original idea from F4Menu by Shao Shanny - Backup links for the program can be found on the [Total Commander forum](http://ghisler.ch/board/viewtopic.php?t=17003)
+

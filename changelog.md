@@ -6,6 +6,7 @@
                    c) Fix: Editor - Set as Default should now work correctly  
                    d) Fix: Editor - cancel should now work more reliably by using .clone()  
                    e) Only save settings when actually changing them e.g. no longer at each start/exit of the script  
+                   f) New: Option(s) to Close F4MiniMenu when TC closes  
 * 20190607 - v0.96.2 - Fix: adding Try to all Menu, tray, icons to avoid startup error for compiled scripts and autohotkey.exe is not installed. https://www.ghisler.ch/board/viewtopic.php?p=356022#p356022  
 * 20190606 - v0.96.1 - Fix: adding close F4MiniMenu setting to INI version (iob.ahk) https://www.ghisler.ch/board/viewtopic.php?p=355998#p355998  
 * 20190527 - v0.96  

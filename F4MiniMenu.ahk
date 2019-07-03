@@ -390,7 +390,7 @@ DragDrop(program,file,delay,parameters,startdir)
 		}
 	
 	 If InStr(title,"Paint Shop Pro.exe") ; Annoying hack but seems to be required for PSP
-		title=Jasc Paint Shop Pro 
+		title=Jasc Paint Shop Pro
 	 DropFiles(file, title)
 	 If (title = "Jasc Paint Shop Pro")
 		WinActivate, % title
