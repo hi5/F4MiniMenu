@@ -1,18 +1,25 @@
 ## Changelog
 
+* 20220528 - v1.0  
+                   a) Fix: "Start Total Commander if not running" feature #23 https://github.com/hi5/F4MiniMenu/issues/23  
+                   b) Fix: Use another method to calculate Y for Position = 2 in GetPos (as this is now default for c))
+                   c) Rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything(e) (default foreground menu to center in Window)  
+                   d) Passive mode using parameters to use F4MiniMenu via Button bar, Start Menu, or F4 Editor (start F4MM, processes files, close F4MM, so not a persistent script)  
+                   e) Fix: Path from Lister Windows Title failed if file name started/ended with [ or ] e.g. "[2000] My Document.txt"
+                   f) remove stray file inc\inc.zip from repository
 * 20190622 - v0.97  
                    a) New option for filtered foreground menu: only show programs that match selected extensions. See Settings for setup. https://github.com/hi5/F4MiniMenu/issues/21  
                    b) Fix: correctly use %commander_path% in Editor listview IL_Add routine (if v.Icon isn't set)  
                    c) Fix: Editor - Set as Default should now work correctly  
                    d) Fix: Editor - cancel should now work more reliably by using .clone()  
-                   e) Only save settings when actually changing them e.g. no longer at each start/exit of the script  
+                   e) Only save settings when actually changing them e.g. no longer at each start/exit of the script 
                    f) New: Option(s) to Close F4MiniMenu when TC closes  
 * 20190607 - v0.96.2 - Fix: adding Try to all Menu, tray, icons to avoid startup error for compiled scripts and autohotkey.exe is not installed. https://www.ghisler.ch/board/viewtopic.php?p=356022#p356022  
 * 20190606 - v0.96.1 - Fix: adding close F4MiniMenu setting to INI version (iob.ahk) https://www.ghisler.ch/board/viewtopic.php?p=355998#p355998  
 * 20190527 - v0.96  
                    a) Added options to "Total Commander" startup settings on request https://www.ghisler.ch/board/viewtopic.php?p=355595#p355595 (always start, close F4MiniMenu)  
                    b) dpi + fix to avoid Gui error when calling New editor from menu while Browse Gui was active.  
-                   c) tray menu: icons, left click opens tray menu, added "Open" to check keyhistory etc  
+                   c) tray menu: icons, left click opens tray menu, added "Open" to check key history etc.  
 * 20170710 - v0.95 Added F4TCIE and introduced DocumentTemplates. #13 https://github.com/hi5/F4MiniMenu/issues/13  
              New icon :-)
 * 20170607 - v0.94c Minor fix to empty file and quoted startdir variables in GetInput(). Fix for %ComSpec% in Editor names.
@@ -42,7 +49,7 @@
                   b) Added Unicode support for drag & drop method so F4MiniMenu should now be compatible with both Ansi and Unicode versions of AutoHotkey.
 * 20130607 - v0.51 Check if selected file(s) are archived, if so bypass F4MiniMenu all together and use internal TC Edit command to open file, this will only use the file under the cursor, not all selected files.
 * 20130330 - v0.5 a) Process entire file list first and open per program; 
-                  b) Introduced [Filelist](#filelist) method; 
+                  b) Introduced [Filelist](readme.md#filelist) method; 
                   c) Removed "Open Mode".
 * 20121117 - v0.4 Configuration GUIs, tray menu. First editor now considered default editor.
 * 20121111 - v0.3 Added menu for "foreground" feature - open all selected files with specific editor (its behaviour may change in future).
