@@ -32,7 +32,7 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 	
 	 If (Position = 2) ; second fastest method so deal with it first
 		{
-		 X:=WinWidth/2-100, Y:=WinHeight/2-(MenuSize*15)-50 ; Crude calculation
+		 X:=WinWidth/2-100, Y:=WinHeight/2-WinY ; Y:=WinHeight/2-(MenuSize*15)-50 ; Crude calculation
 		 Pos.Insert("x", X), Pos.Insert("y", Y) 
 		 Return Pos
 		}
