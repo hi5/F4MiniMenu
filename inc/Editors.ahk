@@ -260,6 +260,20 @@ Else If WinActive("Settings")
 	}
 Return
 
+; Note: deactivated Everything Directory Tree settings for now
+/*
+SelectEv:
+FileSelectFile, EvPath, 3, c:\program files\everything\, Path to Everything, Executable (*.exe)
+if (EvPath = "")
+    Return
+
+If WinActive("Settings")
+	{
+	 GuiControl, ,EvPath, %EvPath%
+	}
+Return
+*/
+
 CopyPath:
 GuiControlGet, CopyPath, ,Exe
 SplitPath, CopyPath, , StartDir
