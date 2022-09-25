@@ -1,9 +1,9 @@
 ﻿/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.97
+Version     : v1.00
 Author      : hi5
-Last update : 30 June 2019
+Last update : 28 May 2022
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -11,18 +11,21 @@ Note        : ; % used to resolve syntax highlighting feature bug of N++
 
 */
 
-; <for compiled scripts>
-;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
-;@Ahk2Exe-SetVersion 0.97.0.0
-;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
-; </for compiled scripts>
-
 #SingleInstance, Force
 #UseHook
 #NoEnv
 SetBatchlines, -1
 SetWorkingDir, %A_ScriptDir%
+SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
+
+F4Version:="v1.00"
+
+; <for compiled scripts>
+;@Ahk2Exe-Let vn=%A_PriorLine~U)^(.+"){1}(.+)".*$~$2% ; this takes the version number from the line above (F4Version)
+;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
+;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
+; </for compiled scripts>
 
 ; <for compiled scripts>
 IfNotExist, %A_ScriptDir%\res
@@ -44,12 +47,14 @@ If (TmpFileList = "")
 
 TmpFileList .= "\$$f4mtmplist$$.m3u"
 
-F4Version:="v0.97"
-
 ; shared with F4TCIE
 #Include %A_ScriptDir%\inc\LoadSettings1.ahk
 
-GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD
+GroupAdd, TCOnly, ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE
+GroupAdd, TCOnly, ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE
+
+GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE
+GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE
 GroupAdd, TCF4Windows, ahk_class TLister
 GroupAdd, TCF4Windows, ahk_class TFindFile
 GroupAdd, TCF4Windows, ahk_class TQUICKSEARCH
@@ -121,17 +126,53 @@ If (Error = 1)
 ; Create backup file
 FileCopy, %F4ConfigFile%, %F4ConfigFile%.bak, 1
 
+; Add other file managers if any
+If MatchList.settings.Explorer
+	{
+	 GroupAdd, TCF4Windows, ahk_class CabinetWClass
+	 GroupAdd, TCF4Windows, ahk_class ExploreWClass
+	}
+
+If MatchList.settings.Everything
+	{
+	 GroupAdd, TCF4Windows, ahk_exe Everything.exe
+	}
+
+If (MatchList.settings.DoubleCommander <> "") ; note that some versions of DC report ahk_class TTOTAL_CMD ahk_exe doublecmd.exe 
+{
+	GroupAdd, TCF4Windows, ahk_class DClass ahk_exe doublecmd.exe     ; v0.9
+	GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe doublecmd.exe ; v1.0
+}
+
+If (MatchList.settings.XYPlorer <> "")
+	{
+	 GroupAdd, TCF4Windows, ahk_exe XYPlorer.exe
+	 GroupAdd, TCF4Windows, ahk_exe XYPlorerFree.exe
+	}
+
+If (MatchList.settings.QDir <> "")
+	{
+	 GroupAdd, TCF4Windows, ahk_exe Q-Dir.exe
+	}
+
+; /Add other file managers if any
+
 If (MatchList.settings.TCStart = 2) and !WinExist("ahk_class TTOTAL_CMD")
 	{
 	 If FileExist(MatchList.settings.TCPath)
-		Run % MatchList.settings.TCPath,,,TCOutputVarPID ; %
+		Run % MatchList.settings.TCPath,,UseErrorLevel,TCOutputVarPID ; %
+	 WinWait, ahk_class TTOTAL_CMD
 	}
 
 If (MatchList.settings.TCStart = 3)
 	{
 	 If FileExist(MatchList.settings.TCPath)
-		Run % MatchList.settings.TCPath,,,TCOutputVarPID ; %
+		Run % MatchList.settings.TCPath,,UseErrorLevel,TCOutputVarPID ; %
+	 WinWait, ahk_class TTOTAL_CMD
 	}
+
+#Include %A_ScriptDir%\inc\CLIParser.ahk
+
 
 ; shared with F4MM
 #Include %A_ScriptDir%\inc\TotalCommanderPath.ahk
@@ -148,6 +189,44 @@ Gosub, SetHotkeys
 
 ; Clear tmp file(s)
 OnExit, ExitSettings
+
+If CLI_Editors
+	{
+	 Gosub, ConfigEditors
+	 WinWaitClose, F4MiniMenu - Editor Settings ahk_class AutoHotkeyGUI
+	 Sleep 1000
+	 ExitApp
+	}
+
+If CLI_Settings
+	{
+	 Gosub, Settings
+	 WinWaitClose, F4MiniMenu - Settings ahk_class AutoHotkeyGUI
+	 Sleep 1000
+	 ExitApp
+	}
+
+If CLI_ShowMenu
+	{
+	 Gosub, ShowMenu
+	 Sleep 1000
+	 ExitApp
+	}
+
+If CLI_FilteredMenu
+	{
+	 Gosub, FilteredMenu
+	 Sleep 1000
+	 ExitApp
+	}
+
+If CLI_Exit and ((CLI_ShowMenu <> 1) and (CLI_FilteredMenu <> 1))
+	{
+	 Gosub, Process
+	 Sleep 1000
+	 MsgBox
+	 ExitApp
+	}
 
 ; End of Auto-execute section
 If (Matchlist.settings.F4MMCloseAll = 1)
@@ -166,11 +245,14 @@ Return
 Process:
 ProcessFiles(MatchList)
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
+If CLI_Exit
+	ExitApp
 Return
 
 ; Function executed by background hotkey (open directly)
 ProcessFiles(MatchList, SelectedEditor = "-1")
 	{
+	 Global ArchiveExtentions
 	 Done:=[]
 	 Stop:=0
 	 If (MatchList.Temp.Files = "")
@@ -178,19 +260,45 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 	 else
 	 	Files:=MatchList.Temp.Files
 	 MatchList.Temp.Files:=""	
-	 ; Check if we possibly have selected file(s) from an archive
-	 If RegExMatch(Files,"iUm)" ArchiveExtentions )
-		{
-		 If InStr(Files,"`n")
-			Check:=SubStr(Files,1,InStr(Files,"`n")-2)
-		 Else
-			Check:=Files
-		 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
-			{                ; therefore we resort to the internal TC Edit command - added for v0.51
-			 SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD ; Edit (Notepad)
-			 Return
+
+		 ; Check if we possibly have selected file(s) from an archive
+		 If RegExMatch(Files,"iUm)" ArchiveExtentions )
+			{
+			 Files:=StrReplace(Files,"`r","")
+			 If InStr(Files,"`n")
+				Check:=SubStr(Files,1,InStr(Files,"`n")-1)
+			 Else
+				Check:=Files
+
+			 If WinActive("ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE") or WinActive("ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE")
+				{
+				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
+					{                  ; therefore we resort to the internal TC Edit command - added for v0.51
+					 SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD ; Edit (Notepad)
+					 Return
+					}
+				}
+
+			 If MatchList.settings.DoubleCommander and DoubleCommander_Active()
+				{
+				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
+					{                  ; therefore we resort to sending enter, now user can choose what to do (close or edit using default program)
+					 Send {enter}
+					 Return
+					}
+				}
+
+			 If MatchList.settings.Explorer and Explorer_Active()
+				{
+				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
+					{                  ; don't allow it and return for Explorer
+					 MsgBox, 16, F4MiniMenu, You can not edit files from Archives when using Explorer.
+					 Return
+					}
+				}
+			
 			}
-		}
+
 	 SelectedFiles:=CountFiles(Files)
 
 	 If (SelectedFiles > MatchList.settings.MaxFiles)
@@ -288,13 +396,57 @@ GetExt(Files)
 ; Get a list of selected files using internal TC commands (see totalcmd.inc for references)
 GetFiles()
 	{
-	 Global MatchList
+	 Global MatchList, CLI_Exit, CLI_File
+
+	 If CLI_Exit
+		{
+		 FileRead, Files, %CLI_File%
+		 MatchList.Temp["Files"]:=Files
+		 Return Files
+		}
+
+	 If MatchList.settings.Explorer and Explorer_Active()
+		{
+		 Files:=Explorer_GetSelection()
+		 MatchList.Temp["Files"]:=Files
+		 Return Files
+		}
+
+	 If MatchList.settings.Everything and Everything_Active()
+		{
+		 Files:=Everything_GetSelection()
+		 MatchList.Temp["Files"]:=Files
+		 Return Files
+		}
+
+		If MatchList.settings.DoubleCommander and DoubleCommander_Active()
+			{
+			 Files:=DoubleCommander_GetSelection()
+			 MatchList.Temp["Files"]:=Files
+			 Return Files
+			}
+
+		If MatchList.settings.XYPlorer and XYPlorer_Active()
+			{
+			 Files:=XYPlorer_GetSelection() 
+			 MatchList.Temp["Files"]:=Files
+			 Return Files
+			}
+
+		If MatchList.settings.QDir and QDir_Active()
+			{
+			 Files:=QDir_GetSelection() 
+			 MatchList.Temp["Files"]:=Files
+			 Return Files
+			}
+
 	 If WinActive("ahk_class TLister")
 		{
 		 WinGetActiveTitle, Files
-		 Files:=RegExReplace(Files,"^.*\[(.*)\]","$1")
+		 Files:=RegExReplace(Files,"U)^.*\[(.*).$","$1")
 		 Return Files
 		}
+
 	 If WinActive("ahk_class TFindFile")
 		{
 		 ControlGet, Files, Choice,, TWidthListBox1, ahk_class TFindFile
@@ -303,6 +455,7 @@ GetFiles()
 		 IfNotInString, Files,[ ; make sure you haven't selected a directory or the first line
 			Return Files
 		}
+
 	 ClipboardSave:=ClipboardAll
 	 Clipboard:=""
 	 PostMessage 1075, 2018, 0, , ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
@@ -556,6 +709,14 @@ GetTCFields(opt,file="")
 	}
 
 SetHotkeys:
+
+Hotkey, IfWinActive, ahk_group TCONLY
+
+;If MatchList.settings.EVDirTree
+;	Hotkey, % MatchList.settings.EVDirTree, Everything_DirectoryTree, %HotKeyState%  ; %
+
+Hotkey, IfWinActive,
+
 Hotkey, IfWinActive, ahk_group TCF4Windows
 
 ; ~ native function will not be blocked 
@@ -597,8 +758,61 @@ If (MatchList.settings.FilteredHotkey <> "ERROR") and (MatchList.settings.Filter
 	 Hotkey, % hk_prefix . TMHKey, FilteredMenu, %HotKeyState%  ; %
 	}
 
+If (InStr(FGHKey BGHKey TMHKey,"Esc"))
+	EscHotkeys:=1
+
 Hotkey, IfWinActive
 Return
+
+#If EscHotkeys and MatchList.settings.Everything and Everything_Active()
+$Esc::
+if (A_PriorHotkey <> "$Esc" or A_TimeSincePriorHotkey > 400)
+	{
+	 Keywait Esc
+	 Return
+	}
+Else
+	WinClose ahk_exe everything.exe
+Return
+#If
+
+#If MatchList.settings.Everything and Everything_Active()
+
+Enter:: ; open in source panel/tab
+TCCD(MatchList.settings.TCPath," /O /S ",Everything_GetSelection(dir="1"))
+Return
+
+^Enter:: ; open in source panel, new tab foreground
+TCCD(MatchList.settings.TCPath," /O /S /T ",Everything_GetSelection(dir="1"))
+Return
+
+^+Enter:: ; open in source panel, new tab background
+TCCD(MatchList.settings.TCPath," /O /S /B",Everything_GetSelection(dir="1"))
+Return
+
+!Enter:: ; open in target panel/tab
+TCCD(MatchList.settings.TCPath," /O /S /R=",Everything_GetSelection(dir="1"))
+Return
+
+!^Enter:: ; open in target panel, new tab foreground
+TCCD(MatchList.settings.TCPath," /O /S /T /R=",Everything_GetSelection(dir="1"))
+Return
+
+!+Enter:: ; open in target panel, new tab background
+TCCD(MatchList.settings.TCPath," /O /S /B /R=",Everything_GetSelection(dir="1"))
+Return
+
+#If
+
+TCCD(tc,par,dir)
+	{
+	 WinClose ahk_exe everything.exe
+	 If !InStr(par,"/R=")
+		Run, %tc% %par% "%dir%\"
+	 Else
+	 	Run, %tc% %par%"%dir%\"
+	}
+
 
 SaveSettings:
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
@@ -608,6 +822,9 @@ Return
 
 ExitSettings:
 FileDelete, % TmpFileList
+If CLI_MenuPos
+	MatchList.settings.MenuPos:=CLI_MenuPos
+
 If (Error = 1) ; we can't read settings so create a new clean version
 	{
 	 FileDelete, %F4ConfigFile%
@@ -655,6 +872,8 @@ FileAppend,
 		<F4MMCloseAll>0</F4MMCloseAll>
 		<F4MMClosePID>0</F4MMClosePID>
 		<FullMenu>z</FullMenu>
+		<Explorer>0</Explorer>
+		<Everything>0</Everything>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
 		<Exe>c:\WINDOWS\notepad.exe</Exe>
@@ -681,6 +900,8 @@ TCStart=1
 F4MMCloseAll=0
 F4MMClosePID=0
 FullMenu=z
+Explorer=0
+Everything=0
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe
