@@ -15,13 +15,13 @@
 iob(Filename="")
 	{
 	 Global MatchList:=[]
-	 SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart,F4MMCloseAll,F4MMClosePID,FilteredHotkey,FullMenu"
+	 SectionKeys:=iob_getkeys(1)
 	 Loop, parse, SectionKeys, CSV
 		{
 		 IniRead, OutputVar, %Filename%, Settings, %A_LoopField%
 		 MatchList["Settings",A_LoopField]:=OutputVar
 		}
-	 SectionKeys:="Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"
+	 SectionKeys:=iob_getkeys(2)
 	 IniRead, OutputVarSectionNames, %Filename%
 	 StringReplace,OutputVarSectionNames,OutputVarSectionNames,Settings,,All
 	 StringReplace,OutputVarSectionNames,OutputVarSectionNames,`n,`,,All
@@ -44,10 +44,10 @@ iob_save(ObjectName,Filename="") { ; Object parameter isn't used but just added 
 	global MatchList
 	FileCopy, %Filename%, %Filename%.bak, 1
 	FileDelete, %Filename%
-	SectionKeys:="BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart,F4MMCloseAll,F4MMClosePID,FilteredHotkey,FullMenu"
+	SectionKeys:=iob_getkeys(1)
 	Loop, parse, SectionKeys, CSV
 		IniWrite, % MatchList["Settings",A_LoopField], %Filename%, Settings, %A_LoopField%
-	SectionKeys:="Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"
+	SectionKeys:=iob_getkeys(2)
 	Loop
 		{
 		 Index:=A_Index
@@ -56,4 +56,12 @@ iob_save(ObjectName,Filename="") { ; Object parameter isn't used but just added 
 		 Loop, parse, SectionKeys, CSV
 			IniWrite, % MatchList[Index,A_LoopField], %Filename%, %Index%, %A_LoopField%
 		}
+	}
+
+iob_getkeys(section)
+	{
+	 If (Section = 1)
+	 	Return "BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart,F4MMCloseAll,F4MMClosePID,FilteredHotkey,FullMenu,Explorer,Everything,DoubleCommander,XYPlorer" ; ,EvPath,EVDirTree
+	 If (Section = 2)
+	 	Return "Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"
 	}
