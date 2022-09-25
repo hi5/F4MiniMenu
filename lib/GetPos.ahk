@@ -26,10 +26,13 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 		 Pos.Insert("x", X), Pos.Insert("y", Y-Offset) 
 		 Return Pos
 		}
+
+	 If Explorer_Active() or DoubleCommander_Active() or XYPlorer_Active() ; can't be bothered to figure it out for the time being so always center in explorer window
+		Position = 2
 	 
-	 ; Get TC Window statistics
+	 ; Get Active Window statistics
 	 WinGetPos, WinX, WinY, WinWidth, WinHeight, A
-	
+
 	 If (Position = 2) ; second fastest method so deal with it first
 		{
 		 X:=WinWidth/2-100, Y:=WinHeight/2-WinY ; Y:=WinHeight/2-(MenuSize*15)-50 ; Crude calculation
