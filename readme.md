@@ -1,6 +1,7 @@
-# F4MiniMenu - v0.97
+# F4MiniMenu - v1.00
 
-A <kbd>F4</kbd> Menu[1] program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).
+A <kbd>F4</kbd> Menu[1] program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
+(and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs))
 
 __Features__
 
@@ -46,6 +47,8 @@ As of v0.97 there are *two* foreground menus:
    selected files. You can still access the full menu by using the 'full menu' option
    that is shown in this menu. The default editor will remain the first menu entry.
    If it can't find any matching program, the full menu is shown instead.
+
+As of v1.00: Passive mode, F4MiniMenu doesn't have to remain in memory for it to work, see [passive](#passive) below.
 
 *First come, first serve*
 
@@ -190,15 +193,15 @@ More information can be found in the [DocumentTemplates README](DocumentTemplate
 
 # Parameters/Options
 
-|Field|Meaning|
-|-----|-------|
-|%P|causes the source path to be inserted into the command line, including a backslash \ at the end.|
-|%T|inserts the current target path.|
-|%O|places the current filename without extension into the command line.|
-|%E|places the current extension (without leading period) into the command line.|
-|? |as the first parameter causes a Dialog box to be displayed before starting the program, containing the following parameters. You can change the parameters before starting the program. You can even prevent the program's execution.|
-|-----|-------|
-|%f41|placeholder to alter position of filenames on the command line. (see example below)|
+|Parameter|Meaning|
+|---------|-------|
+|%P       |causes the source path to be inserted into the command line, including a backslash \ at the end.|
+|%T       |inserts the current target path.|
+|%O       |places the current filename without extension into the command line.|
+|%E       |places the current extension (without leading period) into the command line.|
+|?        |as the first parameter causes a Dialog box to be displayed before starting the program, containing the following parameters. You can change the parameters before starting the program. You can even prevent the program's execution.|
+|---------|-------|
+|%f41     |placeholder to alter position of filenames on the command line. (see example below)|
 
 Note: More _%f4_ fields may be added in the future.
 
@@ -226,6 +229,37 @@ You can also automatically close F4MiniMenu using the following options (availab
 
 1. Close F4MM when all copies of TC close: this waits until all running copies of Total Commander are closed, then exit F4MiniMenu.
 2. Close F4MM when TC closes started by F4MM: If you have started (a new) Total Commander via F4MiniMenu, wait until that specific Total Commander closes, then exit F4MiniMenu.
+
+## Passive
+
+**Important** Don't use passive mode when F4MiniMenu is already running.
+
+First parameter must be the file list which contains the selected files in Total Commander or Double Commander (refer to file manager documentation for further information)
+
+Optional parameters are /P1, P2, /M1, and /M2
+
+Examples:
+```
+Command:    F4MiniMenu.ahk
+Parameters: %L
+
+Command:    F4MiniMenu.ahk
+Parameters: %L /P1 /M1
+
+Command:    F4MiniMenu.exe
+Parameters: %L /P2 /M2
+```
+
+|Parameter|Meaning|
+|---------|-------|
+|%L       | List file in the TEMP directory with the names of the selected files to be processed by F4MiniMenu (by file manager) |
+|/P1      | Menu position at Mouse cursor (useful to have it show at buttonbar location) |
+|/P2      | Menu position Centered in window        |
+|/M1      | Full menu                               |
+|/M2      | Filtered menu                           |
+|/ED      | Open Editors, ignore all other options  |
+|/SET     | Open Settings, ignore all other options |
+
 
 ## Screenshots
 
@@ -264,6 +298,34 @@ __Editor configuration__
 * [Class LV_Rows](http://www.autohotkey.com/board/topic/94364-class-lv-rows-copy-cut-paste-and-drag-listviews/) by [Pulover](https://github.com/Pulover/) - as of v0.6
 * [XA Save / Load Arrays to/from XML Functions](https://github.com/hi5/XA)
 * [DropFilesA - SKAN](http://www.autohotkey.com/board/topic/41467-make-ahk-drop-files-into-other-applications/#entry258810) including Unicode version [nimda](http://www.autohotkey.com/board/topic/79145-help-converting-ahk-ahk-l/#entry502676)
+
+## Other programs
+
+### File managers
+
+The foreground and background menu should work with Explorer, Double Commander, and XYPlorer.  
+
+Not supported:
+
+* Starting and Closing of these file managers and/or F4MiniMenu
+* DocumentTemplates
+* Positioning of the menu - defaults to "Centered in window" 
+
+Each file manager has to be (de)activated by opening the settings menu.
+
+To enable:
+
+* for explorer: tick the checkbox (on)
+* for Double Commander and XYPlorer set the hotkey (Double Commander default: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>c</kbd>, XYPlorer default: <kbd>Ctrl</kbd>+<kbd>p</kbd>)
+* save the settings (OK) - F4MiniMenu should reload automatically and now work with the activated file managers.
+
+To disable:
+
+* for explorer: tick the checkbox (off)
+* for Double Commander and XYPlorer delete the hotkey(s) (press DEL)
+* save the settings (OK)
+
+As support for these other file managers is not thoroughly tested, unexpected behaviour may occur.
 
 ## Changelog
 
