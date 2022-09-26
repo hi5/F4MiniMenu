@@ -28,8 +28,8 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 
 ; <for compiled scripts>
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
-;@Ahk2Exe-SetVersion 0.97.0.0
-;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
+;@Ahk2Exe-SetFileVersion 1.00
+;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
 
 SetWorkingDir, %A_ScriptDir%
@@ -83,7 +83,7 @@ for k, v in MatchList
 			 Sleep % v.delay
 			 Run %editor% %file%
 			}
-		 ExitApp ; we only have one file to proces so we're done
+		 ExitApp ; we only have one file to process so we're done
 		}
 	}
 

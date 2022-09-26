@@ -22,9 +22,9 @@ SetTitleMatchMode, 2
 F4Version:="v1.00"
 
 ; <for compiled scripts>
-;@Ahk2Exe-Let vn=%A_PriorLine~U)^(.+"){1}(.+)".*$~$2% ; this takes the version number from the line above (F4Version)
+;@Ahk2Exe-SetFileVersion 1.00
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
-;@Ahk2Exe-SetCopyright MIT License - Copyright (c) https://github.com/hi5
+;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
 
 ; <for compiled scripts>
@@ -735,7 +735,7 @@ Hotkey, % hk_prefix FGHKey, ShowMenu, %HotKeyState%  ; %
 ; MsgBox % "Show Menu: " hk_prefix . FGHKey ; debug
 
 hk_prefix:="$"
-;If (RegExMatch(MatchList.settings.BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in inplace rename (shift-f6) operations in a panel, or at least that is my experience.
+;If (RegExMatch(MatchList.settings.BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in "in place rename" (shift-f6) operations in a panel, or at least that is my experience.
 ;	hk_prefix:="~"
 BGHKey:=MatchList.settings.BackgroundHotkey
 StringReplace, BGHKey, BGHKey, &amp`;amp`;, & , All
