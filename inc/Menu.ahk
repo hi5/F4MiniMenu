@@ -137,12 +137,12 @@ AddMenuProgramOptions:
 Menu, %MenuName%, Add
 Menu, %MenuName%, Add,  %MenuPadding%Add new Editor,    ConfigEditorsNew
 Menu, %MenuName%, Icon, %MenuPadding%Add new Editor,    shell32.dll, 176
-Menu, %MenuName%, Add,  %MenuPadding%Settings,          MenuHandler
-Menu, %MenuName%, Icon, %MenuPadding%Settings,          shell32.dll, 170
 Menu, %MenuName%, Add,  %MenuPadding%Configure Editors, ConfigEditors
 Menu, %MenuName%, Icon, %MenuPadding%Configure Editors, shell32.dll, 70
 Menu, %MenuName%, Add,  %MenuPadding%Scan Document Templates, DocumentTemplatesScan
 Menu, %MenuName%, Icon, %MenuPadding%Scan Document Templates, shell32.dll, 172
+Menu, %MenuName%, Add,  %MenuPadding%Settings,          MenuHandler
+Menu, %MenuName%, Icon, %MenuPadding%Settings,          shell32.dll, 170
 
 Menu, %MenuName%, Add,  %MenuPadding%Exit,              MenuHandler
 Menu, %MenuName%, Icon, %MenuPadding%Exit,              shell32.dll, 132

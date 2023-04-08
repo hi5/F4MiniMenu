@@ -1,11 +1,22 @@
 ## Changelog
 
+* 20230402 - v1.1  
+                   a) Fix: TRY to catch all empty hotkeys to avoid errors at startup  
+                   b) Change: Double click on an "editor" in Configure Editors listview now opens modify window
+                   c) Change: Settings - replace Radio controls for Esc/Win with DropDownLists (not thoroughly tested)  
+                   d) Fix: WinMin/Hide/Maximize and Sleep function should work better (or again)  
+                   e) Fix: additional check to prevent Modify Gui throwing "The same variable cannot be used for more than one control" error; modify window now always on top of editors window (); sysmenu removed  
+                   f) New: TRY, catch -> revert to standard editor if defined editor can not be found, show notification using OSDTIP_Pop() for both F4MiniMenu and F4TCIE  
+                   g) New: support %windir%, %A_ScriptDir% and other path variables (see list "Path variables" in readme.md) https://github.com/hi5/F4MiniMenu/issues/25  
+                   h) New: Filtered foreground Menu - setting to launch program  directly if only one program is found https://github.com/hi5/F4MiniMenu/issues/26  
+                   i) New: Global setting MaxWinWaitSec to prevent stalling F4MM
+                   j) Fix: INI when reading a global setting as "Error" set as empty (lib\iob.ahk)  
 * 20220528 - v1.0  
                    a) Fix: "Start Total Commander if not running" feature #23 https://github.com/hi5/F4MiniMenu/issues/23  
-                   b) Fix: Use another method to calculate Y for Position = 2 in GetPos (as this is now default for c))
+                   b) Fix: Use another method to calculate Y for Position = 2 in GetPos (as this is now default for c))  
                    c) Rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything(e) (default foreground menu to center in Window)  
                    d) Passive mode using parameters to use F4MiniMenu via Button bar, Start Menu, or F4 Editor (start F4MM, processes files, close F4MM, so not a persistent script)  
-                   e) Fix: Path from Lister Windows Title failed if file name started/ended with [ or ] e.g. "[2000] My Document.txt"
+                   e) Fix: Path from Lister Windows Title failed if file name started/ended with [ or ] characters e.g. "[2000] My Document.txt"  
                    f) remove stray file inc\inc.zip from repository
 * 20190622 - v0.97  
                    a) New option for filtered foreground menu: only show programs that match selected extensions. See Settings for setup. https://github.com/hi5/F4MiniMenu/issues/21  
@@ -55,3 +66,4 @@
 * 20121111 - v0.3 Added menu for "foreground" feature - open all selected files with specific editor (its behaviour may change in future).
 * 20121108 - v0.2 Added 0 (zero) entry in XML as default editor.
 * 20121101 - v0.1 Initial very basic version.
+

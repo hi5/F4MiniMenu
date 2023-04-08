@@ -6,6 +6,7 @@ Include for F4MiniMenu.ahk
 
 */
 
+
 FilteredMenu:
 GetExt(GetFiles())
 If debug
@@ -15,9 +16,22 @@ If debug
 	}
 CoordMode, Menu, Client
 Gosub, BuildFilteredMenu
-Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
-Menu, %MenuName%, Show, % Coord["x"], % Coord["y"] 
+; MsgBox % MatchList.settings.FilteredMenuAutoEdit
+If (MenuCounter = 3) and (MatchList.Settings.FilteredMenuAutoEdit = 2)
+	{
+	 ; only found one editor so run automatically
+	 ; TODO how to get from here to openfiles????
+	 ProcessFiles(Matchlist, MatchListReference[3])
+	 OSDTIP_Pop("F4MiniMenu", "Only found one editor.`nOpening file automatically", -750,"W230 H80 U1")
+;	 MsgBox
+	}
+Else
+	{
+	 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
+	 Menu, %MenuName%, Show, % Coord["x"], % Coord["y"] 
+	}	
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
+MenuCounter:=""
 Return
 
 ; Build menu based on defined editors
@@ -28,14 +42,14 @@ Menu, MyFilteredMenu, DeleteAll
 
 MenuName:="MyFilteredMenu"
 
-MatchListReference:=[] ; Object and counter below used to keep track of the orginal position in MatchList so
+MatchListReference:=[] ; Object and counter below used to keep track of the original position in MatchList so
 MenuCounter:=0         ; we select the correct editor in the filtered menu as we use A_ThisMenuItemPos in menuhandler
 
 for k, v in MatchList
 	{
 	 If (k = "settings") or (k = "temp")
 		Continue ; skip settings
-	 if RegExMatch(MatchList.Temp.SelectedExtensions,StrReplace(RegExExtensions(v.ext),",","|")) or (k = 1)
+	 If RegExMatch(MatchList.Temp.SelectedExtensions,StrReplace(RegExExtensions(v.ext),",","|")) or (k = 1)
 		{
 		 MenuCounter++
 		 ExeName:=v.exe
@@ -68,7 +82,5 @@ Gosub, AddMenuProgramOptions
 
 If (MenuCounter = 2) ; we haven't found any matches, so just show full menu
 	MenuName:="MyMenu"
-
-MenuCounter:=""
 
 Return

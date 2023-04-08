@@ -1,10 +1,11 @@
-﻿;[settings]
+;[settings]
 ;BackgroundHotkey=F4
 ;ForegroundHotkey=Esc & F4
 ;MaxFiles=30
 ;MenuPos=3
 ;TCPath=c:\totalcmd\TotalCmd.exe
 ;TCStart=1
+;MaxWinWaitSec=2
 ;[1]
 ;delay=0
 ;exe=c:\WINDOWS\notepad.exe
@@ -19,6 +20,8 @@ iob(Filename="")
 	 Loop, parse, SectionKeys, CSV
 		{
 		 IniRead, OutputVar, %Filename%, Settings, %A_LoopField%
+		 if (OutputVar = "ERROR")
+		 	OutputVar:=""
 		 MatchList["Settings",A_LoopField]:=OutputVar
 		}
 	 SectionKeys:=iob_getkeys(2)
@@ -33,7 +36,7 @@ iob(Filename="")
 			{
 			 IniRead, OutputVar, %Filename%, %section%, %A_LoopField%
 			 if (OutputVar = "ERROR")
-				Break
+				break
 			 MatchList[section,A_LoopField]:=OutputVar
 			}
 		}
@@ -61,7 +64,7 @@ iob_save(ObjectName,Filename="") { ; Object parameter isn't used but just added 
 iob_getkeys(section)
 	{
 	 If (Section = 1)
-	 	Return "BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,TCPath,TCStart,F4MMCloseAll,F4MMClosePID,FilteredHotkey,FullMenu,Explorer,Everything,DoubleCommander,XYPlorer" ; ,EvPath,EVDirTree
+	 	Return "BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,FilteredMenuAutoEdit,MaxWinWaitSec,TCPath,TCStart,F4MMCloseAll,F4MMClosePID,FilteredHotkey,FullMenu,Explorer,Everything,DoubleCommander,XYPlorer" ; ,EvPath,EVDirTree
 	 If (Section = 2)
 	 	Return "Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"
 	}

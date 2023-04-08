@@ -27,7 +27,7 @@ Important:
 1 - The first editor will be considered to the default editor.
 
 Info:
-1 - Delay (in miliseconds) D&&D = Drag && Drop, Open = between files.
+1 - Delay (in miliseconds) D&&D = Drag && Drop, Open = startup.
 2 - Sort using Ctrl+UP / Ctrl+DOWN or use Edit menu.
 )
 
@@ -47,7 +47,7 @@ Gui, Browse:Menu, MenuBar
 ; INI Gui
 Gui, Browse:font,          % dpi("s8")
 Gui, Browse:Add, ListView, % dpi("x6 y5 w780 h285 grid hwndhLV vLV gLVLabel"), Program|Parameters|Start Dir.|Window|Extensions|Method|D&D|Open|Editor|Icon|Name
-Gui, Browse:Add, GroupBox, % dpi("x6 yp+290 w360 h120"), Comments
+Gui, Browse:Add, GroupBox, % dpi("x6 yp+290 w360 h120 vGroupBoxInfo"), Comments
 Gui, Browse:Add, Text,     % dpi("x16 yp+20 w340"), %infotext%
 Gui, Browse:Add, Button,   % dpi("xp+370   yp w70 h24 gSettings"), &Settings
 Gui, Browse:Add, Button,   % dpi("xp+80    yp w70 h24 gAdd"), &Add
@@ -91,6 +91,7 @@ Backup:=MatchList.settings
 MatchList:=[]
 MatchList.settings:=Backup
 Gui, Browse:Default
+Gui +LastFound
 Loop, % LV_GetCount() ; %
 	{
 	 Row:=A_Index
@@ -148,6 +149,8 @@ New:=1
 
 Modify:
 
+Gui, Modify:Destroy ; https://www.ghisler.ch/board/viewtopic.php?p=423475#p423475
+
 ; Clear variables just to be sure
 Loop, parse, GetList, |
 	%A_LoopField%:=""
@@ -173,8 +176,7 @@ If !New
 		}
 	}
 
-
-Gui, Modify:+Owner
+Gui, Modify:+OwnerBrowse -SysMenu 
 Gui, Modify:font,              % dpi("s8")
 Gui, Modify:Add, Text,         % dpi("x10  y10 w77  h18"), &Exe
 Gui, Modify:Add, Edit,         % dpi("x89  y8  w290 h20 vExe"), %Exe%
@@ -211,7 +213,7 @@ Gui, Modify:Add, Text,         % dpi("xp+45 yp+3  h16"), Open:
 Gui, Modify:Add, Edit,         % dpi("xp+32 yp-3  h20 w40 vOpen Number"), %Open%
 
 Gui, Modify:Add, Text,         % dpi("x10 yp+32 w78 h28"), &Window
-Gui, Modify:Add, DropDownList, % dpi("x89 yp-3 w438 h21 R3 Choose" WindowMode " vWindowMode AltSubmit"), 1 - Normal|2 - Maximized|3 - Minimized
+Gui, Modify:Add, DropDownList, % dpi("x89 yp-3 w238 h21 R3 Choose" WindowMode " vWindowMode AltSubmit"), 1 - Normal|2 - Maximized|3 - Minimized
 
 ;Gui, Modify:Add, Text,         x10 y160 w78  h16, &Open Mode
 ;Gui, Modify:Add, DropDownList, x89 y158 w438 h21 Choose%Mode% vMode AltSubmit, (not yet implemented)|
@@ -222,7 +224,6 @@ Gui, Modify:Add, Text,         % dpi("x10 yp+32 w77 h16"), Ex&tensions
 Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w438 h76 vExt"), %Ext%
 
 Gui, Modify:Add, Link,         % dpi("x10 yp+100 w310 h16"), F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
-
 
 Gui, Modify:Add, Button,       % dpi("x340 yp-5 w90 h24"), &OK
 Gui, Modify:Add, Button,       % dpi("x437 yp   w90 h24"), &Cancel
@@ -368,15 +369,18 @@ for k, v in MatchList
    If (FileName = "")
       Continue
    If (v.Icon <> "")
-      FileName := StrReplace(v.Icon,"%Commander_Path%",Commander_Path)
+      ; FileName := StrReplace(v.Icon,"%Commander_Path%",Commander_Path)
+      FileName := GetPath(v.Icon)
    
    If InStr(FileName,"%Commander_Path%")
-      FileName := StrReplace(FileName,"%Commander_Path%",Commander_Path)
+;      FileName := StrReplace(FileName,"%Commander_Path%",Commander_Path)
+      FileName := GetPath(FileName)
    
     ; Build a unique extension ID to avoid characters that are illegal in variable names,
     ; such as dashes.  This unique ID method also performs better because finding an item
     ; in the array does not require search-loop.
     SplitPath, FileName,,, FileExt  ; Get the file's extension.
+    FileName:=GetPath(FileName)
     if FileExt in EXE,ICO,ANI,CUR
       {
         ExtID := FileExt  ; Special ID as a placeholder.
@@ -420,7 +424,7 @@ for k, v in MatchList
       }
 
     ; Create the new row in the ListView and assign it the icon number determined above:
-	  LV_Add("Icon" IconNumber, v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index, v.Icon, v.Name)
+	  LV_Add("Icon" IconNumber , v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index, v.Icon, v.Name)
 	}
 dpifactor:=dpi()
 LV_ModifyCol(1, dpifactor*250), LV_ModifyCol(2, dpifactor*70), LV_ModifyCol(3, dpifactor*70)
@@ -436,7 +440,9 @@ Return
 LVLabel:
 ; Detect Drag event.
 If A_GuiEvent = D
-LvHandle.Drag() ; Call Drag function using the Handle.
+	LvHandle.Drag() ; Call Drag function using the Handle.
+If A_GuiEvent = DoubleClick
+	Gosub, Modify
 return
 
 MoveUp:

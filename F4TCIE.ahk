@@ -1,9 +1,9 @@
-﻿/*
+/*
 
 Script      : F4TCIE.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.41
+Version     : 0.5
 Author      : hi5
-Last update : 1 October 2017
+Last update : 12 November 2022
 Purpose     : Helper script for F4MiniMenu program to allow internal editor to function
               now you can edit files from within Archives and FTP (and have TC update/upload them)
 Notes       : It will always use the "normal" method to open programs, so the "drag & drop", "filelist" 
@@ -27,8 +27,8 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 #NoEnv
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
-;@Ahk2Exe-SetFileVersion 1.00
+;@Ahk2Exe-SetDescription F4MiniMenu (IE): Open files from TC
+;@Ahk2Exe-SetFileVersion 1.1
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
 
@@ -47,7 +47,7 @@ If !File ; if empty
 
 If Error
 	{
-	 MsgBox, 16, F4MiniMenu/F4TCIE, Couldn't load configuration file, closing script and starting default Windows editor.`n`nMay not work if there is no "Edit" defined for this filetype:`n`n%OutExtension%
+	 MsgBox, 16, F4MiniMenu/F4TCIE, Couldn't load configuration file (%F4ConfigFile%), closing script and starting default Windows editor.`n`nMay not work if there is no "Edit" defined for this filetype:`n`n%OutExtension%`n`nNote: do check if F4MiniMenu/F4TCIE have the same naming convention (for INI both program names have to end with an "i")`nSee "XML or INI" https://github.com/hi5/F4MiniMenu/blob/master/readme.md
 	 Try
 		Run edit %file% ; run Windows editor for this filetype
 	 Catch
@@ -68,7 +68,8 @@ for k, v in MatchList
 		continue
 	 If RegExMatch(OutExtension,RegExExtensions(v.ext)) ; Open in defined program  - v0.9 allow for wildcards
 		{
-		 editor:=GetTCCommander_Path(v.exe)
+		 ;editor:=GetTCCommander_Path(v.exe)
+		 editor:=GetPath(v.exe)
 		 If OutExtension in %templateExt%
 			{
 			 IfExist, %file% ; file is already present, this could be that TC created it just now (0 bytes) or that is already existed.
@@ -81,14 +82,21 @@ for k, v in MatchList
 		If editor
 			{
 			 Sleep % v.delay
-			 Run %editor% %file%
+			 Try
+			 	Run %editor% %file%
+			 Catch
+			 	{
+				 Run % GetPath(matchlist[1].exe) A_Space file
+				 ; OSDTIP_Pop(MainText, SubText, TimeOut, Options, FontName, Transparency)
+				 OSDTIP_Pop("F4MiniMenu/F4TCIE", "Defined editor/program not found`nReverting to default editor", -750,"W230 H80 U1")
+				}	
 			}
 		 ExitApp ; we only have one file to process so we're done
 		}
 	}
 
 ; We couldn't find a defined Editor so launch the default Editor [1]
-Run % matchlist[1].exe A_Space file
+Run % GetPath(matchlist[1].exe) A_Space file
 
 ; shared with F4MM
 #include %A_ScriptDir%\inc\HelperFunctions.ahk

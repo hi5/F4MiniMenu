@@ -1,9 +1,9 @@
-﻿/*
+/*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.00
+Version     : v1.1
 Author      : hi5
-Last update : 28 May 2022
+Last update : 02 April 2023
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -19,10 +19,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.00"
+F4Version:="v1.1"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.00
+;@Ahk2Exe-SetFileVersion 1.1
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
@@ -41,7 +41,7 @@ MenuPadding:="   "
 DefaultShortName:=""
 
 EnvGet, TmpFileList, temp
-EnvGet, MyComSpec, ComSpec
+
 If (TmpFileList = "")
 	TmpFileList:=A_ScriptDir
 
@@ -79,7 +79,7 @@ Menu, tray, Add, &Edit this script,       MenuHandler
 Try
 	Menu, tray, Icon,&Edit this script,       comres.dll, 7
 If A_IsCompiled
-	Menu, tray,Disable, &Edit this script
+	Menu, tray, Disable, &Edit this script
 
 Menu, tray, Add, 
 Menu, tray, Add, &Suspend Hotkeys,        MenuHandler
@@ -262,7 +262,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 	 MatchList.Temp.Files:=""	
 
 		 ; Check if we possibly have selected file(s) from an archive
-		 If RegExMatch(Files,"iUm)" ArchiveExtentions )
+		 If RegExMatch(Files,"iUm)" ArchiveExtentions)
 			{
 			 Files:=StrReplace(Files,"`r","")
 			 If InStr(Files,"`n")
@@ -319,6 +319,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 		 open:=A_LoopField
 		 SplitPath, A_LoopField, , , OutExtension
 		 
+		 ; TODO: check for "checked" (= active) editor from settings
 		 for k, v in MatchList
 			{
 			 Index:=A_Index
@@ -358,15 +359,15 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			{
 			 cmdfiles:=""	
 			 Loop, parse, list, `n, `r
-			 	cmdfiles .= """" A_LoopField """" A_Space
-			 OpenFile(v, cmdfiles)
+			 	cmdfiles .= """" A_LoopField """" A_Space                ; " fix highlighting
+			 OpenFile(v, cmdfiles, MatchList.Settings.MaxWinWaitSec)
 			 cmdfiles:=""
 			}
 		 else If (v.Method = "FileList")
 			{
 			 FileDelete, % TmpFileList
 			 FileAppend, %list%, %TmpFileList%, UTF-8-RAW
-			 OpenFile(v, TmpFileList)
+			 OpenFile(v, TmpFileList, MatchList.Settings.MaxWinWaitSec)
 			}
 		 Else If (v.Method <> "Files")
 			{
@@ -374,7 +375,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				{
 				 If (A_LoopField = "")
 					Continue
-				 OpenFile(v,A_LoopField)
+				 OpenFile(v, A_LoopField, MatchList.Settings.MaxWinWaitSec)
 				}
 			}
 		}
@@ -469,88 +470,144 @@ GetFiles()
 	}
 
 ; Function to determine which method to use to open a file	
-OpenFile(Editor,open)	
+; normal:    filepath\file1.ext
+; cmdline:   "filepath\file1.ext" "filepath\file2.ext" "filepath\file3.ext"
+; filelist:  %temp%\$$f4mtmplist$$.m3u OR %A_ScriptDir%\$$f4mtmplist$$.m3u
+; drag&drop: filepath\file1.ext
+OpenFile(Editor,open,MaxWinWaitSec=2)
 	{
+	 If (MaxWinWaitSec = "") or (MaxWinWaitSec < 2) or (MaxWinWaitSec = "ERROR")
+	 	MaxWinWaitSec:=2
 	 func:=Editor.Method
 	 title:="ahk_exe " Editor.Exe
 	 If (func = "FileList")
 		{
-		 if !Normal(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir) ; if GetInput() was cancelled don't process windowmode below
-			Return open
+		 ; if GetInput() was cancelled don't process windowmode below
+		 result:=Normal(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir) 
 		}
 	 Else If IsFunc(func) ; takes care of drag & drop; cmdline
 		{
-		if !%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)  ; if GetInput() was cancelled don't process windowmode below
-			Return open
+		 ; if GetInput() was cancelled don't process windowmode below
+		 result:=%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)  
 		}
-	 If (Editor.windowmode = 1) ; normal (activate)
+
+	 ; Moved above window actions in v1.1
+	 ; Added WinExist check to give program some time to start first
+	 ; before proceeding - similar to Delay
+	 If !WinExist(title)
+		Sleep % Editor.open
+
+	 ; Program was started so we can continue.
+	 ; Result can be > 1 if defined program was not found 
+	 ; and we resorted to default editor as a fall back, see normal()
+	 if (result = 1) 
 		{
-		 WinWait, %title%
-		 WinActivate, %title%
+		 If (Editor.windowmode = 1) ; normal (activate)
+			{
+			 WinWait, %title%,, % MaxWinWaitSec
+			 WinActivate, %title%
+			}
+		 Else If (Editor.windowmode = 2) ; maximize
+			{
+			 WinWait, %title%,, % MaxWinWaitSec
+			 WinMaximize, %title%
+			}
+		 Else If (Editor.windowmode = 3) ; minimize
+			{
+			 WinWait, %title%,, % MaxWinWaitSec
+			 WinMinimize, %title%
+			}
 		}
-	 Else If (Editor.windowmode = 2) ; maximize
-		{
-		 WinWait, %title%
-		 WinMaximize, %title%
-		}
-	 Else If (Editor.windowmode = 3) ; minimize
-		{
-		 WinWait, %title%
-		 WinMinimize, %title%
-		}
-	 Sleep % editor.open
 	 Return open
 	}
 
 Normal(program,file,delay,parameters,startdir)
 	{
 	 ; Run, Target, WorkingDir, Max|Min|Hide
-	 program:=GetTCCommander_Path(program)
+	 Global MatchList
+	 ;program:=GetTCCommander_Path(program)
+	 program:=GetPath(program)
 	 execute:=1
 	 GetInput(parameters,file,startdir,execute,program)
 	 if !execute
 	 	Return execute
+	 startdir:=GetPath(startdir)
 	 if (file = "")
-		Run, %program% %parameters%, %startdir%
+		Try
+			Run, %program% %parameters%, %startdir%
+		Catch
+			{
+			 ;program:=GetTCCommander_Path(MatchList[1].Exe)
+			 program:=GetPath(MatchList[1].Exe)
+			 startdir:=GetPath(startdir)
+			 Run, %program% %parameters%, %startdir%
+			 execute++
+			}
 	 else
-		 Run, %program% %parameters% "%file%", %startdir%
+		Try
+			Run, %program% %parameters% "%file%", %startdir%
+		Catch
+			{
+			 ;program:=GetTCCommander_Path(MatchList[1].Exe)
+			 program:=GetPath(MatchList[1].Exe)
+			 startdir:=GetPath(startdir)
+			 Run, %program% %parameters% "%file%", %startdir%
+			 ; OSDTIP_Pop(MainText, SubText, TimeOut, Options, FontName, Transparency)
+			 OSDTIP_Pop("F4MiniMenu", "Defined editor/program not found`nReverting to default editor", -750,"W230 H80 U1")
+			 execute++
+			}
+     Return execute
 	}
 
 cmdline(program,file,delay,parameters,startdir)
 	{
 	 ; Run, Target, WorkingDir, Max|Min|Hide
-	 program:=GetTCCommander_Path(program)
+	 ;program:=GetTCCommander_Path(program)
+	 program:=GetPath(program)
 	 execute:=1
 	 GetInput(parameters,file,startdir,execute,program)
 	 if !execute
-		Return
+		Return execute
+	 startdir:=GetPath(startdir)
 	 Run, %program% %parameters% %file%, %startdir%
+	 Return execute
 	}
 
 DragDrop(program,file,delay,parameters,startdir)
 	{
 	 ; Run, Target, WorkingDir, Max|Min|Hide
-	 program:=GetTCCommander_Path(program)
+	 ;program:=GetTCCommander_Path(program)
+	 program:=GetPath(program)
 	 title:="ahk_exe " program
 	 IfWinNotExist, %title%
 		{
+		 startdir:=GetPath(startdir)
 		 Run, %program% %parameters% "%file%", %startdir%
 		 ; in case there are more files to be processed we need the extra time after
 		 ; first startup as some programs are sloooooow and we have to make sure it
 		 ; can accept drag & drop files. It is is only for the first file in the list
-		 Sleep %delay% 
+		 Sleep %delay%
 		 Return 1
 		}
-	
-	 If InStr(title,"Paint Shop Pro.exe") ; Annoying hack but seems to be required for PSP
-		title=Jasc Paint Shop Pro
-	 DropFiles(file, title)
-	 If (title = "Jasc Paint Shop Pro")
-		WinActivate, % title
+
+;@Ahk2Exe-IgnoreBegin
+	 #include *i %A_ScriptDir%\inc\DragDropPrivateRules.ahk
+;@Ahk2Exe-IgnoreEnd
+
 	 Return 1
 	}
 
 ; Helper functions & Labels
+
+CheckCmdLine(Method,CountFiles)
+	{
+	 If (Method <> "cmdline")
+		Return 1
+	 StrReplace(CountFiles, Chr(34) A_Space Chr(34), , OutputVarCount)
+	 If (OutputVarCount > 1)
+		Return 0
+	 Return 1	
+	}
 
 GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 	{
@@ -653,7 +710,7 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 	}
 
 CheckFile(list,file)
-{
+	{
 	 For k, v in list
 		If (v = file)
 			Return 1
@@ -690,11 +747,11 @@ GetTCFields(opt,file="")
 		 if InStr(file,""" """) ; we have multiple files so we need to parse them to get all names + ext
 			{
 			 StringReplace, file, file, " ",|, All
-			 Loop, parse, % Trim(file,""""), |
+			 Loop, parse, % Trim(file,""""), |             ; """ fix for highlighting issue in editor
 				{
 				 SplitPath, A_LoopField, , , OutExtension, OutNameNoExt
-				 filenames .= """" OutNameNoExt """" A_Space
-				 fileext .= """" OutExtension """" A_Space
+				 filenames .= """" OutNameNoExt """" A_Space ; " fix for highlighting issue in editor
+				 fileext .= """" OutExtension """" A_Space   ; " fix for highlighting issue in editor
 				}
 			}
 		 else
@@ -722,29 +779,35 @@ Hotkey, IfWinActive, ahk_group TCF4Windows
 ; ~ native function will not be blocked 
 ; $ prefix forces the keyboard hook to be used to implement this hotkey
 
-hk_prefix:="$"
-;If (RegExMatch(MatchList.settings.ForegroundHotkey,"[\^\+\!\# \&]"))
-;	hk_prefix:="~"
-FGHKey:=MatchList.settings.ForegroundHotkey
-StringReplace, FGHKey, FGHKey, &amp`;amp`;, & , All
-StringReplace, FGHKey, FGHKey, &amp`;, &, All
-If (InStr(FGHKey,"ESC"))
-	hk_prefix:="~"
+If (MatchList.settings.ForegroundHotkey <> "ERROR") and (MatchList.settings.ForegroundHotkey <> "")
+	{
+	 hk_prefix:="$"
+	 ;If (RegExMatch(MatchList.settings.ForegroundHotkey,"[\^\+\!\# \&]"))
+	 ;	hk_prefix:="~"
+	 FGHKey:=MatchList.settings.ForegroundHotkey
+	 StringReplace, FGHKey, FGHKey, &amp`;amp`;, & , All
+	 StringReplace, FGHKey, FGHKey, &amp`;, &, All
+	 If (InStr(FGHKey,"ESC"))
+		hk_prefix:="~"
 
-Hotkey, % hk_prefix FGHKey, ShowMenu, %HotKeyState%  ; %
-; MsgBox % "Show Menu: " hk_prefix . FGHKey ; debug
+	 Hotkey, % hk_prefix FGHKey, ShowMenu, %HotKeyState%  ; %
+	; MsgBox % "Show Menu: " hk_prefix . FGHKey ; debug
+	}
 
-hk_prefix:="$"
-;If (RegExMatch(MatchList.settings.BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in "in place rename" (shift-f6) operations in a panel, or at least that is my experience.
-;	hk_prefix:="~"
-BGHKey:=MatchList.settings.BackgroundHotkey
-StringReplace, BGHKey, BGHKey, &amp`;amp`;, & , All
-StringReplace, BGHKey, BGHKey, &amp`;, &, All
-If (InStr(BGHKey,"ESC"))
-	hk_prefix:="~"
+If (MatchList.settings.BackgroundHotkey <> "ERROR") and (MatchList.settings.BackgroundHotkey <> "")
+	{
+	 hk_prefix:="$"
+	 ;If (RegExMatch(MatchList.settings.BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in "in place rename" (shift-f6) operations in a panel, or at least that is my experience.
+	 ;	hk_prefix:="~"
+	 BGHKey:=MatchList.settings.BackgroundHotkey
+	 StringReplace, BGHKey, BGHKey, &amp`;amp`;, & , All
+	 StringReplace, BGHKey, BGHKey, &amp`;, &, All
+	 If (InStr(BGHKey,"ESC"))
+		hk_prefix:="~"
 
-Hotkey, % hk_prefix . BGHKey, Process, %HotKeyState%  ; %
-; MsgBox % "OpenItDirectly: " hk_prefix . BGHKey ; debug
+	 Hotkey, % hk_prefix BGHKey, Process, %HotKeyState%  ; %
+	 ; MsgBox % "OpenItDirectly: " hk_prefix . BGHKey ; debug
+	}
 
 If (MatchList.settings.FilteredHotkey <> "ERROR") and (MatchList.settings.FilteredHotkey <> "")
 	{
@@ -813,7 +876,6 @@ TCCD(tc,par,dir)
 	 	Run, %tc% %par%"%dir%\"
 	}
 
-
 SaveSettings:
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 %F4Save%("MatchList", F4ConfigFile)
@@ -832,7 +894,6 @@ If (Error = 1) ; we can't read settings so create a new clean version
 	}
 ExitApp
 Return
-
 
 ; Used in ProcessFiles() - Technique from http://www.autohotkey.com/docs/scripts/MsgBoxButtonNames.htm	
 ChangeButtonNames:
@@ -865,6 +926,7 @@ FileAppend,
 		<BackgroundHotkey>F4</BackgroundHotkey>
 		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
 		<FilteredHotkey></FilteredHotkey>
+		<FilteredMenuAutoEdit>1</FilteredMenuAutoEdit>
 		<MaxFiles>30</MaxFiles>
 		<MenuPos>3</MenuPos>
 		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
@@ -874,6 +936,7 @@ FileAppend,
 		<FullMenu>z</FullMenu>
 		<Explorer>0</Explorer>
 		<Everything>0</Everything>
+		<MaxWinWaitSec>2</MaxWinWaitSec>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
 		<Exe>c:\WINDOWS\notepad.exe</Exe>
@@ -895,6 +958,7 @@ ForegroundHotkey=Esc & F4
 FilteredHotkey=
 MaxFiles=30
 MenuPos=3
+FilteredMenuAutoEdit=1
 TCPath=c:\totalcmd\TotalCmd.exe
 TCStart=1
 F4MMCloseAll=0
@@ -902,6 +966,7 @@ F4MMClosePID=0
 FullMenu=z
 Explorer=0
 Everything=0
+MaxWinWaitSec=2
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe
@@ -915,7 +980,7 @@ Return
 
 ; Check DocumentTemplates\ - this setting can be used in F4TCIE.ahk (not required)
 DocumentTemplatesScan:
-If (FileExist(A_ScriptDir "\DocumentTemplates\") = "D")
+If (FileExist(A_ScriptDir "\DocumentTemplates\") = "D") ;               " fix highlighting
 	{
 	 templatesExtBeforeScan:=MatchList.Settings["templatesExt"]
 	 Loop, %A_ScriptDir%\DocumentTemplates\template.*
