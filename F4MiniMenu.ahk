@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.1
+Version     : v1.2
 Author      : hi5
 Last update : 02 April 2023
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -19,10 +19,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.1"
+F4Version:="v1.2"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.1
+;@Ahk2Exe-SetFileVersion 1.2
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
@@ -153,6 +153,7 @@ If (MatchList.settings.XYPlorer <> "")
 If (MatchList.settings.QDir <> "")
 	{
 	 GroupAdd, TCF4Windows, ahk_exe Q-Dir.exe
+	 GroupAdd, TCF4Windows, ahk_exe Q-Dir_x64.exe
 	}
 
 ; /Add other file managers if any
@@ -273,7 +274,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 If WinActive("ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE") or WinActive("ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE")
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
-					{                  ; therefore we resort to the internal TC Edit command - added for v0.51
+					{                ; therefore we resort to the internal TC Edit command - added for v0.51
 					 SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD ; Edit (Notepad)
 					 Return
 					}
@@ -282,7 +283,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 If MatchList.settings.DoubleCommander and DoubleCommander_Active()
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
-					{                  ; therefore we resort to sending enter, now user can choose what to do (close or edit using default program)
+					{                ; therefore we resort to sending enter, now user can choose what to do (close or edit using default program)
 					 Send {enter}
 					 Return
 					}
@@ -291,7 +292,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 If MatchList.settings.Explorer and Explorer_Active()
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
-					{                  ; don't allow it and return for Explorer
+					{                ; don't allow it and return for Explorer
 					 MsgBox, 16, F4MiniMenu, You can not edit files from Archives when using Explorer.
 					 Return
 					}
@@ -394,6 +395,7 @@ GetExt(Files)
 	 MatchList.Temp["SelectedExtensions"]:=Trim(Ext,"|")
 	}
 
+; Process other applications and windows first (find files, lister) 
 ; Get a list of selected files using internal TC commands (see totalcmd.inc for references)
 GetFiles()
 	{
@@ -420,26 +422,26 @@ GetFiles()
 		 Return Files
 		}
 
-		If MatchList.settings.DoubleCommander and DoubleCommander_Active()
-			{
-			 Files:=DoubleCommander_GetSelection()
-			 MatchList.Temp["Files"]:=Files
-			 Return Files
-			}
+	 If MatchList.settings.DoubleCommander and DoubleCommander_Active()
+		{
+		 Files:=DoubleCommander_GetSelection()
+		 MatchList.Temp["Files"]:=Files
+		 Return Files
+		}
 
-		If MatchList.settings.XYPlorer and XYPlorer_Active()
-			{
-			 Files:=XYPlorer_GetSelection() 
-			 MatchList.Temp["Files"]:=Files
-			 Return Files
-			}
+	 If MatchList.settings.XYPlorer and XYPlorer_Active()
+		{
+		 Files:=XYPlorer_GetSelection() 
+		 MatchList.Temp["Files"]:=Files
+		 Return Files
+		}
 
-		If MatchList.settings.QDir and QDir_Active()
-			{
-			 Files:=QDir_GetSelection() 
-			 MatchList.Temp["Files"]:=Files
-			 Return Files
-			}
+	 If MatchList.settings.QDir and QDir_Active()
+		{
+		 Files:=QDir_GetSelection() 
+		 MatchList.Temp["Files"]:=Files
+		 Return Files
+		}
 
 	 If WinActive("ahk_class TLister")
 		{
@@ -448,9 +450,10 @@ GetFiles()
 		 Return Files
 		}
 
-	 If WinActive("ahk_class TFindFile")
+	 If WinActive("ahk_class TFindFile") ; class names may change between versions, below for TC11
 		{
-		 ControlGet, Files, Choice,, TWidthListBox1, ahk_class TFindFile
+		 ; ControlGet, Files, Choice,, TWidthListBox1, ahk_class TFindFile;  for TC10
+		 ControlGet, Files, Choice,, TMyListBox2, ahk_class TFindFile
 		 If (ErrorLevel = 1) or (Files = "")
 			ControlGet, Files, Choice,, LCLListbox2, ahk_class TFindFile
 		 IfNotInString, Files,[ ; make sure you haven't selected a directory or the first line
@@ -483,9 +486,9 @@ OpenFile(Editor,open,MaxWinWaitSec=2)
 	 If (func = "FileList")
 		{
 		 ; if GetInput() was cancelled don't process windowmode below
-		 result:=Normal(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir) 
+		 result:=Normal(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)
 		}
-	 Else If IsFunc(func) ; takes care of drag & drop; cmdline
+	 Else If IsFunc(func) ; takes care of normal, drag & drop, and cmdline
 		{
 		 ; if GetInput() was cancelled don't process windowmode below
 		 result:=%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)  
@@ -534,7 +537,9 @@ Normal(program,file,delay,parameters,startdir)
 	 startdir:=GetPath(startdir)
 	 if (file = "")
 		Try
+		 {
 			Run, %program% %parameters%, %startdir%
+		 }
 		Catch
 			{
 			 ;program:=GetTCCommander_Path(MatchList[1].Exe)
@@ -545,7 +550,12 @@ Normal(program,file,delay,parameters,startdir)
 			}
 	 else
 		Try
-			Run, %program% %parameters% "%file%", %startdir%
+			{
+			 if (file <> "")
+				Run, %program% %parameters% "%file%", %startdir%
+			 else	
+				Run, %program% %parameters%, %startdir%
+			}
 		Catch
 			{
 			 ;program:=GetTCCommander_Path(MatchList[1].Exe)
@@ -630,6 +640,17 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 		parameters:=StrReplace(parameters,"%t",GetTCFields("%t"))
 	 if InStr(parameters,"%o")
 		parameters:=StrReplace(parameters,"%o",GetTCFields("%o",file))
+	 if InStr(parameters,"%n")
+		parameters:=StrReplace(parameters,"%o",GetTCFields("%n",file))
+	 if InStr(parameters,"%m")
+		parameters:=StrReplace(parameters,"%o",GetTCFields("%m",file))
+	 if InStr(parameters,"%$date")
+		{
+		 DateTimeObject:=GetTCFields(parameters)
+		 parameters:=StrReplace(parameters,DateTimeObject[1],DateTimeObject[2])
+		 DateTimeObject:=""
+		}
+
 	 if InStr(parameters,"%e")
 		parameters:=StrReplace(parameters,"%e",GetTCFields("%e",file))
 	 ; %f4? placeholders for optional parameters:
@@ -640,6 +661,7 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 		 parameters:=StrReplace(parameters, "%f41", file)
 		 file:=""
 		}
+
 	 if InStr(startdir,"%p")
 		startdir:=StrReplace(startdir,"%p",GetTCFields("%p"))
 	 if InStr(startdir,"%t")
@@ -706,7 +728,6 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 		Gui, AskInput:Destroy
 		execute:=1
 		Return
-
 	}
 
 CheckFile(list,file)
@@ -727,8 +748,22 @@ GetTCFields(opt,file="")
 	{
 	 ; %P causes the source path to be inserted into the command line, including a backslash (\) at the end.
 	 ; %T inserts the current target path. Especially useful for packers.
+
+	 ; first we deal with non TC 
+
+	 if MatchList.settings.Explorer or MatchList.settings.XYPlorer or MatchList.settings.QDir or MatchList.settings.Everything 
+	 	{
+	 	 if (opt = "%p") or (opt = "%t")
+	 	 	{
+	 	 	 SplitPath, file, , OutDir ; panel
+	 	 	 Return OutDir
+	 	 	}
+	 	}
+
+	 ; SP = Source Path, TP = Target Path	 
 	 if (opt = "%p") or (opt = "%t")
 		{
+		 /*		
 		 ; cm_CopySrcPathToClip=2029 ; Copy source path to clipboard
 		 ; cm_CopyTrgPathToClip=2030 ; Copy target path to clipboard
 		 ; % (panel = "%p") ? "source" : "target"
@@ -737,8 +772,18 @@ GetTCFields(opt,file="")
 		 SendMessage 1075, % (opt = "%p") ? 2029 : 2030, 0, , ahk_class TTOTAL_CMD
 		 panel:=Clipboard "\"
 		 Clipboard:=ClipSaveAll
+		 */
+		 panel:=TC_SendData((opt = "%p") ? "SP" : "TP")
 		 Return panel
 		}
+
+	 ; SN = Source Name Caret, TN = Target Name Caret
+	 if (opt = "%n") or (opt = "%m")
+		{
+		 NameCaret:=TC_SendData((opt = "%n") ? "SN" : "TN")
+		 Return NameCaret
+		}
+
 
 	 ; %O places the current filename without extension into the command line.
 	 ; %E places the current extension (without leading period) into the command line.
@@ -762,7 +807,71 @@ GetTCFields(opt,file="")
 			}
 		 Return % (opt = "%o") ? filenames : fileext
 		}
+		
+	 if InStr(opt, "%$date")
+		{
 
+		 /* TC HELP
+
+		 %$DATE% Inserts the 24 hour date and time in the form YYYYMMDDhhmmss -> A_Now in AutoHotkey
+
+		 %$DATE:placeholders% 
+		 Inserts the date in the form specified by placeholders. 
+		 Same as in multi-rename tool:                           -> AHK
+		 y Paste year in 2 digit form                            -> yy
+		 Y Paste year in 4 digit form                            -> yyyy 
+		 M Paste month, always 2 digit                           -> MM
+		 D Paste day, always 2 digit                             -> dd
+		 h Paste hours, always in 24 hour 2 digit format (0-23)  -> H
+		 H Paste hours, always in 12 hour 2 digit format (1-12)  -> hh
+		 i1 same but 1 character a/p only                        -> t
+		 i am/pm indicator in English                            -> tt
+		 m Paste minutes, always in 2 digit format               -> mm
+		 s Paste seconds, always in 2 digit format               -> ss
+		 any non-alpha character like a dot or dash will be added directly
+
+		 F4MM addition: |value|timeunit
+
+		 */
+
+		 DateTimeObject:=[]
+
+		 ; output entire string, output1 time formatting options
+		 RegExMatch(opt,"Ui)%\$date:*([^%]*)%",output)
+	
+		 if (output = "%$DATE%")
+			{
+			 FormatTime, DateTime, , %A_Now%
+			 DateTimeObject[1]:="%$DATE%"
+			 DateTimeObject[2]:=DateTime
+			 return % DateTimeObject
+			}
+		 else ; output1 -> we have placeholders
+			{
+			 OutputData:=StrSplit(output1,"|") 
+			 ; 1 placeholder, 2 value, 3 time units 
+			 ; the order in which we process the format is important (y before Y, h-zzzzz-H, i1 before i) 
+			 OutputData[1]:=RegExReplace(OutputData[1],"y","yy")
+			 OutputData[1]:=RegExReplace(OutputData[1],"Y","yyyy") 
+			 OutputData[1]:=RegExReplace(OutputData[1],"M","MM")
+			 OutputData[1]:=RegExReplace(OutputData[1],"D","dd")
+			 OutputData[1]:=RegExReplace(OutputData[1],"h","zzzzz")  ; we need to swap lower case h for temp char z
+			 OutputData[1]:=RegExReplace(OutputData[1],"H","hh")     ; we we can safely process H hh conversion
+			 OutputData[1]:=RegExReplace(OutputData[1],"zzzzz","H")  ; and now use char z for h->H conversion
+			 OutputData[1]:=RegExReplace(OutputData[1],"i1","t")
+			 OutputData[1]:=RegExReplace(OutputData[1],"i","tt")
+			 OutputData[1]:=RegExReplace(OutputData[1],"m","mm")
+			 OutputData[1]:=RegExReplace(OutputData[1],"s","ss")
+			 DateTimeFormat:=OutputData[1]
+	
+			 FormatTime, DateTime,, yyyyMMddHHmmss
+			 EnvAdd, DateTime, % OutputData[2], % OutputData[3] ; do math if any
+			 FormatTime, DateTime, %DateTime%, %DateTimeFormat% ; format the time
+			 DateTimeObject[1]:=output
+			 DateTimeObject[2]:=DateTime
+			 return % DateTimeObject
+			}
+	 }
 	}
 
 SetHotkeys:
@@ -1011,3 +1120,4 @@ Return
 #include %A_ScriptDir%\lib\DropFiles.ahk
 #include %A_ScriptDir%\lib\GetPos.ahk
 #include %A_ScriptDir%\lib\dpi.ahk
+#include %A_ScriptDir%\lib\tc.ahk              ; wm_copydata

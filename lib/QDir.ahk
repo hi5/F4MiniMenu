@@ -6,6 +6,8 @@ QDir_Active()
 	{
 	 IfWinActive ahk_exe Q-Dir.exe
 		Return 1
+	 IfWinActive ahk_exe Q-Dir_x64.exe
+		Return 1
 	}
 
 QDir_GetSelection() 

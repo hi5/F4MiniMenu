@@ -1,7 +1,9 @@
-# F4MiniMenu - v1.1
+# F4MiniMenu - v1.2
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
-(and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs))
+(and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
+
+It is a *standalone* program which runs separatly from Total Commander. See Getting Started.
 
 ## Features
 
@@ -33,12 +35,12 @@ types. Several tools have been made to solve this problem, these include:
 While the original F4Menu[1] has quite a few options, this "clone" started out as a minimalistic
 program with only the basic functionality: opening multiple file types in various editors.
 
-There are various methods to open selected files: regular, "[Drag & Drop](#drag-drop)", [Filelist](#filelist)
+There are various methods to open selected files: regular, "[Drag & Drop](#drag--drop)", [Filelist](#filelist)
 or by making use of a [cmdline](#cmdline) option.
 
 There is a helper script to use F4MiniMenu settings as the "internal editor" defined in 
 Total Commander and use so called **DocumentTemplates** for creating new files.
-See [F4TCIE](#f4tcie).
+See [F4TCIE](#helper-script-f4tcieahk).
 
 There are *two* foreground menus:
 
@@ -71,33 +73,49 @@ will take precedence. Set the F4MiniMenu shortcuts via the tray menu, right clic
 In general: be careful opening with opening large numbers of files at once, programs can crash
 and your computer could become unstable requiring a reboot.
 
-Do not edit the "F4MiniMenu.xml" or "F4MiniMenu.ini" settings file while the script is running, any 
+Do not edit the `F4MiniMenu.xml` or `F4MiniMenu.ini` settings file while the script is running, any 
 changes made will be overwritten when the script exits. A backup is made at startup and saved as
-"F4MiniMenu.xml.bak" or "F4MiniMenu.ini.bak"
+`F4MiniMenu.xml.bak` or `F4MiniMenu.ini.bak`
 
 ### Disclaimer
 
 Use at your own risk.
 
+# Getting Started
+
+Start `F4MiniMenu.ahk` (or `F4MiniMenu-64.exe`, `F4MiniMenu-32.exe`, available in [Releases](https://github.com/hi5/F4MiniMenu/releases)).
+
+Note that F4MiniMenu is a program that runs on its **own** and sits in the tray menu waiting 
+for Total Commander windows (and others if set up) to be _Active_ and the defined hotkeys to be
+pressed to take action (e.g. _Edit files_, default: <kbd>F4</kbd>; or _Show a menu_ default: <kbd>Esc</kbd>+<kbd>F4</kbd>).
+Access the settings and define(d) editors via the tray menu or [foreground menu](https://github.com/hi5/F4MiniMenu#screenshots) - <kbd>Esc</kbd>+<kbd>F4</kbd>. 
+
+No changes to the TC settings are required, although there is a helper script (program), see [F4TCIE](#helper-script-f4tcieahk),
+which does need to be defined as `editor` in the TC Settings for working with files in archives and FTP.
+
+Once F4MiniMenu is started, the Global settings and new editors with a variety of options (as outlined below) can be changed and added.
+
+(Additional information in the "Setup" section below.)
+
 # Settings
 
 ## Global configuration
 
-* Menu  
-  - Position of Menu  
-  - Accelerator key for full menu when using the filtered menu  
-  - Show menu or Edit file directly when using the filtered menu     
+* Menu
+  - Position of Menu
+  - Accelerator key for full menu when using the filtered menu
+  - Show menu or Edit file directly when using the filtered menu
 * Files (Maximum number of files to be opened, will ask for confirmation if more are selected)
 * WinWait -- see below
-* Total Commander  
-  - TC Start  
-  - TC Path  
-  - Close F4MM options  
-* Hotkeys   
-  - Background  
-  - Foreground menu  
-  - Filtered menu  
-* Other programs  
+* Total Commander
+  - TC Start
+  - TC Path
+  - Close F4MM options
+* Hotkeys
+  - Background
+  - Foreground menu
+  - Filtered menu
+* Other programs
   - Explorer, Double Commander, XYPlorer, Everything.
 
 __WinWait__ Set the maximum time in seconds to wait for the selected program window to appear before applying the selected Window Mode (Normal, Maximized, Minimized -- see Editor configuration). This should also prevent any unexpected "waiting" in case a program launch failed (crash, very slow program start etc).  
@@ -108,9 +126,9 @@ It may not be possible to edit (open) a new document during this defined waiting
 
 The following options can be set for each editor:
 
-* Path to Program executable
+* Path to Program executable. See Path variables.
 * Extensions as a comma separated list
-* Parameters to pass on (if any)
+* Parameters to pass on -- if any, see Parameters/Options.
 * Start directory (if any)
 * Method (normal, drag & drop, filelist, cmdline) -- see Methods below
 * Window Mode (Normal (often last used window size and position), Maximized, Minimized)
@@ -118,9 +136,8 @@ The following options can be set for each editor:
 * Name to use in the menu as alternative to the program.exe (if any)
 * Drag & Drop delay in millisecond (time to wait before sending drag & drop command so program can start)
 * Open delay in milliseconds (time to wait before opening the first file so program can start)
-* Use File name for WinMatch, rarely needed -- see below
 
-## Path variables 
+## Path variables
 
 All path variables should be wrapped in `%` signs, examples:
 
@@ -176,18 +193,18 @@ There are four methods to start a program and open the selected file(s).
 ## Normal
 
 This works in many cases and is similar to opening a file in TC by pressing enter or double click (or traditional F4).
-When multiple files are selected and the program needs to be started first a delay per editor can be set before 
-attemping to open the second and other files. Delay for Open. (A similar delay can be set for Drag & Drop).
+When multiple files are selected and the program(s) needs to be started first, a delay per editor can be set before 
+attemping to open the second and other files: Delay for Open. A similar delay can be set for Drag & Drop. Normal is the default method.
 
 ## Drag & Drop
 
 When the program is already running F4MM attempts to Drag & Drop the selected files into the application.
 If the program is not running, it is started using the normal method for the first file, then subsquent
 files are Drag & Dropped. In order to give the application some time to start, before D&D the second and 
-other files a delay can be set per editor - Delay for Drag & Drop. (A simlar delay can be set for Normal)
+other files a delay can be set per editor - Delay for Drag & Drop. A simlar delay can be set for Normal.
 
 Many programs support Drag & Drop, but not all programs will respond well to the Drag & Drop
-method used in this script, so if it does not seem to work with a particular program, try
+method used in this script. If it does not seem to work with a particular program, try
 the Normal or cmdline method(s).
 
 ## Filelist
@@ -248,20 +265,26 @@ problems with slow programs. It is deleted when __F4MiniMenu__ starts or closes.
 
 ## Parameters/Options
 
+(The TC file manager has two file panels side by side referred to as Source and Target)
+
 |Parameter|Meaning|
 |---------|-------|
-|%P       |insert the source path into the command line, including a backslash \ at the end.|
-|%T       |insert the current target path, including a backslash \ at the end.|
-|%O       |places the current filename without extension into the command line.|
-|%E       |places the current extension (without leading period) into the command line.|
-|?        |as the first parameter causes a Dialog box to be displayed before starting the program, containing the parameters that follow. This allows the parameters to be changed before starting the program or prevent the programs execution.|
-|---------|-------|
-|%f41     |placeholder to alter position of filenames on the command line. (see example below)|
+|`%P`       |insert the source path into the command line, including a backslash \ at the end.|
+|`%T`       |insert the current target path, including a backslash \ at the end. (TC only, see notes)|
+|`%O`       |places the current filename without extension into the command line.|
+|`%E`       |places the current extension (without leading period) into the command line.|
+|`?`        |as the first parameter causes a Dialog box to be displayed before starting the program, containing the parameters that follow. This allows the parameters to be changed before starting the program or prevent the programs execution.|
+|`%N`       |places the filename under the cursor into the command line.|
+|`%M`       |places the current filename in the target directory into the command line.|
+|`%$DATE:placeholders%`|See TC help, "Environment variables". Valid placeholders: y,Y,M,D,h,H,i1,i,m,s.|
+|**F4MM specific options:**|-------|
+|`%f41`   |placeholder to alter position of filenames on the command line. (see notes and example below)|
+|`%$DATE:placeholders\|Value\|TimeUnits%`|if _Value_ and _TimeUnits_ are present, these parameters allow for "Date & Time Math" to add or substract TimeUnits. TimeUnits can be either `Seconds`, `Minutes`, `Hours`, or `Days`. See TimeUnits of the https://www.autohotkey.com/docs/v1/lib/EnvAdd.htm command.|
 
-|%N       |places the filename under the cursor into the command line.|
-|%M       |places the current filename in the target directory into the command line.|
+Notes:
 
-Note: More _%f4_ fields may be added in the future.
+1. More _%f4_ fields may be added in the future.
+2. %T for other file managers %T will use the same value as %P 
 
 *Example: %f41*
 
@@ -278,6 +301,10 @@ in the parameters field it will instruct F4MiniMenu where to place the files on 
     Parameters: %f41 burst
 
 So the program now starts as _pdftk.exe file.pdf burst_ (instead of _pdftk.exe burst file.pdf_)
+
+*Example: %$DATE:placeholders|Value|TimeUnits%*
+
+`%$DATE:Y-M-D|7|Days%` -> A week from now e.g. add 7 Days ahead. -7 would be last week.
 
 # Helper script: F4TCIE.ahk
 
@@ -306,7 +333,7 @@ To configure Total Commander to use F4TCIE.ahk:
 
 If for some reason the configuration can not be opened, an attempt is made to start the editor
 for the file type associated in Windows (so for txt -> notepad, for bmp,jpg -> MS Paint etc).
-When there is no editor for the file type notepad.exe is started.
+When there is no editor for the file type found `notepad.exe` is started.
 
 Reference: see also [#13](https://github.com/hi5/F4MiniMenu/issues/13)
 
@@ -329,7 +356,7 @@ More information can be found in the [DocumentTemplates README](DocumentTemplate
 ### Script
 
 Download the source  as a ZIP from GitHub here <https://github.com/hi5/F4MiniMenu/archive/master.zip>
-and unpack. To start it simply run F4MiniMenu.ahk. Setup F4MiniMenu using the tray menu 
+and unpack. To start it simply run `F4MiniMenu.ahk`. Setup F4MiniMenu using the tray menu 
 options for *Settings* and *Configure editors*.
 
 Once the shortcuts have been setup access *Settings* and *Configure editors* via the Foreground
@@ -361,7 +388,7 @@ Automatically close F4MiniMenu using the following options (available via Settin
 
 **Important** Do not use passive mode when F4MiniMenu is already running.
 
-First parameter must be the file list which contains the selected files in Total Commander or Double Commander (refer to file manager documentation for further information)
+First parameter must be the file list which contains the selected files in Total Commander or Double Commander (refer to file manager documentation for further information).
 
 Optional parameters are /P1, /P2, /M1, and /M2
 
@@ -454,6 +481,7 @@ __Editor configuration__
 * [XA Save / Load Arrays to/from XML Functions](https://github.com/hi5/XA)
 * [DropFilesA - SKAN](http://www.autohotkey.com/board/topic/41467-make-ahk-drop-files-into-other-applications/#entry258810) including Unicode version [nimda](http://www.autohotkey.com/board/topic/79145-help-converting-ahk-ahk-l/#entry502676)
 * [OSDTIP_Pop() - SKAN](https://www.autohotkey.com/boards/viewtopic.php?t=76881#p333577)
+* [TC_SendData() - dindog and others](https://www.ghisler.ch/board/viewtopic.php?p=363391#p363391) - using WM_CopyData
 
 ## Changelog
 

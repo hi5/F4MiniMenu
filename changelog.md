@@ -1,15 +1,28 @@
 ## Changelog
 
+* 20231121 - v1.2  
+                   a) Updated class name for Find Results control class (TMyListBox2, 32bit) for TC11  
+                   b) Added: Help MsgBox-es in Settings Gui now Task Modal (32+8192=8224)  
+                   c) Added: Settings label to Gui to better handle closing the Gui https://github.com/hi5/F4MiniMenu/issues/24#issuecomment-1573127847  
+                   d) Added: GuiEscape for Add/Modify editors dialog to allow <kbd>Esc</kbd> to exit (next to <kbd>Alt</kbd>+<kbd>c</kbd>) https://github.com/hi5/F4MiniMenu/issues/24#issuecomment-1573127847  
+                   e) Fix: no longer require full path for programs in PATH e.g. `write.exe` v `c:\windows\write.exe`, bug introduced in v1.1 due to GetFullPathName() https://github.com/hi5/F4MiniMenu/issues/24#issuecomment-1573127847  
+                   f) Fix: use SplitPath for `%p` parameter when not using TC https://github.com/hi5/F4MiniMenu/issues/24#issuecomment-1573127847  
+                   g) Change: `%p` and `%t` now use wm_copydata  
+                   h) New: `%N` and `%M` to place filename under the cursor into the command line (source and target directory) using wm_copydata  
+                   i) New: Added support for `%$DATE%`, `%$DATE:YMD%` + offset calculations via `%$DATE:YMD|value|timeunits%`   
+                   j) Fix: F4TCIE quote file path for `%file%` to resolve paths\files with spaces  
+                   k) Fix: F4TCIE `Run notepad` changed to `Run %A_WinDir%\notepad.exe` to avoid any potential path issues. Added ExitApp after Run command  
+
 * 20230402 - v1.1  
                    a) Fix: TRY to catch all empty hotkeys to avoid errors at startup  
-                   b) Change: Double click on an "editor" in Configure Editors listview now opens modify window
+                   b) Change: Double click on an "editor" in Configure Editors listview now opens modify window  
                    c) Change: Settings - replace Radio controls for Esc/Win with DropDownLists (not thoroughly tested)  
                    d) Fix: WinMin/Hide/Maximize and Sleep function should work better (or again)  
                    e) Fix: additional check to prevent Modify Gui throwing "The same variable cannot be used for more than one control" error; modify window now always on top of editors window (); sysmenu removed  
                    f) New: TRY, catch -> revert to standard editor if defined editor can not be found, show notification using OSDTIP_Pop() for both F4MiniMenu and F4TCIE  
-                   g) New: support %windir%, %A_ScriptDir% and other path variables (see list "Path variables" in readme.md) https://github.com/hi5/F4MiniMenu/issues/25  
-                   h) New: Filtered foreground Menu - setting to launch program  directly if only one program is found https://github.com/hi5/F4MiniMenu/issues/26  
-                   i) New: Global setting MaxWinWaitSec to prevent stalling F4MM
+                   g) New: support `%windir%`, `%A_ScriptDir%` and other path variables (see list "Path variables" in readme.md) https://github.com/hi5/F4MiniMenu/issues/25  
+                   h) New: Filtered foreground Menu - setting to launch program directly if only one program is found https://github.com/hi5/F4MiniMenu/issues/26  
+                   i) New: Global setting MaxWinWaitSec to prevent stalling F4MM  
                    j) Fix: INI when reading a global setting as "Error" set as empty (lib\iob.ahk)  
 * 20220528 - v1.0  
                    a) Fix: "Start Total Commander if not running" feature #23 https://github.com/hi5/F4MiniMenu/issues/23  

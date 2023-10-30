@@ -29,29 +29,29 @@ HotKeyState:="Off"
 Gosub, SetHotkeys
 
 ; Gui for general program settings
-Gui, +OwnDialogs
-Gui, font,              % dpi("s8")
-Gui, Add, GroupBox,     % dpi("x16 y7 w540 h70"), Menu
-Gui, Add, Text,         % dpi("x25 y25 w309 h16"), &Selection menu appears
-Gui, Add, DropDownList, % dpi("x328 y20 w219 h25 r4 Choose" MatchList.settings.MenuPos " vMenuPos AltSubmit"), 1 - At Mouse cursor|2 - Centered in window|3 - Right next to current file|4 - Docked next to current file (opposite panel)
-Gui, Add, Text,         % dpi("x25 yp+35 w309 h16"), &Accelerator key for full menu (for use in filtered menu, 1 char.)
-Gui, Add, Edit,         % dpi("x328 yp-5 w30 h21 vFullMenu"), % MatchList.settings.FullMenu ; %
-Gui, Add, Text,         % dpi("x365 yp+5 w70 h16"), If one result:
-Gui, Add, DropDownList, % dpi("x430 yp-5 w117 h25 r2 Choose" MatchList.settings.FilteredMenuAutoEdit " vFilteredMenuAutoEdit AltSubmit"), 1 - Show menu|2 - Edit directly
+Gui, Settings: +OwnDialogs
+Gui, Settings: font,              % dpi("s8")
+Gui, Settings: Add, GroupBox,     % dpi("x16 y7 w540 h70"), Menu
+Gui, Settings: Add, Text,         % dpi("x25 y25 w309 h16"), &Selection menu appears (TC only)
+Gui, Settings: Add, DropDownList, % dpi("x328 y20 w219 h25 r4 Choose" MatchList.settings.MenuPos " vMenuPos AltSubmit"), 1 - At Mouse cursor|2 - Centered in window|3 - Right next to current file|4 - Docked next to current file (opposite panel)
+Gui, Settings: Add, Text,         % dpi("x25 yp+35 w309 h16"), &Accelerator key for full menu (for use in filtered menu, 1 char.)
+Gui, Settings: Add, Edit,         % dpi("x328 yp-5 w30 h21 vFullMenu"), % MatchList.settings.FullMenu ; %
+Gui, Settings: Add, Text,         % dpi("x365 yp+5 w70 h16"), If one result:
+Gui, Settings: Add, DropDownList, % dpi("x430 yp-5 w117 h25 r2 Choose" MatchList.settings.FilteredMenuAutoEdit " vFilteredMenuAutoEdit AltSubmit"), 1 - Show menu|2 - Edit directly
 
-Gui, Add, GroupBox,     % dpi("x16 yp+40 w260 h45"), Files
-Gui, Add, Text,         % dpi("x25 yp+20 w209 h16"), &Maximum number of files to be opened
-Gui, Add, Edit,         % dpi("x227 yp-5 w40 h21 Number vMaxFiles"), % MatchList.settings.Maxfiles ; %
+Gui, Settings: Add, GroupBox,     % dpi("x16 yp+40 w260 h45"), Files
+Gui, Settings: Add, Text,         % dpi("x25 yp+20 w209 h16"), &Maximum number of files to be opened
+Gui, Settings: Add, Edit,         % dpi("x227 yp-5 w40 h21 Number vMaxFiles"), % MatchList.settings.Maxfiles ; %
 
-Gui, Add, GroupBox,     % dpi("x280 yp-15 w276 h45"), WinWait
-Gui, Add, Text,         % dpi("x289 yp+20 w209 h16"), &Seconds (max) to wait for program window
-Gui, Add, Edit,         % dpi("x507 yp-5 w40 h21")
-Gui, Add, UpDown, vMaxWinWaitSec Range2-10, % MatchList.Settings.MaxWinWaitSec ; %
+Gui, Settings: Add, GroupBox,     % dpi("x280 yp-15 w276 h45"), WinWait
+Gui, Settings: Add, Text,         % dpi("x289 yp+20 w209 h16"), &Seconds (max) to wait for program window
+Gui, Settings: Add, Edit,         % dpi("x507 yp-5 w40 h21")
+Gui, Settings: Add, UpDown, vMaxWinWaitSec Range2-10, % MatchList.Settings.MaxWinWaitSec ; %
 
 
-Gui, Add, GroupBox,     % dpi("x16 yp+40 w540 h70"), Total Commander
-Gui, Add, DropDownList, % dpi("x25 yp+15 w240 h25 R3 Choose" MatchList.settings.TCStart " vTCStart AltSubmit"), 1 - Do not start TC (default)|2 - Start TC if not Running (set TC Path)|3 - Always start TC (set TC Path) 
-Gui, Add, Text,         % dpi("xp+250 yp+5 w50 h16"), TC Path
+Gui, Settings: Add, GroupBox,     % dpi("x16 yp+40 w540 h70"), Total Commander
+Gui, Settings: Add, DropDownList, % dpi("x25 yp+15 w240 h25 R3 Choose" MatchList.settings.TCStart " vTCStart AltSubmit"), 1 - Do not start TC (default)|2 - Start TC if not Running (set TC Path)|3 - Always start TC (set TC Path) 
+Gui, Settings: Add, Text,         % dpi("xp+250 yp+5 w50 h16"), TC Path
 If !FileExist(MatchList.settings.TCPath)
 	{
 	 RegRead TCPath, HKEY_CURRENT_USER, Software\Ghisler\Total Commander, InstallDir
@@ -60,26 +60,27 @@ If !FileExist(MatchList.settings.TCPath)
 		MatchList["settings","TCPath"]:=TCPath
 	 TCPath:=""	
 	}
-Gui, Add, Edit  ,       % dpi("xp+53  yp-5 w180 h21 vTCPath"), % MatchList.settings.TCPath ; %
-Gui, Add, Button,       % dpi("xp+187  yp   w30  h20 gSelectExe"), >>
+Gui, Settings: Add, Edit  ,       % dpi("xp+53  yp-5 w180 h21 vTCPath"), % MatchList.settings.TCPath ; %
+Gui, Settings: Add, Button,       % dpi("xp+187  yp   w30  h20 gSelectExe"), >>
 
 Checked:=MatchList.settings.F4MMCloseAll
-Gui, Add, Checkbox,     % dpi("x25 yp+30  w250 h16 Checked" checked " vF4MMCloseAll"), Close F4MM when all copies of TC close
+Gui, Settings: Add, Checkbox,     % dpi("x25 yp+30  w250 h16 Checked" checked " vF4MMCloseAll"), Close F4MM when all copies of TC close
 Checked:=MatchList.settings.F4MMClosePID
-Gui, Add, Checkbox,     % dpi("xp+250 yp  w250 h16 Checked" checked " vF4MMClosePID"), Close F4MM when TC closes started by F4MM
-Gui, Font, % dpi("cGreen")
-Gui, Add, Text,         % dpi("xp+250 yp gFMMCloseHelpText"), (?)
-Gui, Font, % dpi("cBlack")
-Gui, Font, ; needed as theme is stripped from control @ https://www.autohotkey.com/boards/viewtopic.php?p=399355#p399355
-Gui, Font, % dpi("s8")
-Gui, Add, GroupBox,     % dpi("x16 yp+35 w395 h120"), Hotkeys
+Gui, Settings: Add, Checkbox,     % dpi("xp+250 yp  w250 h16 Checked" checked " vF4MMClosePID"), Close F4MM when TC closes started by F4MM
+Gui, Settings: Font, % dpi("cGreen")
+Gui, Settings: Add, Text,         % dpi("xp+250 yp gFMMCloseHelpText"), (?)
+Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, ; needed as theme is stripped from control @ https://www.autohotkey.com/boards/viewtopic.php?p=399355#p399355
+Gui, Settings: Font, % dpi("s8")
+Gui, Settings: Add, GroupBox,     % dpi("x16 yp+35 w395 h120"), Hotkeys
 
-Gui, Add, Text,         % dpi("x25 yp+25 w150 h16"), &Background mode (direct)
-;Gui, Add, Radio,        % dpi("xp+130 yp w45 h16 vBEsc"), Esc
-;Gui, Add, Radio,        % dpi("xp+45  yp w45 h16 vBWin"), Win
-Gui, Add, DropDownList, % dpi("xp+140 yp-3 w70 R3 vBMod"), |Esc|Win
+Gui, Settings: Add, Text,         % dpi("x25 yp+25 w150 h16"), &Background mode (direct)
+;Gui, Settings: Add, Radio,        % dpi("xp+130 yp w45 h16 vBEsc"), Esc
+;Gui, Settings: Add, Radio,        % dpi("xp+45  yp w45 h16 vBWin"), Win
+Gui, Settings: Add, DropDownList, % dpi("xp+140 yp-3 w70 R3 vBMod"), |Esc|Win
 
 ; Always annoying to work around Hotkey control limit, use boxes for Win & Esc keys
+Gui, Settings: Default
 If InStr(BGHKey,"#")
 	{
 	 StringReplace, BGHKey, BGHKey, #, , All
@@ -94,12 +95,14 @@ If InStr(BGHKey,"Esc &")
 	 GuiControl, Choose, BMod, 3
 	}
 
-Gui, Add, Hotkey, % dpi("xp+90 yp w140 h20 vBGHKey"), %BGHKey%
+Gui, Settings: Add, Hotkey, % dpi("xp+90 yp w140 h20 vBGHKey"), %BGHKey%
 
-Gui, Add, Text, % dpi("x25 yp+35 w150 h16"), &Foreground mode (menu)
-;Gui, Add, Radio, % dpi("xp+130 yp w45 h16 vFEsc"), Esc
-;Gui, Add, Radio, % dpi("xp+45  yp w45 h16 vFWin"), Win
-Gui, Add, DropDownList, % dpi("xp+140 yp-3 w70 R3 vFMod"), |Esc|Win
+Gui, Settings: Add, Text, % dpi("x25 yp+35 w150 h16"), &Foreground mode (menu)
+;Gui, Settings: Add, Radio, % dpi("xp+130 yp w45 h16 vFEsc"), Esc
+;Gui, Settings: Add, Radio, % dpi("xp+45  yp w45 h16 vFWin"), Win
+Gui, Settings: Add, DropDownList, % dpi("xp+140 yp-3 w70 R3 vFMod"), |Esc|Win
+
+Gui, Settings: Default
 
 If InStr(FGHKey,"#")
 	{
@@ -116,13 +119,15 @@ If InStr(FGHKey,"Esc &")
 	 GuiControl, Choose, FMod, 2
 	}
 	
-Gui, Add, Hotkey, % dpi("xp+90 yp w140 h20 vFGHKey"), %FGHKey% 
-;Gui, Add, Button, % dpi("xp+110 yp w30 h20 gButtonClearFG"), clear
+Gui, Settings: Add, Hotkey, % dpi("xp+90 yp w140 h20 vFGHKey"), %FGHKey% 
+;Gui, Settings: Add, Button, % dpi("xp+110 yp w30 h20 gButtonClearFG"), clear
 
-Gui, Add, Text, % dpi("x25 yp+35 w150 h16"), Fil&tered mode (menu)
-;Gui, Add, Radio, % dpi("xp+130 yp w45 h16 vTEsc"), Esc
-;Gui, Add, Radio, % dpi("xp+45  yp w45 h16 vTWin"), Win
-Gui, Add, DropDownList, % dpi("xp+140 yp-3 w70 R3 vTmod"), |Esc|Win
+Gui, Settings: Add, Text, % dpi("x25 yp+35 w150 h16"), Fil&tered mode (menu)
+;Gui, Settings: Add, Radio, % dpi("xp+130 yp w45 h16 vTEsc"), Esc
+;Gui, Settings: Add, Radio, % dpi("xp+45  yp w45 h16 vTWin"), Win
+Gui, Settings: Add, DropDownList, % dpi("xp+140 yp-3 w70 R3 vTmod"), |Esc|Win
+
+Gui, Settings: Default
 
 If InStr(TMHKey,"#")
 	{
@@ -139,65 +144,66 @@ If InStr(TMHKey,"Esc &")
 	 GuiControl, Choose, Tmod, 2
 	}
 	
-Gui, Add, Hotkey, % dpi("xp+90 yp w140 h20 vTMHKey"), %TMHKey% 
-; Gui, Add, Button, % dpi("xp+110 yp w30 h20 gButtonClearTM"), clear
+Gui, Settings: Add, Hotkey, % dpi("xp+90 yp w140 h20 vTMHKey"), %TMHKey% 
+; Gui, Settings: Add, Button, % dpi("xp+110 yp w30 h20 gButtonClearTM"), clear
 
-Gui, Add, Button, % dpi("xp+170 yp-75 w120 h25 gButtonOK"), OK
-Gui, Add, Button, % dpi("xp     yp+40 w120 h25 gButtonClear"), Clear All Hotkeys
-Gui, Add, Button, % dpi("xp     yp+40 w120 h25 gGuiClose"), Cancel
+Gui, Settings: Add, Button, % dpi("xp+170 yp-75 w120 h25 gButtonOK"), OK
+Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gButtonClear"), Clear All Hotkeys
+Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gSettingsGuiClose"), Cancel
 
-Gui, Add, GroupBox, % dpi("x16 yp+40 w540 h72"), Other programs
+Gui, Settings: Add, GroupBox, % dpi("x16 yp+40 w540 h72"), Other programs
 
 Checked:=MatchList.settings.Explorer
-Gui, Add, Checkbox,  % dpi("x25 yp+20 w60 h16 Checked" checked " vExplorer"), Explorer
+Gui, Settings: Add, Checkbox,  % dpi("x25 yp+20 w60 h16 Checked" checked " vExplorer"), Explorer
 
-Gui, Add, Text,      % dpi("xp+70 yp+1 w100 h20"), Double Commander:
-Gui, Add, Hotkey,    % dpi("xp+100 yp-3 w90 h20 vDoubleCommander"), % MatchList.settings.DoubleCommander
-Gui, Add, Text,      % dpi("xp+100 yp+3 w50 h20"), XYPlorer:
-Gui, Add, Hotkey,    % dpi("xp+50 yp-3 w90 h20 vXYPlorer"), % MatchList.settings.XYPlorer
-Gui, Font, % dpi("s8 cGreen")
-Gui, Add, Text,      % dpi("xp+175 yp gFMMFileManText"), (?)
-Gui, Font, % dpi("cBlack")
-Gui, Font, ; see note above, required to reset style
-Gui, Font, % dpi("s8")
+Gui, Settings: Add, Text,      % dpi("xp+70 yp+1 w100 h20"), Double Commander:
+Gui, Settings: Add, Hotkey,    % dpi("xp+100 yp-3 w90 h20 vDoubleCommander"), % MatchList.settings.DoubleCommander
+Gui, Settings: Add, Text,      % dpi("xp+100 yp+3 w50 h20"), XYPlorer:
+Gui, Settings: Add, Hotkey,    % dpi("xp+50 yp-3 w90 h20 vXYPlorer"), % MatchList.settings.XYPlorer
+Gui, Settings: Font, % dpi("s8 cGreen")
+Gui, Settings: Add, Text,      % dpi("xp+175 yp gFMMFileManText"), (?)
+Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, ; see note above, required to reset style
+Gui, Settings: Font, % dpi("s8")
 
 Checked:=MatchList.settings.Everything
-Gui, Add, Checkbox,  % dpi("x25 yp+30 w100 h16 Checked" checked " vEverything"), Everything
+Gui, Settings: Add, Checkbox,  % dpi("x25 yp+30 w100 h16 Checked" checked " vEverything"), Everything
 
 ; Note: deactivated Everything Directory Tree and DocumentTemplates settings for now
 /*
-Gui, Add, Text,      % dpi("xp+70 yp+1 w100 h20"), Ev. Dir Tree:
-Gui, Add, Hotkey,    % dpi("xp+100 yp-3 w90 h20 vEVDirTree"), % MatchList.settings.EVDirTree
+Gui, Settings: Add, Text,      % dpi("xp+70 yp+1 w100 h20"), Ev. Dir Tree:
+Gui, Settings: Add, Hotkey,    % dpi("xp+100 yp-3 w90 h20 vEVDirTree"), % MatchList.settings.EVDirTree
 
-Gui, Add, Text,      % dpi("xp+100 yp+1 w50 h20"), Ev. Path:
-Gui, Add, Edit  ,    % dpi("xp+50  yp-5 w160 h21 vEvPath"), % MatchList.settings.EvPath ; %
-Gui, Add, Button,    % dpi("xp+165  yp   w30  h20 gSelectEv"), >>
+Gui, Settings: Add, Text,      % dpi("xp+100 yp+1 w50 h20"), Ev. Path:
+Gui, Settings: Add, Edit  ,    % dpi("xp+50  yp-5 w160 h21 vEvPath"), % MatchList.settings.EvPath ; %
+Gui, Settings: Add, Button,    % dpi("xp+165  yp   w30  h20 gSelectEv"), >>
 
-Gui, Add, GroupBox, % dpi("x16 yp+45 w540 h70"), Currently Available Document Templates
-Gui, Add, Edit, % dpi("x25 yp+20 ReadOnly h40 w385 vDocumentTemplates"), % MatchList.Settings.templatesExt
-Gui, Add, Button, % dpi("xp+402 yp w120 h25 gButtonDocumentTemplates"), Update (scan)
+Gui, Settings: Add, GroupBox, % dpi("x16 yp+45 w540 h70"), Currently Available Document Templates
+Gui, Settings: Add, Edit, % dpi("x25 yp+20 ReadOnly h40 w385 vDocumentTemplates"), % MatchList.Settings.templatesExt
+Gui, Settings: Add, Button, % dpi("xp+402 yp w120 h25 gButtonDocumentTemplates"), Update (scan)
 */
 
-;Gui, Add, GroupBox, x16 yp+40 w395 h60 , Misc.
+;Gui, Settings: Add, GroupBox, x16 yp+40 w395 h60 , Misc.
 ;perhaps in future versions
-;Gui, Add, Text, x25 yp+25 w150 h16 , Store set&tings in:
-;Gui, Add, DropDownList, xp+225 yp-5 w140 h25 r2 Choose%SettingsFormat% vSettingsFormat AltSubmit, 1 - XML Format|2 - INI format
+;Gui, Settings: Add, Text, x25 yp+25 w150 h16 , Store set&tings in:
+;Gui, Settings: Add, DropDownList, xp+225 yp-5 w140 h25 r2 Choose%SettingsFormat% vSettingsFormat AltSubmit, 1 - XML Format|2 - INI format
 
-Gui, Add, Link,   % dpi("x25 yp+35"), F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
+Gui, Settings: Add, Link,   % dpi("x25 yp+35"), F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
 
-;Gui, Add, GroupBox, xp+400 yp-85 w122 h60
-;Gui, Add, Link,   xp+5 yp+13, Feedback welcome at`n<a href="http://ghisler.ch/board/viewtopic.php?t=35721">Total Commander forum</a>`nor <a href="https://github.com/hi5/F4MiniMenu">GitHub Issues</a>.
+;Gui, Settings: Add, GroupBox, xp+400 yp-85 w122 h60
+;Gui, Settings: Add, Link,   xp+5 yp+13, Feedback welcome at`n<a href="http://ghisler.ch/board/viewtopic.php?t=35721">Total Commander forum</a>`nor <a href="https://github.com/hi5/F4MiniMenu">GitHub Issues</a>.
 
-Gui, Show, % dpi("center w570"), F4MiniMenu - Settings
+Gui, Settings: Show, % dpi("center w570"), F4MiniMenu - Settings
 Return
 
 ButtonDocumentTemplates:
 Gosub, DocumentTemplatesScan
+Gui, Settings: Default
 GuiControl,,DocumentTemplates, % MatchList.Settings.templatesExt
 Return
 
 ButtonOK:
-Gui, Submit, NoHide
+Gui, Settings: Submit, NoHide
 MatchList.settings.MenuPos:=MenuPos
 MatchList.settings.FilteredMenuAutoEdit:=FilteredMenuAutoEdit
 If (MaxFiles > 50)
@@ -259,7 +265,7 @@ MatchList.settings.XYPlorer:=XYPlorer
 
 HotKeyState:="On"
 Gosub, SetHotkeys
-Gui, Destroy
+Gui, Settings:Destroy
 Gosub, SaveSettings
 Sleep 500
 Reload ; v0.96 we may have changed F4MMClose so we need to reload the script to (de)activate the WinWait in F4MiniMenu.ahk
@@ -267,6 +273,7 @@ Sleep 500
 Return
 
 ButtonClear:
+Gui, Settings: Default
 GuiControl, Choose, BMod, 0
 GuiControl, Choose, FMod, 0
 GuiControl, Choose, TMod, 0
@@ -275,16 +282,16 @@ GuiControl, , FGHKey,
 GuiControl, , TMHKey,
 Return
 
-GuiEscape:
-GuiClose:
-Gui, Destroy
+SettingsGuiEscape:
+SettingsGuiClose:
+Gui, Settings: Destroy
 
 HotKeyState:="On"
 Gosub, SetHotkeys
 Return
 
 FMMCloseHelpText:
-MsgBox, 32, F4MMClose (experimental),
+MsgBox, 8224, F4MMClose (experimental),
 (join`n
 F4MiniMenu - %F4Version% can automatically exit from memory using the following rules:
 
@@ -298,7 +305,7 @@ If you have started (a new) Total Commander via F4MiniMenu, wait until that spec
 Return
 
 FMMFileManText:
-MsgBox, 32, Other file managers (experimental),
+MsgBox, 8224, Other file managers (experimental),
 (join`n
 F4MiniMenu can also work with other programs.`nTo activate enter the keyboard shortcut to "Copy Filename(s) with Full Path"`n`
 Double Commander default:`tShift+Ctrl+C`n

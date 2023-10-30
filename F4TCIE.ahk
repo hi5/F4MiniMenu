@@ -1,9 +1,9 @@
 /*
 
 Script      : F4TCIE.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.5
+Version     : 0.6
 Author      : hi5
-Last update : 12 November 2022
+Last update : 30 October 2023
 Purpose     : Helper script for F4MiniMenu program to allow internal editor to function
               now you can edit files from within Archives and FTP (and have TC update/upload them)
 Notes       : It will always use the "normal" method to open programs, so the "drag & drop", "filelist" 
@@ -28,7 +28,7 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 
 ; <for compiled scripts>
 ;@Ahk2Exe-SetDescription F4MiniMenu (IE): Open files from TC
-;@Ahk2Exe-SetFileVersion 1.1
+;@Ahk2Exe-SetFileVersion 1.2
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
 
@@ -49,9 +49,9 @@ If Error
 	{
 	 MsgBox, 16, F4MiniMenu/F4TCIE, Couldn't load configuration file (%F4ConfigFile%), closing script and starting default Windows editor.`n`nMay not work if there is no "Edit" defined for this filetype:`n`n%OutExtension%`n`nNote: do check if F4MiniMenu/F4TCIE have the same naming convention (for INI both program names have to end with an "i")`nSee "XML or INI" https://github.com/hi5/F4MiniMenu/blob/master/readme.md
 	 Try
-		Run edit %file% ; run Windows editor for this filetype
+		Run edit "%file%" ; run Windows editor for this filetype
 	 Catch
-		Run notepad %file% ; alas no type defined so run notepad as a last resort
+		Run %A_WinDir%\notepad.exe "%file%" ; alas no type defined so run notepad as a last resort
 	 ExitApp
 	}
 
@@ -66,7 +66,7 @@ for k, v in MatchList
 		continue
 	 if (v.ext = "") ; reported by Ovg if EXT is empty it would not launch the default editor
 		continue
-	 If RegExMatch(OutExtension,RegExExtensions(v.ext)) ; Open in defined program  - v0.9 allow for wildcards
+	 if RegExMatch(OutExtension,RegExExtensions(v.ext)) ; Open in defined program  - v0.9 allow for wildcards
 		{
 		 ;editor:=GetTCCommander_Path(v.exe)
 		 editor:=GetPath(v.exe)
@@ -79,24 +79,34 @@ for k, v in MatchList
 					FileCopy, %A_ScriptDir%\DocumentTemplates\template.%OutExtension%, %file%, 1
 				}
 			}
-		If editor
+		 if editor
 			{
 			 Sleep % v.delay
 			 Try
-			 	Run %editor% %file%
+			 	{
+			 	 Run "%editor%" "%file%"
+				 Sleep 100 ; added explicit Exit as compiled version sometimes kept running 30/10/2023
+				 ExitApp
+			 	}
 			 Catch
 			 	{
-				 Run % GetPath(matchlist[1].exe) A_Space file
+			 	 editor:=GetPath(matchlist[1].exe)
+				 Run "%editor%" "%file%"
 				 ; OSDTIP_Pop(MainText, SubText, TimeOut, Options, FontName, Transparency)
 				 OSDTIP_Pop("F4MiniMenu/F4TCIE", "Defined editor/program not found`nReverting to default editor", -750,"W230 H80 U1")
-				}	
+				 Sleep 100 ; added explicit Exit as compiled version sometimes kept running 30/10/2023
+				 ExitApp
+				}
 			}
 		 ExitApp ; we only have one file to process so we're done
 		}
 	}
 
 ; We couldn't find a defined Editor so launch the default Editor [1]
-Run % GetPath(matchlist[1].exe) A_Space file
+editor:=GetPath(matchlist[1].exe)
+Run "%editor%" "%file%"
+Sleep 100 ; added explicit Exit as compiled version sometimes kept running 30/10/2023
+ExitApp
 
 ; shared with F4MM
 #include %A_ScriptDir%\inc\HelperFunctions.ahk
@@ -104,4 +114,3 @@ Run % GetPath(matchlist[1].exe) A_Space file
 ; just for loading the Matchlist object, we don't need all the rest
 #include %A_ScriptDir%\lib\xa.ahk
 #include %A_ScriptDir%\lib\iob.ahk
-

@@ -1,19 +1,21 @@
 ﻿; used in F4MiniMenu and F4TCIE
 
-GetPath(editor)
+GetPath(path)
 	{
 	 global MyComSpec,Commander_Path,MyProgramFiles,MyProgramFilesx86,MyProgramW6432
-	 if !InStr(editor,"%")
-		Return GetFullPathName(editor)
+	 ; path:=StrReplace(path,"%ComSpec%",MyComSpec)
+	 if !InStr(path,"\") ; for programs in path environment e.g. wordpad, write
+	 	Return path 
+	 if !InStr(path,"%") ; no special treatment required
+		Return GetFullPathName(path)
 	 Loop, parse, % "Commander_Path,A_ScriptDir,A_ComputerName,A_UserName,A_WinDir,A_ProgramFiles,ProgramFiles,A_AppData,A_AppDataCommon,A_Desktop,A_DesktopCommon,A_StartMenu,A_StartMenuCommon,A_Programs,A_ProgramsCommon,A_Startup,A_StartupCommon,A_MyDocuments", CSV
-		editor:=StrReplace(editor,"%" A_LoopField "%",%A_LoopField%)
-   ; special cases
-	 editor:=StrReplace(editor,"%WinDir%",A_WinDir) 
-	 editor:=StrReplace(editor,"%ComSpec%",MyComSpec)
-	 editor:=StrReplace(editor,"%ProgramFiles%",MyProgramFiles)
-	 editor:=StrReplace(editor,"%ProgramFiles(x86)%",MyProgramFilesx86)
-	 editor:=StrReplace(editor,"%ProgramW6432%",MyProgramW6432)
-	 Return GetFullPathName(editor)
+		path:=StrReplace(path,"%" A_LoopField "%",%A_LoopField%)
+  	 ; special cases
+	 path:=StrReplace(path,"%WinDir%",A_WinDir) 
+	 path:=StrReplace(path,"%ProgramFiles%",MyProgramFiles)
+	 path:=StrReplace(path,"%ProgramFiles(x86)%",MyProgramFilesx86)
+	 path:=StrReplace(path,"%ProgramW6432%",MyProgramW6432)
+	 Return GetFullPathName(path)
 	}
 
 ; get absolute path from relative path
