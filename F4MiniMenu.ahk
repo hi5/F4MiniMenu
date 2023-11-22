@@ -1,9 +1,9 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.2
+Version     : v1.3
 Author      : hi5
-Last update : 02 April 2023
+Last update : 21 November 2023
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -11,6 +11,7 @@ Note        : ; % used to resolve syntax highlighting feature bug of N++
 
 */
 
+#Requires AutoHotkey v1.1.31+
 #SingleInstance, Force
 #UseHook
 #NoEnv
@@ -19,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.2"
+F4Version:="v1.3"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.2
+;@Ahk2Exe-SetFileVersion 1.3
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
@@ -641,9 +642,9 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 	 if InStr(parameters,"%o")
 		parameters:=StrReplace(parameters,"%o",GetTCFields("%o",file))
 	 if InStr(parameters,"%n")
-		parameters:=StrReplace(parameters,"%o",GetTCFields("%n",file))
+		parameters:=StrReplace(parameters,"%n",GetTCFields("%n",file))
 	 if InStr(parameters,"%m")
-		parameters:=StrReplace(parameters,"%o",GetTCFields("%m",file))
+		parameters:=StrReplace(parameters,"%m",GetTCFields("%m",file))
 	 if InStr(parameters,"%$date")
 		{
 		 DateTimeObject:=GetTCFields(parameters)

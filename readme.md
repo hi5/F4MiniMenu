@@ -1,4 +1,4 @@
-# F4MiniMenu - v1.2
+# F4MiniMenu - v1.3
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
 (and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
@@ -13,7 +13,7 @@ It is a *standalone* program which runs separatly from Total Commander. See Gett
   b. Matching Editors based on extension (filtered menu)  
 * Various methods to open selected files: "[regular](#normal)", "[Drag & Drop](#drag-drop)", [Filelist](#filelist), [cmdline](#cmdline)
 * Document Templates to create new files for file types other than "text" - [DocumentTemplates README](DocumentTemplates/readme.md)
-* Open source - written in [AutoHotkey](https://www.autohotkey.com/)
+* Open source - written in [AutoHotkey](https://www.autohotkey.com/) (v1.1)
 
 ## Discussion
 
@@ -104,13 +104,13 @@ Once F4MiniMenu is started, the Global settings and new editors with a variety o
 * Menu
   - Position of Menu
   - Accelerator key for full menu when using the filtered menu
-  - Show menu or Edit file directly when using the filtered menu
+  - Show Menu or Edit file directly when using the filtered menu
 * Files (Maximum number of files to be opened, will ask for confirmation if more are selected)
 * WinWait -- see below
 * Total Commander
-  - TC Start
+  - TC Start (Start Total Commander when F4MM is started, or not)
   - TC Path
-  - Close F4MM options
+  - Close F4MM options (Exit F4MM when Total Commander closes)
 * Hotkeys
   - Background
   - Foreground menu
@@ -330,6 +330,23 @@ To configure Total Commander to use F4TCIE.ahk:
 
     TC, Configuration, Edit/View, Editor (ini):
     drive:\path-to\F4TCIEi.ahk "%1"
+
+Note: if both AutoHotkey v1.1 and v2 are installed you may receive an error message (from the AutoHotkey launcher).
+In that case include the full path of the AutoHotkey v1.1 executable before the drive:\path-to\F4TCIE.ahk like so:
+
+    TC, Configuration, Edit/View, Editor:
+    c:\program files\autohotkey\autohotkey.exe drive:\path-to\F4TCIE.ahk "%1"
+
+Tip: To use %PROCESSOR_ARCHITECTURE%
+
+Rename
+
+    F4TCIE-64i.exe -> F4TCIE-amd64i.exe
+    F4TCIE-32i.exe -> F4TCIE-x86i.exe
+
+then use
+
+    drive:\path-to\F4TCIE-%PROCESSOR_ARCHITECTURE%.exe "%1"
 
 If for some reason the configuration can not be opened, an attempt is made to start the editor
 for the file type associated in Windows (so for txt -> notepad, for bmp,jpg -> MS Paint etc).

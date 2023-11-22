@@ -23,12 +23,13 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 
 */
 
+#Requires AutoHotkey v1.1.31+
 #NoTrayIcon
 #NoEnv
 
 ; <for compiled scripts>
 ;@Ahk2Exe-SetDescription F4MiniMenu (IE): Open files from TC
-;@Ahk2Exe-SetFileVersion 1.2
+;@Ahk2Exe-SetFileVersion 1.3
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
 

@@ -1,6 +1,10 @@
 ## Changelog
 
-* 20231121 - v1.2  
+* 20231121 - v1.3  
+                   a) Fix: `%N` and `%M` now processed correctly  
+                   b) Added "#Requires AutoHotkey v1.1.31+" directive for users with v1 & v2 installed, added note in documention about using v1 AutoHotkey.exe in setup  
+
+* 20231030 - v1.2  
                    a) Updated class name for Find Results control class (TMyListBox2, 32bit) for TC11  
                    b) Added: Help MsgBox-es in Settings Gui now Task Modal (32+8192=8224)  
                    c) Added: Settings label to Gui to better handle closing the Gui https://github.com/hi5/F4MiniMenu/issues/24#issuecomment-1573127847  
