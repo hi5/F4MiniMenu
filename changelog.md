@@ -1,5 +1,9 @@
 ## Changelog
 
+* 20240123 - v1.4  a) New: enable/disable F4MM for Lister and Find Files (search results) windows (see settings). If Lister setting is active and F4Edit>1 in wincmd.ini: close Lister   
+                      In TC 11.03 the press "F4 to open currently viewed file in Lister" was added.  
+                      (See F4Edit= options in TC help file on how to handle F4 in lister via wincmd.ini. F4TCIE _could_ be used.)
+
 * 20231121 - v1.3  
                    a) Fix: `%N` and `%M` now processed correctly  
                    b) Added "#Requires AutoHotkey v1.1.31+" directive for users with v1 & v2 installed, added note in documention about using v1 AutoHotkey.exe in setup  

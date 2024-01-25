@@ -151,23 +151,34 @@ Gui, Settings: Add, Button, % dpi("xp+170 yp-75 w120 h25 gButtonOK"), OK
 Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gButtonClear"), Clear All Hotkeys
 Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gSettingsGuiClose"), Cancel
 
-Gui, Settings: Add, GroupBox, % dpi("x16 yp+40 w540 h72"), Other programs
+Gui, Settings: Add, GroupBox, % dpi("x16 yp+40 w260 h72"), Other programs
+
+Gui, Settings: Add, Text,      % dpi("x25 yp+20 w100 h20"), Dbl Cmd:
+Gui, Settings: Add, Hotkey,    % dpi("xp+52 yp-3 w90 h20 vDoubleCommander"), % MatchList.settings.DoubleCommander
+
+Gui, Settings: Add, Text,      % dpi("x25 yp+30 w50 h20"), XYPlorer:
+Gui, Settings: Add, Hotkey,    % dpi("xp+52 yp-3 w90 h20 vXYPlorer"), % MatchList.settings.XYPlorer
 
 Checked:=MatchList.settings.Explorer
-Gui, Settings: Add, Checkbox,  % dpi("x25 yp+20 w60 h16 Checked" checked " vExplorer"), Explorer
+Gui, Settings: Add, Checkbox,  % dpi("xp+100 yp-25 w60 h16 Checked" checked " vExplorer"), Explorer
 
-Gui, Settings: Add, Text,      % dpi("xp+70 yp+1 w100 h20"), Double Commander:
-Gui, Settings: Add, Hotkey,    % dpi("xp+100 yp-3 w90 h20 vDoubleCommander"), % MatchList.settings.DoubleCommander
-Gui, Settings: Add, Text,      % dpi("xp+100 yp+3 w50 h20"), XYPlorer:
-Gui, Settings: Add, Hotkey,    % dpi("xp+50 yp-3 w90 h20 vXYPlorer"), % MatchList.settings.XYPlorer
+Checked:=MatchList.settings.Everything
+Gui, Settings: Add, Checkbox,  % dpi("xp     yp+28 w80 h16 Checked" checked " vEverything"), Everything
+
 Gui, Settings: Font, % dpi("s8 cGreen")
-Gui, Settings: Add, Text,      % dpi("xp+175 yp gFMMFileManText"), (?)
+Gui, Settings: Add, Text,      % dpi("xp+70 yp-28 gFMMFileManText"), (?)
 Gui, Settings: Font, % dpi("cBlack")
 Gui, Settings: Font, ; see note above, required to reset style
 Gui, Settings: Font, % dpi("s8")
 
-Checked:=MatchList.settings.Everything
-Gui, Settings: Add, Checkbox,  % dpi("x25 yp+30 w100 h16 Checked" checked " vEverything"), Everything
+Gui, Settings: Add, GroupBox, % dpi("xp+35 yp-19 w270 h72"), Use elsewhere in TC (no menu)
+
+Checked:=MatchList.settings.Lister
+Gui, Settings: Add, Checkbox,  % dpi("xp+10 yp+20 w240 h16 Checked" checked " vLister"), Lister (+ use F4Edit setting in wincmd.ini)
+
+Checked:=MatchList.settings.FindFiles
+Gui, Settings: Add, Checkbox,  % dpi("xp    yp+28 w100 h16 Checked" checked " vFindFiles"), Find Files
+
 
 ; Note: deactivated Everything Directory Tree and DocumentTemplates settings for now
 /*
@@ -262,6 +273,8 @@ MatchList.settings.Everything:=Everything
 ;MatchList.settings.EVDirTree:=EVDirTree
 MatchList.settings.DoubleCommander:=DoubleCommander
 MatchList.settings.XYPlorer:=XYPlorer
+MatchList.settings.Lister:=Lister
+MatchList.settings.FindFiles:=FindFiles
 
 HotKeyState:="On"
 Gosub, SetHotkeys
@@ -310,7 +323,7 @@ MsgBox, 8224, Other file managers (experimental),
 F4MiniMenu can also work with other programs.`nTo activate enter the keyboard shortcut to "Copy Filename(s) with Full Path"`n`
 Double Commander default:`tShift+Ctrl+C`n
 XYPlorer default:`tCtrl+p`n
-Everything:`tCheckbox to use F4MiniMenu`n
+Explorer, Everything:`tCheckbox to use F4MiniMenu`n
 Note: use at your own risk.
 )
 ;Ev DirTree:`tReplace TC Dir Tree (Alt-F10)`n

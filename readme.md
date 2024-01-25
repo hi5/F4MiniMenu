@@ -1,4 +1,4 @@
-# F4MiniMenu - v1.3
+# F4MiniMenu - v1.4
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
 (and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
@@ -117,6 +117,10 @@ Once F4MiniMenu is started, the Global settings and new editors with a variety o
   - Filtered menu
 * Other programs
   - Explorer, Double Commander, XYPlorer, Everything.
+* Use elsewhere in TC
+  - Lister(1), Find Files
+
+(1) If Lister setting is active _and_ F4Edit>1 in wincmd.ini: _close Lister window_ - See `F4Edit=` options in TC help file on how to handle F4 in lister via wincmd.ini (Introduced in TC v11.03).
 
 __WinWait__ Set the maximum time in seconds to wait for the selected program window to appear before applying the selected Window Mode (Normal, Maximized, Minimized -- see Editor configuration). This should also prevent any unexpected "waiting" in case a program launch failed (crash, very slow program start etc).  
 As soon as the window appears it will continue to apply the Window mode and no longer wait.

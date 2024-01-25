@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.3
+Version     : v1.4
 Author      : hi5
 Last update : 21 November 2023
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.3"
+F4Version:="v1.4"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.3
+;@Ahk2Exe-SetFileVersion 1.4
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
@@ -53,12 +53,6 @@ TmpFileList .= "\$$f4mtmplist$$.m3u"
 
 GroupAdd, TCOnly, ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE
 GroupAdd, TCOnly, ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE
-
-GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE
-GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE
-GroupAdd, TCF4Windows, ahk_class TLister
-GroupAdd, TCF4Windows, ahk_class TFindFile
-GroupAdd, TCF4Windows, ahk_class TQUICKSEARCH
 
 FileDelete, % TmpFileList
 
@@ -126,6 +120,17 @@ If (Error = 1)
 
 ; Create backup file
 FileCopy, %F4ConfigFile%, %F4ConfigFile%.bak, 1
+
+; Hotkey groups (menus)
+GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE
+GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE
+GroupAdd, TCF4Windows, ahk_class TQUICKSEARCH
+
+If MatchList.settings.Lister
+	GroupAdd, TCF4Windows, ahk_class TLister
+If MatchList.settings.FindFiles
+	GroupAdd, TCF4Windows, ahk_class TFindFile
+
 
 ; Add other file managers if any
 If MatchList.settings.Explorer
@@ -400,7 +405,7 @@ GetExt(Files)
 ; Get a list of selected files using internal TC commands (see totalcmd.inc for references)
 GetFiles()
 	{
-	 Global MatchList, CLI_Exit, CLI_File
+	 Global MatchList, CLI_Exit, CLI_File, ListerWindowClose
 
 	 If CLI_Exit
 		{
@@ -448,6 +453,8 @@ GetFiles()
 		{
 		 WinGetActiveTitle, Files
 		 Files:=RegExReplace(Files,"U)^.*\[(.*).$","$1")
+		 If (ListerWindowClose > 1)
+		 	WinClose, A
 		 Return Files
 		}
 
@@ -1047,6 +1054,8 @@ FileAppend,
 		<Explorer>0</Explorer>
 		<Everything>0</Everything>
 		<MaxWinWaitSec>2</MaxWinWaitSec>
+		<Lister>1</Lister>
+		<FindFiles>1</FindFiles>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
 		<Exe>c:\WINDOWS\notepad.exe</Exe>
@@ -1077,6 +1086,8 @@ FullMenu=z
 Explorer=0
 Everything=0
 MaxWinWaitSec=2
+Lister=1
+FindFiles=1
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe

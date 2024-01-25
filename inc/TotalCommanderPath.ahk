@@ -3,6 +3,14 @@
 ; try to get Commander_Path, it will be empty if TC is not running (yet)
 EnvGet, Commander_Path, Commander_Path
 
+ListerWindowClose:=0
+EnvGet, Commander_Ini_Path, Commander_Ini_Path
+If (Commander_Ini_Path <> "")
+	{
+	 Commander_Ini_Path .= "\wincmd.ini"
+	 IniRead, ListerWindowClose, %Commander_Ini_Path%, Lister, F4Edit, 0
+	}
+
 If (Commander_Path = "") ; try to read registry
 	 RegRead Commander_Path, HKEY_CURRENT_USER, Software\Ghisler\Total Commander, InstallDir
 
