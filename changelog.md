@@ -1,5 +1,7 @@
 ## Changelog
 
+* 20240127 - v1.41 a) Fix: Check to see if TC is running in order to be able to read F4Edit= correctly (using environment variable %Commander_ini_Path%)
+
 * 20240123 - v1.4  a) New: enable/disable F4MM for Lister and Find Files (search results) windows (see settings). If Lister setting is active and F4Edit>1 in wincmd.ini: close Lister   
                       In TC 11.03 the press "F4 to open currently viewed file in Lister" was added.  
                       (See F4Edit= options in TC help file on how to handle F4 in lister via wincmd.ini. F4TCIE _could_ be used.)

@@ -1,4 +1,4 @@
-# F4MiniMenu - v1.4
+# F4MiniMenu - v1.41
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
 (and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
