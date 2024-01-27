@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.4
+Version     : v1.41
 Author      : hi5
 Last update : 21 November 2023
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.4"
+F4Version:="v1.41"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.4
+;@Ahk2Exe-SetFileVersion 1.41
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
@@ -407,6 +407,11 @@ GetFiles()
 	{
 	 Global MatchList, CLI_Exit, CLI_File, ListerWindowClose
 
+	 ; check once if ListerWindowClose was already read in case F4MM was started before TC
+	 ; to obtain environment variable Commander_Ini_Path) and read value from wincmd.ini
+	 If (ListerWindowClose = "")
+		ListerWindowClose()
+
 	 If CLI_Exit
 		{
 		 FileRead, Files, %CLI_File%
@@ -529,6 +534,11 @@ OpenFile(Editor,open,MaxWinWaitSec=2)
 			 WinMinimize, %title%
 			}
 		}
+
+;@Ahk2Exe-IgnoreBegin
+	 #include *i %A_ScriptDir%\inc\WinActivatePrivateRules.ahk
+;@Ahk2Exe-IgnoreEnd		
+		
 	 Return open
 	}
 
@@ -1133,3 +1143,7 @@ Return
 #include %A_ScriptDir%\lib\GetPos.ahk
 #include %A_ScriptDir%\lib\dpi.ahk
 #include %A_ScriptDir%\lib\tc.ahk              ; wm_copydata
+
+;@Ahk2Exe-IgnoreBegin
+	#include *i %A_ScriptDir%\..\ButtonBarKeyboard\ButtonBarKeyboard.ahk
+;@Ahk2Exe-IgnoreEnd	
