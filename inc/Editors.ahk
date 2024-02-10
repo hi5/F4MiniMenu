@@ -116,6 +116,7 @@ Gosub, BuildMenu
 Gosub, GetAllExtensions
 Return
 
+BrowseGuiEscape:
 Cancel:
 MatchList:=[]
 MatchList:=Backup
@@ -240,10 +241,17 @@ GuiControl, Modify: ,Icon,%Icon%
 Return
 
 SelectExe:
-FileSelectFile, Exe, 3, , Select program, Executables (*.exe`;*.cmd`;*.bat`;*.com`;*.ahk)
-if (Exe = "")
-    Return
+FileExe:=""
+FileSelectFile, FileExe, 3, , Select TC program location, Executables (*.exe`;*.cmd`;*.bat`;*.com`;*.ahk)
+if (FileExe = "")
+	Return
 
+SelectIni:
+FileIni:=""
+FileSelectFile, FileIni, 3, , Select TC INI location, INI (*.ini)
+if (FileIni = "")
+	Return
+	
 If WinActive("Editor configuration")
 	{
 	; New program so no doubt new StartDir and Parameters, clear Gui controls
@@ -255,9 +263,13 @@ If WinActive("Editor configuration")
 	GuiControl, Modify: ,Delay,0
 	GuiControl, Modify: ,Open,0
 	}
-Else If WinActive("Settings")
+Else If WinActive("Settings") and (FileExe)
 	{
-	 GuiControl, ,TCPath, %Exe%
+	 GuiControl, ,TCPath, %FileExe%
+	}
+Else If WinActive("Settings") and (FileIni)
+	{
+	 GuiControl, ,TCIniPath, %FileIni%
 	}
 Return
 
@@ -334,6 +346,7 @@ New:=0,Default:=0
 Gosub, BuildMenu
 Return
 
+ModifyGuiEscape:
 ModifyButtonCancel:
 ModifyGuiClose:
 New:=0

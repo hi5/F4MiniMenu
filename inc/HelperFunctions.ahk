@@ -2,13 +2,13 @@
 
 GetPath(path)
 	{
-	 global MyComSpec,Commander_Path,MyProgramFiles,MyProgramFilesx86,MyProgramW6432
+	 global MyComSpec,Commander_Path,MyProgramFiles,MyProgramFilesx86,MyProgramW6432,A_UserProfile
 	 ; path:=StrReplace(path,"%ComSpec%",MyComSpec)
 	 if !InStr(path,"\") ; for programs in path environment e.g. wordpad, write
 	 	Return path 
 	 if !InStr(path,"%") ; no special treatment required
 		Return GetFullPathName(path)
-	 Loop, parse, % "Commander_Path,A_ScriptDir,A_ComputerName,A_UserName,A_WinDir,A_ProgramFiles,ProgramFiles,A_AppData,A_AppDataCommon,A_Desktop,A_DesktopCommon,A_StartMenu,A_StartMenuCommon,A_Programs,A_ProgramsCommon,A_Startup,A_StartupCommon,A_MyDocuments", CSV
+	 Loop, parse, % "Commander_Path,A_ScriptDir,A_ComputerName,A_UserName,A_WinDir,A_ProgramFiles,ProgramFiles,A_AppData,A_AppDataCommon,A_Desktop,A_DesktopCommon,A_StartMenu,A_StartMenuCommon,A_Programs,A_ProgramsCommon,A_Startup,A_StartupCommon,A_MyDocuments,A_UserProfile", CSV
 		path:=StrReplace(path,"%" A_LoopField "%",%A_LoopField%)
   	 ; special cases
 	 path:=StrReplace(path,"%WinDir%",A_WinDir) 

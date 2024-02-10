@@ -1,4 +1,4 @@
-# F4MiniMenu - v1.41
+# F4MiniMenu - v1.42
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
 (and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
@@ -109,7 +109,7 @@ Once F4MiniMenu is started, the Global settings and new editors with a variety o
 * WinWait -- see below
 * Total Commander
   - TC Start (Start Total Commander when F4MM is started, or not)
-  - TC Path
+  - TC Path, TC INI Path (for F4Edit settings, see "Use elsewhere in TC")
   - Close F4MM options (Exit F4MM when Total Commander closes)
 * Hotkeys
   - Background
@@ -118,9 +118,13 @@ Once F4MiniMenu is started, the Global settings and new editors with a variety o
 * Other programs
   - Explorer, Double Commander, XYPlorer, Everything.
 * Use elsewhere in TC
-  - Lister(1), Find Files
+  - Lister(1), Find Files, QuickView(2)
 
-(1) If Lister setting is active _and_ F4Edit>1 in wincmd.ini: _close Lister window_ - See `F4Edit=` options in TC help file on how to handle F4 in lister via wincmd.ini (Introduced in TC v11.03).
+(1) If **Lister** setting is active _and_ `F4Edit>1` in wincmd.ini: _close Lister window_ - See `F4Edit=` options in TC help file on how to handle F4 in lister via wincmd.ini (Introduced in TC v11.03).
+
+(2) **QuickView** is experimental:  
+`[x]` when checked, it will try to open the file that is currently open in the QuickView panel, _even_ if multiple files are selected in the active TC panel and the focus is NOT on the QuickView panel it self. The foreground and filtered menus can be opened in the QuickView panel, but here also only the one "viewed" file will be opened.  
+`[ ]` when unchecked all selected files will be opened even when QuickView is being used.
 
 __WinWait__ Set the maximum time in seconds to wait for the selected program window to appear before applying the selected Window Mode (Normal, Maximized, Minimized -- see Editor configuration). This should also prevent any unexpected "waiting" in case a program launch failed (crash, very slow program start etc).  
 As soon as the window appears it will continue to apply the Window mode and no longer wait.

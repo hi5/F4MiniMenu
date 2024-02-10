@@ -64,7 +64,7 @@ iob_save(ObjectName,Filename="") { ; Object parameter isn't used but just added 
 iob_getkeys(section)
 	{
 	 If (Section = 1)
-	 	Return "BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,FilteredMenuAutoEdit,MaxWinWaitSec,TCPath,TCStart,F4MMCloseAll,F4MMClosePID,FilteredHotkey,FullMenu,Explorer,Everything,DoubleCommander,XYPlorer,Lister,FindFiles" ; ,EvPath,EVDirTree
+	 	Return "BackgroundHotkey,ForegroundHotkey,MaxFiles,MenuPos,FilteredMenuAutoEdit,MaxWinWaitSec,TCPath,TCIniPath,TCStart,F4MMCloseAll,F4MMClosePID,FilteredHotkey,FullMenu,Explorer,Everything,DoubleCommander,XYPlorer,Lister,FindFiles,QuickView" ; ,EvPath,EVDirTree
 	 If (Section = 2)
 	 	Return "Delay,Exe,Ext,Method,Open,Windowmode,StartDir,Parameters,Icon,Name"
 	}

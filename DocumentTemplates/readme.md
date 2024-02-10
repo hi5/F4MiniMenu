@@ -1,4 +1,4 @@
-﻿# Document Templates for F4TCIE.ahk
+# Document Templates for F4TCIE.ahk
 
 Note that this is an additional functionality, if you don't place any template.* files
 in this folder F4TCIE will not use it.
@@ -28,15 +28,14 @@ can start your preferred Graphics program for PNG files.
 If it can't find a template, it will simply launch your default editor.
 
 When you add new templates to this folder you need to Update (scan) the 
-"Currently Available Document Templates" in the Settings window, or via 
-"Scan Document Templates" in the Tray or Foreground menu OR restart F4MiniMenu.
+available templates via the "Scan Document Templates" in the Tray or Foreground
+menu OR restart F4MiniMenu.
 
 You can find two examples in DocumentTemplatesExamples.zip to illustrate how it
 works (RTF, PNG) - you can of course replace these with your own Template files.
 
 ## Limitation(s)
 
-In versions prior to Total Commander 9.10:
-
 * It won't work in/with ZIP files (but will copy file to Active panel)
 * Shift+F4 doesn't work in FTP panels (default TC behaviour)
+

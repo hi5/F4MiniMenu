@@ -23,4 +23,4 @@ EnvGet, MyComSpec, ComSpec
 EnvGet, MyProgramFiles, ProgramFiles
 EnvGet, MyProgramFilesx86, ProgramFiles(x86)
 EnvGet, MyProgramW6432, ProgramW6432
-
+EnvGet, A_UserProfile, UserProfile

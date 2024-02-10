@@ -1,5 +1,11 @@
 ## Changelog
 
+* 20240130 - v1.42 a) New: Enable/Disable using F4MM in Lister, Find Files and QuickView (Use elsewhere in TC)  
+                      Fix: Resort to reading multiple locations in the registry + settings option to locate `wincmd.ini` to be able to read `F4Edit` setting  
+                      and additional setting `INI Path`  
+                      Hopefully this is now correctly handled in all cases (F4MM starts before TC, TC starts before F4MM)  
+
+
 * 20240127 - v1.41 a) Fix: Check to see if TC is running in order to be able to read F4Edit= correctly (using environment variable %Commander_ini_Path%)
 
 * 20240123 - v1.4  a) New: enable/disable F4MM for Lister and Find Files (search results) windows (see settings). If Lister setting is active and F4Edit>1 in wincmd.ini: close Lister   

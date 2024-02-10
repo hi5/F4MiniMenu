@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.41
+Version     : v1.42
 Author      : hi5
 Last update : 21 November 2023
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.41"
+F4Version:="v1.42"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.41
+;@Ahk2Exe-SetFileVersion 1.42
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
@@ -37,6 +37,7 @@ FileInstall, res\f4.ico, %A_ScriptDir%\res\f4.ico
 global AllExtensions:=""
 global TmpFileList:=""
 global Commander_Path:=""
+global Commander_Ini:=""
 MatchList:=""
 MenuPadding:="   "
 DefaultShortName:=""
@@ -407,11 +408,6 @@ GetFiles()
 	{
 	 Global MatchList, CLI_Exit, CLI_File, ListerWindowClose
 
-	 ; check once if ListerWindowClose was already read in case F4MM was started before TC
-	 ; to obtain environment variable Commander_Ini_Path) and read value from wincmd.ini
-	 If (ListerWindowClose = "")
-		ListerWindowClose()
-
 	 If CLI_Exit
 		{
 		 FileRead, Files, %CLI_File%
@@ -457,10 +453,24 @@ GetFiles()
 	 If WinActive("ahk_class TLister")
 		{
 		 WinGetActiveTitle, Files
+		 ; check once if ListerWindowClose was already read in case F4MM was started before TC
+		 ; to obtain environment variable Commander_Ini_Path) and read value from wincmd.ini
+		 If (ListerWindowClose = "") or (ListerWindowClose = "ERROR")
+			ListerWindowClose()
 		 Files:=RegExReplace(Files,"U)^.*\[(.*).$","$1")
-		 If (ListerWindowClose > 1)
-		 	WinClose, A
+		 If ListerWindowClose in 2,3
+			WinClose, A
 		 Return Files
+		}
+
+	 If MatchList.settings.QuickView
+		{
+		 WinGetText, Files, ahk_class TTOTAL_CMD, Lister
+		 If (Files <> "")
+			{
+			 RegExMatch(Files,"U) - \K\[(.*)\]`r?`n",Files)
+			 Return Files1
+			}
 		}
 
 	 If WinActive("ahk_class TFindFile") ; class names may change between versions, below for TC11
@@ -1057,6 +1067,7 @@ FileAppend,
 		<MaxFiles>30</MaxFiles>
 		<MenuPos>3</MenuPos>
 		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
+		<TCIniPath></TCIniPath>
 		<TCStart>1</TCStart>
 		<F4MMCloseAll>0</F4MMCloseAll>
 		<F4MMClosePID>0</F4MMClosePID>
@@ -1066,6 +1077,7 @@ FileAppend,
 		<MaxWinWaitSec>2</MaxWinWaitSec>
 		<Lister>1</Lister>
 		<FindFiles>1</FindFiles>
+		<QuickView>1</QuickView>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
 		<Exe>c:\WINDOWS\notepad.exe</Exe>
@@ -1090,6 +1102,7 @@ MenuPos=3
 FilteredMenuAutoEdit=1
 TCPath=c:\totalcmd\TotalCmd.exe
 TCStart=1
+TCIniPath=
 F4MMCloseAll=0
 F4MMClosePID=0
 FullMenu=z
@@ -1098,6 +1111,7 @@ Everything=0
 MaxWinWaitSec=2
 Lister=1
 FindFiles=1
+QuickView=1
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe
