@@ -177,7 +177,7 @@ If !New
 		}
 	}
 
-Gui, Modify:+OwnerBrowse -SysMenu 
+Gui, Modify:+OwnerBrowse -SysMenu
 Gui, Modify:font,              % dpi("s8")
 Gui, Modify:Add, Text,         % dpi("x10  y10 w77  h18"), &Exe
 Gui, Modify:Add, Edit,         % dpi("x89  y8  w290 h20 vExe"), %Exe%
@@ -241,33 +241,35 @@ GuiControl, Modify: ,Icon,%Icon%
 Return
 
 SelectExe:
-FileExe:=""
-FileSelectFile, FileExe, 3, , Select TC program location, Executables (*.exe`;*.cmd`;*.bat`;*.com`;*.ahk)
-if (FileExe = "")
+Exe:=""
+FileSelectFile, Exe, 3, , Select program, Executables (*.exe`;*.cmd`;*.bat`;*.com`;*.ahk)
+if (Exe = "")
 	Return
+
+If WinActive("Editor configuration")
+	{
+	 ; New program so no doubt new StartDir and Parameters, clear Gui controls
+	 GuiControl, Modify: ,Exe, %Exe%
+	 GuiControl, Modify: ,Icon,%Icon%
+	 GuiControl, Modify: ,Name,%Name%
+	 GuiControl, Modify: ,StartDir,
+	 GuiControl, Modify: ,Parameters,
+	 GuiControl, Modify: ,Delay,0
+	 GuiControl, Modify: ,Open,0
+	}
+Else If WinActive("Settings") and (Exe)
+	{
+	 GuiControl, ,TCPath, %Exe%
+	}
+Return
 
 SelectIni:
 FileIni:=""
 FileSelectFile, FileIni, 3, , Select TC INI location, INI (*.ini)
 if (FileIni = "")
 	Return
-	
-If WinActive("Editor configuration")
-	{
-	; New program so no doubt new StartDir and Parameters, clear Gui controls
-	GuiControl, Modify: ,Exe, %Exe%
-	GuiControl, Modify: ,Icon,%Icon%
-	GuiControl, Modify: ,Name,%Name%
-	GuiControl, Modify: ,StartDir,
-	GuiControl, Modify: ,Parameters,
-	GuiControl, Modify: ,Delay,0
-	GuiControl, Modify: ,Open,0
-	}
-Else If WinActive("Settings") and (FileExe)
-	{
-	 GuiControl, ,TCPath, %FileExe%
-	}
-Else If WinActive("Settings") and (FileIni)
+
+If WinActive("Settings") and (FileIni)
 	{
 	 GuiControl, ,TCIniPath, %FileIni%
 	}
@@ -298,7 +300,7 @@ ModifyButtonOK:
 Gui, Modify:Default
 Gui, Submit, NoHide
 If (Editor = "") ; we have a new editor
-	 Editor:=MatchList.MaxIndex() + 1
+	Editor:=MatchList.MaxIndex() + 1
 
 MatchList[Editor,"Exe"]:=Exe
 MatchList[Editor,"Icon"]:=Icon
@@ -334,7 +336,7 @@ If Default
 	 MatchList.InsertAt(1,DefaultMatchEditor)
 	 DefaultMatchEditor:=""
 	}
-	
+
 Gui, Modify:Destroy
 Gui, Browse:Default
 
@@ -384,11 +386,11 @@ for k, v in MatchList
    If (v.Icon <> "")
       ; FileName := StrReplace(v.Icon,"%Commander_Path%",Commander_Path)
       FileName := GetPath(v.Icon)
-   
+
    If InStr(FileName,"%Commander_Path%")
 ;      FileName := StrReplace(FileName,"%Commander_Path%",Commander_Path)
       FileName := GetPath(FileName)
-   
+
     ; Build a unique extension ID to avoid characters that are illegal in variable names,
     ; such as dashes.  This unique ID method also performs better because finding an item
     ; in the array does not require search-loop.
@@ -396,8 +398,8 @@ for k, v in MatchList
     FileName:=GetPath(FileName)
     if FileExt in EXE,ICO,ANI,CUR
       {
-        ExtID := FileExt  ; Special ID as a placeholder.
-        IconNumber = 0  ; Flag it as not found so that these types can each have a unique icon.
+       ExtID := FileExt  ; Special ID as a placeholder.
+       IconNumber = 0  ; Flag it as not found so that these types can each have a unique icon.
       }
     else  ; Some other extension/file-type, so calculate its unique ID.
       {
@@ -437,7 +439,7 @@ for k, v in MatchList
       }
 
     ; Create the new row in the ListView and assign it the icon number determined above:
-	  LV_Add("Icon" IconNumber , v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index, v.Icon, v.Name)
+      LV_Add("Icon" IconNumber , v.Exe, v.Parameters, v.StartDir, v.WindowMode, v.ext, v.Method, v.Delay, v.Open, A_Index, v.Icon, v.Name)
 	}
 dpifactor:=dpi()
 LV_ModifyCol(1, dpifactor*250), LV_ModifyCol(2, dpifactor*70), LV_ModifyCol(3, dpifactor*70)

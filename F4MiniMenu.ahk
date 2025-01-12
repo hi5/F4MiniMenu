@@ -1,9 +1,9 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.42
+Version     : v1.43
 Author      : hi5
-Last update : 21 November 2023
+Last update : 11 January 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -23,8 +23,10 @@ SetTitleMatchMode, 2
 F4Version:="v1.42"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.42
+;@Ahk2Exe-SetFileVersion 1.43
+;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
+;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
 
@@ -73,31 +75,31 @@ Menu, tray, Icon,&Reload this script,     shell32.dll, 239
 
 Menu, tray, Add, &Edit this script,       MenuHandler
 Try
-	Menu, tray, Icon,&Edit this script,       comres.dll, 7
+	Menu, tray, Icon,&Edit this script,   comres.dll, 7
 If A_IsCompiled
 	Menu, tray, Disable, &Edit this script
 
-Menu, tray, Add, 
+Menu, tray, Add,
 Menu, tray, Add, &Suspend Hotkeys,        MenuHandler
 Try
-	Menu, tray, Icon,&Suspend Hotkeys,        %A_AhkPath%, 3
+	Menu, tray, Icon,&Suspend Hotkeys,    %A_AhkPath%, 3
 Menu, tray, Add, &Pause Script,           MenuHandler
 Try
-	Menu, tray, Icon,&Pause Script,           %A_AhkPath%, 4
-Menu, tray, Add, 
+	Menu, tray, Icon,&Pause Script,       %A_AhkPath%, 4
+Menu, tray, Add,
 Menu, tray, Add, Settings,                Settings
 Try
-	Menu, tray, Icon, Settings,               shell32.dll, 170
+	Menu, tray, Icon, Settings,           shell32.dll, 170
 Menu, tray, Add, Configure editors,       ConfigEditors
 Try
-	Menu, tray, Icon, Configure Editors,      shell32.dll, 70
+	Menu, tray, Icon, Configure Editors,  shell32.dll, 70
 Menu, tray, Add, Scan Document Templates, DocumentTemplatesScan
 Try
 	Menu, tray, Icon, Scan Document Templates, shell32.dll, 172
-Menu, tray, Add, 
+Menu, tray, Add,
 Menu, tray, Add, Exit,                    ExitSettings
 Try
-	Menu, tray, Icon, Exit,                   shell32.dll, 132
+	Menu, tray, Icon, Exit,               shell32.dll, 132
 
 If !FileExist(F4ConfigFile) and !FileExist(F4ConfigFile ".bak") ; most likely first run, no need to show error message
 	Gosub, CreateNewConfig
@@ -145,11 +147,11 @@ If MatchList.settings.Everything
 	 GroupAdd, TCF4Windows, ahk_exe Everything.exe
 	}
 
-If (MatchList.settings.DoubleCommander <> "") ; note that some versions of DC report ahk_class TTOTAL_CMD ahk_exe doublecmd.exe 
-{
-	GroupAdd, TCF4Windows, ahk_class DClass ahk_exe doublecmd.exe     ; v0.9
-	GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe doublecmd.exe ; v1.0
-}
+If (MatchList.settings.DoubleCommander <> "") ; note that some versions of DC report ahk_class TTOTAL_CMD ahk_exe doublecmd.exe
+	{
+	 GroupAdd, TCF4Windows, ahk_class DClass ahk_exe doublecmd.exe     ; v0.9
+	 GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe doublecmd.exe ; v1.0
+	}
 
 If (MatchList.settings.XYPlorer <> "")
 	{
@@ -264,10 +266,10 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 	 Done:=[]
 	 Stop:=0
 	 If (MatchList.Temp.Files = "")
-	 	Files:=GetFiles() ; Get list of selected files in TC, one per line
+		Files:=GetFiles() ; Get list of selected files in TC, one per line
 	 else
-	 	Files:=MatchList.Temp.Files
-	 MatchList.Temp.Files:=""	
+		Files:=MatchList.Temp.Files
+	 MatchList.Temp.Files:=""
 
 		 ; Check if we possibly have selected file(s) from an archive
 		 If RegExMatch(Files,"iUm)" ArchiveExtentions)
@@ -304,14 +306,14 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 					 Return
 					}
 				}
-			
+
 			}
 
 	 SelectedFiles:=CountFiles(Files)
 
 	 If (SelectedFiles > MatchList.settings.MaxFiles)
 		{
-		 ; Technique from http://www.autohotkey.com/docs/scripts/MsgBoxButtonNames.htm	
+		 ; Technique from http://www.autohotkey.com/docs/scripts/MsgBoxButtonNames.htm
 		 SetTimer, ChangeButtonNames, 10
 		 MsgBox, 4150, Maximum files, % "Number of selected files: [" SelectedFiles "]`nDo wish to process them all`nor stop at the maximum?: [" MatchList.settings.MaxFiles "]" ; %
 		 IfMsgBox, Cancel
@@ -326,7 +328,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			Break
 		 open:=A_LoopField
 		 SplitPath, A_LoopField, , , OutExtension
-		 
+
 		 ; TODO: check for "checked" (= active) editor from settings
 		 for k, v in MatchList
 			{
@@ -365,9 +367,9 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			Continue
 		 If (v.Method = "cmdline")
 			{
-			 cmdfiles:=""	
+			 cmdfiles:=""
 			 Loop, parse, list, `n, `r
-			 	cmdfiles .= """" A_LoopField """" A_Space                ; " fix highlighting
+				cmdfiles .= """" A_LoopField """" A_Space                ; " fix highlighting
 			 OpenFile(v, cmdfiles, MatchList.Settings.MaxWinWaitSec)
 			 cmdfiles:=""
 			}
@@ -402,7 +404,7 @@ GetExt(Files)
 	 MatchList.Temp["SelectedExtensions"]:=Trim(Ext,"|")
 	}
 
-; Process other applications and windows first (find files, lister) 
+; Process other applications and windows first (find files, lister)
 ; Get a list of selected files using internal TC commands (see totalcmd.inc for references)
 GetFiles()
 	{
@@ -438,14 +440,14 @@ GetFiles()
 
 	 If MatchList.settings.XYPlorer and XYPlorer_Active()
 		{
-		 Files:=XYPlorer_GetSelection() 
+		 Files:=XYPlorer_GetSelection()
 		 MatchList.Temp["Files"]:=Files
 		 Return Files
 		}
 
 	 If MatchList.settings.QDir and QDir_Active()
 		{
-		 Files:=QDir_GetSelection() 
+		 Files:=QDir_GetSelection()
 		 MatchList.Temp["Files"]:=Files
 		 Return Files
 		}
@@ -495,7 +497,7 @@ GetFiles()
 	 Return Files
 	}
 
-; Function to determine which method to use to open a file	
+; Function to determine which method to use to open a file
 ; normal:    filepath\file1.ext
 ; cmdline:   "filepath\file1.ext" "filepath\file2.ext" "filepath\file3.ext"
 ; filelist:  %temp%\$$f4mtmplist$$.m3u OR %A_ScriptDir%\$$f4mtmplist$$.m3u
@@ -503,7 +505,7 @@ GetFiles()
 OpenFile(Editor,open,MaxWinWaitSec=2)
 	{
 	 If (MaxWinWaitSec = "") or (MaxWinWaitSec < 2) or (MaxWinWaitSec = "ERROR")
-	 	MaxWinWaitSec:=2
+		MaxWinWaitSec:=2
 	 func:=Editor.Method
 	 title:="ahk_exe " Editor.Exe
 	 If (func = "FileList")
@@ -514,7 +516,7 @@ OpenFile(Editor,open,MaxWinWaitSec=2)
 	 Else If IsFunc(func) ; takes care of normal, drag & drop, and cmdline
 		{
 		 ; if GetInput() was cancelled don't process windowmode below
-		 result:=%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)  
+		 result:=%func%(Editor.Exe,open,Editor.Delay,Editor.Parameters,Editor.StartDir)
 		}
 
 	 ; Moved above window actions in v1.1
@@ -524,9 +526,9 @@ OpenFile(Editor,open,MaxWinWaitSec=2)
 		Sleep % Editor.open
 
 	 ; Program was started so we can continue.
-	 ; Result can be > 1 if defined program was not found 
+	 ; Result can be > 1 if defined program was not found
 	 ; and we resorted to default editor as a fall back, see normal()
-	 if (result = 1) 
+	 if (result = 1)
 		{
 		 If (Editor.windowmode = 1) ; normal (activate)
 			{
@@ -547,8 +549,8 @@ OpenFile(Editor,open,MaxWinWaitSec=2)
 
 ;@Ahk2Exe-IgnoreBegin
 	 #include *i %A_ScriptDir%\inc\WinActivatePrivateRules.ahk
-;@Ahk2Exe-IgnoreEnd		
-		
+;@Ahk2Exe-IgnoreEnd
+
 	 Return open
 	}
 
@@ -561,7 +563,7 @@ Normal(program,file,delay,parameters,startdir)
 	 execute:=1
 	 GetInput(parameters,file,startdir,execute,program)
 	 if !execute
-	 	Return execute
+		Return execute
 	 startdir:=GetPath(startdir)
 	 if (file = "")
 		Try
@@ -581,7 +583,7 @@ Normal(program,file,delay,parameters,startdir)
 			{
 			 if (file <> "")
 				Run, %program% %parameters% "%file%", %startdir%
-			 else	
+			 else
 				Run, %program% %parameters%, %startdir%
 			}
 		Catch
@@ -594,7 +596,7 @@ Normal(program,file,delay,parameters,startdir)
 			 OSDTIP_Pop("F4MiniMenu", "Defined editor/program not found`nReverting to default editor", -750,"W230 H80 U1")
 			 execute++
 			}
-     Return execute
+	 Return execute
 	}
 
 cmdline(program,file,delay,parameters,startdir)
@@ -644,12 +646,12 @@ CheckCmdLine(Method,CountFiles)
 	 StrReplace(CountFiles, Chr(34) A_Space Chr(34), , OutputVarCount)
 	 If (OutputVarCount > 1)
 		Return 0
-	 Return 1	
+	 Return 1
 	}
 
 GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 	{
-	 WinGetActiveStats, A, W, H, X, Y 
+	 WinGetActiveStats, A, W, H, X, Y
 	 X:=X+(W/2)-205
 	 Y:=Y+(H/2)-110
 	 if InStr(parameters,"?")
@@ -683,7 +685,7 @@ GetInput(byref parameters, byref file, byref startdir, byref execute, program)
 		parameters:=StrReplace(parameters,"%e",GetTCFields("%e",file))
 	 ; %f4? placeholders for optional parameters:
 	 ; %f41 placeholder to alter position of filenames on the command line.
-	 ; 
+	 ;
 	 if InStr(parameters,"%f41")
 		{
 		 parameters:=StrReplace(parameters, "%f41", file)
@@ -764,8 +766,8 @@ CheckFile(list,file)
 		If (v = file)
 			Return 1
 	 Return 0
-	} 
-	
+	}
+
 CountFiles(Files)
 	{
 	 StringReplace, Files, Files, `n, `n, UseErrorLevel
@@ -777,21 +779,21 @@ GetTCFields(opt,file="")
 	 ; %P causes the source path to be inserted into the command line, including a backslash (\) at the end.
 	 ; %T inserts the current target path. Especially useful for packers.
 
-	 ; first we deal with non TC 
+	 ; first we deal with non TC
 
-	 if MatchList.settings.Explorer or MatchList.settings.XYPlorer or MatchList.settings.QDir or MatchList.settings.Everything 
-	 	{
-	 	 if (opt = "%p") or (opt = "%t")
-	 	 	{
-	 	 	 SplitPath, file, , OutDir ; panel
-	 	 	 Return OutDir
-	 	 	}
-	 	}
+	 if MatchList.settings.Explorer or MatchList.settings.XYPlorer or MatchList.settings.QDir or MatchList.settings.Everything
+		{
+		 if (opt = "%p") or (opt = "%t")
+			{
+			 SplitPath, file, , OutDir ; panel
+			 Return OutDir
+			}
+		}
 
-	 ; SP = Source Path, TP = Target Path	 
+	 ; SP = Source Path, TP = Target Path
 	 if (opt = "%p") or (opt = "%t")
 		{
-		 /*		
+		 /*
 		 ; cm_CopySrcPathToClip=2029 ; Copy source path to clipboard
 		 ; cm_CopyTrgPathToClip=2030 ; Copy target path to clipboard
 		 ; % (panel = "%p") ? "source" : "target"
@@ -835,7 +837,7 @@ GetTCFields(opt,file="")
 			}
 		 Return % (opt = "%o") ? filenames : fileext
 		}
-		
+
 	 if InStr(opt, "%$date")
 		{
 
@@ -843,11 +845,11 @@ GetTCFields(opt,file="")
 
 		 %$DATE% Inserts the 24 hour date and time in the form YYYYMMDDhhmmss -> A_Now in AutoHotkey
 
-		 %$DATE:placeholders% 
-		 Inserts the date in the form specified by placeholders. 
+		 %$DATE:placeholders%
+		 Inserts the date in the form specified by placeholders.
 		 Same as in multi-rename tool:                           -> AHK
 		 y Paste year in 2 digit form                            -> yy
-		 Y Paste year in 4 digit form                            -> yyyy 
+		 Y Paste year in 4 digit form                            -> yyyy
 		 M Paste month, always 2 digit                           -> MM
 		 D Paste day, always 2 digit                             -> dd
 		 h Paste hours, always in 24 hour 2 digit format (0-23)  -> H
@@ -866,7 +868,7 @@ GetTCFields(opt,file="")
 
 		 ; output entire string, output1 time formatting options
 		 RegExMatch(opt,"Ui)%\$date:*([^%]*)%",output)
-	
+
 		 if (output = "%$DATE%")
 			{
 			 FormatTime, DateTime, , %A_Now%
@@ -876,11 +878,11 @@ GetTCFields(opt,file="")
 			}
 		 else ; output1 -> we have placeholders
 			{
-			 OutputData:=StrSplit(output1,"|") 
-			 ; 1 placeholder, 2 value, 3 time units 
-			 ; the order in which we process the format is important (y before Y, h-zzzzz-H, i1 before i) 
+			 OutputData:=StrSplit(output1,"|")
+			 ; 1 placeholder, 2 value, 3 time units
+			 ; the order in which we process the format is important (y before Y, h-zzzzz-H, i1 before i)
 			 OutputData[1]:=RegExReplace(OutputData[1],"y","yy")
-			 OutputData[1]:=RegExReplace(OutputData[1],"Y","yyyy") 
+			 OutputData[1]:=RegExReplace(OutputData[1],"Y","yyyy")
 			 OutputData[1]:=RegExReplace(OutputData[1],"M","MM")
 			 OutputData[1]:=RegExReplace(OutputData[1],"D","dd")
 			 OutputData[1]:=RegExReplace(OutputData[1],"h","zzzzz")  ; we need to swap lower case h for temp char z
@@ -891,7 +893,7 @@ GetTCFields(opt,file="")
 			 OutputData[1]:=RegExReplace(OutputData[1],"m","mm")
 			 OutputData[1]:=RegExReplace(OutputData[1],"s","ss")
 			 DateTimeFormat:=OutputData[1]
-	
+
 			 FormatTime, DateTime,, yyyyMMddHHmmss
 			 EnvAdd, DateTime, % OutputData[2], % OutputData[3] ; do math if any
 			 FormatTime, DateTime, %DateTime%, %DateTimeFormat% ; format the time
@@ -913,7 +915,7 @@ Hotkey, IfWinActive,
 
 Hotkey, IfWinActive, ahk_group TCF4Windows
 
-; ~ native function will not be blocked 
+; ~ native function will not be blocked
 ; $ prefix forces the keyboard hook to be used to implement this hotkey
 
 If (MatchList.settings.ForegroundHotkey <> "ERROR") and (MatchList.settings.ForegroundHotkey <> "")
@@ -1010,7 +1012,7 @@ TCCD(tc,par,dir)
 	 If !InStr(par,"/R=")
 		Run, %tc% %par% "%dir%\"
 	 Else
-	 	Run, %tc% %par%"%dir%\"
+		Run, %tc% %par%"%dir%\"
 	}
 
 SaveSettings:
@@ -1032,12 +1034,12 @@ If (Error = 1) ; we can't read settings so create a new clean version
 ExitApp
 Return
 
-; Used in ProcessFiles() - Technique from http://www.autohotkey.com/docs/scripts/MsgBoxButtonNames.htm	
+; Used in ProcessFiles() - Technique from http://www.autohotkey.com/docs/scripts/MsgBoxButtonNames.htm
 ChangeButtonNames:
 IfWinNotExist, Maximum files ahk_class #32770
 	Return ; Keep waiting...
 SetTimer, ChangeButtonNames, off
-; WinActivate 
+; WinActivate
 ControlSetText, Button2, Process All, Maximum files ahk_class #32770
 ControlSetText, Button3, Stop at Max., Maximum files ahk_class #32770
 Return
@@ -1160,4 +1162,4 @@ Return
 
 ;@Ahk2Exe-IgnoreBegin
 	#include *i %A_ScriptDir%\..\ButtonBarKeyboard\ButtonBarKeyboard.ahk
-;@Ahk2Exe-IgnoreEnd	
+;@Ahk2Exe-IgnoreEnd

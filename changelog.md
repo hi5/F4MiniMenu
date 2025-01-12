@@ -1,10 +1,13 @@
 ## Changelog
 
+* 20250111 - v1.43 a) Fix: moved INI selection routine introduced in v1.42 as it interferred with selecting a (new) editor https://www.ghisler.ch/board/viewtopic.php?p=466621#p466621  
+                   b) Additional hint in "Other programs" section re Hotkey to "Copy File Name(s) with Full Path"  
+                   c) Added two ;@Ahk2Exe-Set* for compiled script properties (incl. AutoHotkey version)  
+
 * 20240130 - v1.42 a) New: Enable/Disable using F4MM in Lister, Find Files and QuickView (Use elsewhere in TC)  
                       Fix: Resort to reading multiple locations in the registry + settings option to locate `wincmd.ini` to be able to read `F4Edit` setting  
                       and additional setting `INI Path`  
                       Hopefully this is now correctly handled in all cases (F4MM starts before TC, TC starts before F4MM)  
-
 
 * 20240127 - v1.41 a) Fix: Check to see if TC is running in order to be able to read F4Edit= correctly (using environment variable %Commander_ini_Path%)
 

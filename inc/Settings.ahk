@@ -154,7 +154,7 @@ Gui, Settings: Add, Button, % dpi("xp+170 yp-75 w120 h25 gButtonOK"), OK
 Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gButtonClear"), Clear All Hotkeys
 Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gSettingsGuiClose"), Cancel
 
-Gui, Settings: Add, GroupBox, % dpi("x16 yp+40 w260 h72"), Other programs
+Gui, Settings: Add, GroupBox, % dpi("x16 yp+40 w260 h72"), Other prg. (Hotkey: Copy File Names w. Full Path)
 
 Gui, Settings: Add, Text,      % dpi("x25 yp+20 w100 h20"), Dbl Cmd:
 Gui, Settings: Add, Hotkey,    % dpi("xp+52 yp-3 w90 h20 vDoubleCommander"), % MatchList.settings.DoubleCommander
@@ -347,12 +347,13 @@ Return
 FMMFileManText:
 MsgBox, 8224, Other file managers (experimental),
 (join`n
-F4MiniMenu can also work with other programs.`nTo activate enter the keyboard shortcut to "Copy Filename(s) with Full Path"`n`
+F4MiniMenu can also work with other programs.`nTo activate, enter the keyboard shortcut to "Copy File Name(s) with Full Path"`n`
 Double Commander default:`tShift+Ctrl+C`n
-XYPlorer default:`tCtrl+p`n
-Explorer, Everything:`tCheckbox to use F4MiniMenu`n
+XYPlorer default:`t`t`tCtrl+p`n
+Explorer, Everything:`t`tCheckbox to use F4MM`n
 Note: use at your own risk.
 )
+Return
 
 FMMTCElseWhere:
 MsgBox, 8224, Use elsewhere in TC (experimental),

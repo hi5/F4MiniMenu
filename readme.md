@@ -1,4 +1,4 @@
-# F4MiniMenu - v1.42
+# F4MiniMenu - v1.43
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
 (and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
@@ -30,6 +30,7 @@ types. Several tools have been made to solve this problem, these include:
 * [ChoiceEditor](http://www.totalcmd.net/plugring/ChoiceEditor.html)
 * [Open File shell for TC](http://www.totalcmd.net/plugring/OpenFileTC.html)
 * [Total Commander Edit Redirector](http://ghisler.ch/board/viewtopic.php?t=27573)
+* [Total Editor](https://www.ghisler.ch/board/viewtopic.php?t=81215)
 * and of course [F4Menu](http://ghisler.ch/board/viewtopic.php?t=17003) - TC Forum thread
 
 While the original F4Menu[1] has quite a few options, this "clone" started out as a minimalistic
@@ -457,13 +458,13 @@ Each file manager has to be (de)activated in the settings.
 To enable:
 
 * for Explorer and Everything: tick the checkbox (on)
-* for Double Commander and XYPlorer set the hotkey (Double Commander default: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>c</kbd>, XYPlorer default: <kbd>Ctrl</kbd>+<kbd>p</kbd>)
+* for Double Commander and XYPlorer set the hotkey that will copy the full path names to the clipboard, e.g. the equivalent of the `cm_CopyFullNamesToClip` TC command (Double Commander default: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>c</kbd>, XYPlorer default: <kbd>Ctrl</kbd>+<kbd>p</kbd>)
 * save the settings (OK) - F4MiniMenu should reload automatically and now work with the activated file managers.
 
 To disable:
 
 * for Explorer and Everything: tick the checkbox (off)
-* for Double Commander and XYPlorer delete the hotkey(s) (press DEL)
+* for Double Commander and XYPlorer delete the hotkey(s) (press <kbd>DEL</kbd>)
 * save the settings (OK)
 
 As support for these other file managers is not thoroughly tested, unexpected behaviour may occur.
