@@ -6,7 +6,7 @@ Everything functions
 
 Everything_Active()
 	{
-	 WinGet, EverythingExe, ProcessName, Everything
+	 WinGet, EverythingExe, ProcessName, A
 	 if EverythingExe in Everything.exe,Everything64.exe
 		Return 1
 	}

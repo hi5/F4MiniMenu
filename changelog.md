@@ -1,5 +1,9 @@
 ## Changelog
 
+* 20250208 - v1.45 a) Finetuning Everything_Active() (using "A" not "Everything" in WinGet to detect active window)  
+                   b) Use TXT as default extention for default editor if user doesn't set one - otherwise it would not match correctly for define extensions https://www.ghisler.ch/board/viewtopic.php?p=468305#p468305  
+                   c) log option (manual setting, don't document)
+
 * 20250208 - v1.44 a) Add Everything64.exe to ahk_group TCF4Windows; updated Everything-functions to check for Everything.exe or Everything64.exe - added notes to help tip and docs  
 
 * 20250111 - v1.43 a) Fix: moved INI selection routine introduced in v1.42 as it interferred with selecting a (new) editor https://www.ghisler.ch/board/viewtopic.php?p=466621#p466621  

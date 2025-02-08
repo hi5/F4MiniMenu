@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.44
+Version     : v1.45
 Author      : hi5
 Last update : 08 February 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.44"
+F4Version:="v1.45"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.44
+;@Ahk2Exe-SetFileVersion 1.45
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -372,6 +372,8 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 Loop, parse, list, `n, `r
 				cmdfiles .= """" A_LoopField """" A_Space                ; " fix highlighting
 			 OpenFile(v, cmdfiles, MatchList.Settings.MaxWinWaitSec)
+			 If MatchList.Settings.log
+				Log(A_Now " : cmdline -> " v.exe "|" cmdfiles "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 			 cmdfiles:=""
 			}
 		 else If (v.Method = "FileList")
@@ -379,6 +381,8 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 FileDelete, % TmpFileList
 			 FileAppend, %list%, %TmpFileList%, UTF-8-RAW
 			 OpenFile(v, TmpFileList, MatchList.Settings.MaxWinWaitSec)
+			 If MatchList.Settings.log
+				Log(A_Now " :  FileList -> " v.exe "|" TmpFileList "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 			}
 		 Else If (v.Method <> "Files")
 			{
@@ -387,6 +391,8 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				 If (A_LoopField = "")
 					Continue
 				 OpenFile(v, A_LoopField, MatchList.Settings.MaxWinWaitSec)
+				 If MatchList.Settings.log
+					Log("`n" A_Now " : Files  -> " v.exe "|" A_LoopField "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 				}
 			}
 		}
@@ -1081,6 +1087,8 @@ FileAppend,
 		<Lister>1</Lister>
 		<FindFiles>1</FindFiles>
 		<QuickView>1</QuickView>
+		<log>0</log>
+		<logfile>%A_ScriptDir%\logfile.txt</logfile>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
 		<Exe>c:\WINDOWS\notepad.exe</Exe>
@@ -1115,6 +1123,8 @@ MaxWinWaitSec=2
 Lister=1
 FindFiles=1
 QuickView=1
+log=0
+logfile=%A_ScriptDir%\logfile.txt
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe
@@ -1160,6 +1170,7 @@ Return
 #include %A_ScriptDir%\lib\GetPos.ahk
 #include %A_ScriptDir%\lib\dpi.ahk
 #include %A_ScriptDir%\lib\tc.ahk              ; wm_copydata
+#include %A_ScriptDir%\lib\log.ahk
 
 ;@Ahk2Exe-IgnoreBegin
 	#include *i %A_ScriptDir%\..\ButtonBarKeyboard\ButtonBarKeyboard.ahk
