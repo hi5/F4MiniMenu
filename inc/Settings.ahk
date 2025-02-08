@@ -1,4 +1,4 @@
-/*
+﻿/*
 
 General program settings GUI
 Include for F4MiniMenu.ahk
@@ -350,8 +350,10 @@ MsgBox, 8224, Other file managers (experimental),
 F4MiniMenu can also work with other programs.`nTo activate, enter the keyboard shortcut to "Copy File Name(s) with Full Path"`n`
 Double Commander default:`tShift+Ctrl+C`n
 XYPlorer default:`t`t`tCtrl+p`n
-Explorer, Everything:`t`tCheckbox to use F4MM`n
-Note: use at your own risk.
+Explorer, Everything:`t`tCheckbox to use F4MM`n`n
+Notes:
+ℹ Everything >v1.5: F4 may override "Focus Next Selected"
+⚠ Use at your own risk.
 )
 Return
 

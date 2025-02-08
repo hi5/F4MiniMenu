@@ -1,4 +1,4 @@
-# F4MiniMenu - v1.43
+# F4MiniMenu - v1.44
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
 (and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
@@ -112,18 +112,21 @@ Once F4MiniMenu is started, the Global settings and new editors with a variety o
   - TC Start (Start Total Commander when F4MM is started, or not)
   - TC Path, TC INI Path (for F4Edit settings, see "Use elsewhere in TC")
   - Close F4MM options (Exit F4MM when Total Commander closes)
-* Hotkeys
-  - Background
-  - Foreground menu
-  - Filtered menu
-* Other programs
+* Hotkeys (Note: when using F4MM with other programs it may be that the hotkeys do not work as expected, especially for programs running as Administrator)
+  - Background (open files directly, do not show a menu)
+  - Foreground menu (select program (from all programs) to open all selected files with)
+  - Filtered menu (select program (filtered programs based on matching extensions) to open all selected files with)
+* Other programs (1)
   - Explorer, Double Commander, XYPlorer, Everything.
 * Use elsewhere in TC
-  - Lister(1), Find Files, QuickView(2)
+  - Lister(2), Find Files, QuickView(3)
 
-(1) If **Lister** setting is active _and_ `F4Edit>1` in wincmd.ini: _close Lister window_ - See `F4Edit=` options in TC help file on how to handle F4 in lister via wincmd.ini (Introduced in TC v11.03).
+(1) Support for other programs may stop or change at any time when new versions of those programs are being used.
+(1a) In Everything >v1.5+ F4 is assigned to "Focus Next Selected", F4MM will overrule this functionality - select another shortcut (either in F4MM or Everything) is this is not desired behaviour. (Settings in Everything may change during the programs development, still Alpha Feb. 2025)
 
-(2) **QuickView** is experimental:  
+(2) If **Lister** setting is active _and_ `F4Edit>1` in wincmd.ini: _close Lister window_ - See `F4Edit=` options in TC help file on how to handle F4 in lister via wincmd.ini (Introduced in TC v11.03).
+
+(3) **QuickView** is experimental:  
 `[x]` when checked, it will try to open the file that is currently open in the QuickView panel, _even_ if multiple files are selected in the active TC panel and the focus is NOT on the QuickView panel it self. The foreground and filtered menus can be opened in the QuickView panel, but here also only the one "viewed" file will be opened.  
 `[ ]` when unchecked all selected files will be opened even when QuickView is being used.
 

@@ -1,21 +1,24 @@
 /*
 Everything functions
 - Note: deactivated Everything_DirectoryTree() for now
+- 20250208 Added Everything64.exe; for 1.5 alpha the F4MM shortcut F4 overrides "F4 = Focus Next Selected"
 */
 
 Everything_Active()
 	{
-	 IfWinActive ahk_exe Everything.exe
+	 WinGet, EverythingExe, ProcessName, Everything
+	 if EverythingExe in Everything.exe,Everything64.exe
 		Return 1
 	}
 
 Everything_GetSelection(dir="0")
 	{
-	 ControlGet, OutputVar, List, Selected, SysListView321, ahk_exe Everything.exe
+	 WinGet, EverythingExe, ProcessName, Everything
+	 ControlGet, OutputVar, List, Selected, SysListView321, ahk_exe %EverythingExe%
 	 If (OutputVar = "")
 		{
 		 Send {Down}
-		 ControlGet, OutputVar, List, Selected, SysListView321, ahk_exe Everything.exe
+		 ControlGet, OutputVar, List, Selected, SysListView321, ahk_exe %EverythingExe%
 		}
 	 Loop, parse, OutputVar, `n, `r
 		{

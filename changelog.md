@@ -1,5 +1,7 @@
 ## Changelog
 
+* 20250208 - v1.44 a) Add Everything64.exe to ahk_group TCF4Windows; updated Everything-functions to check for Everything.exe or Everything64.exe - added notes to help tip and docs  
+
 * 20250111 - v1.43 a) Fix: moved INI selection routine introduced in v1.42 as it interferred with selecting a (new) editor https://www.ghisler.ch/board/viewtopic.php?p=466621#p466621  
                    b) Additional hint in "Other programs" section re Hotkey to "Copy File Name(s) with Full Path"  
                    c) Added two ;@Ahk2Exe-Set* for compiled script properties (incl. AutoHotkey version)  

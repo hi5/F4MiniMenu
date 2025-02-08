@@ -1,7 +1,7 @@
 /*
 
 Script      : F4TCIE.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 0.6
+Version     : 1.3
 Author      : hi5
 Last update : 30 October 2023
 Purpose     : Helper script for F4MiniMenu program to allow internal editor to function
@@ -28,8 +28,10 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 #NoEnv
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetDescription F4MiniMenu (IE): Open files from TC
 ;@Ahk2Exe-SetFileVersion 1.3
+;@Ahk2Exe-SetProductName F4MiniMenu (IE)
+;@Ahk2Exe-SetDescription F4MiniMenu (IE): Open files from TC
+;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
 ;@Ahk2Exe-SetCopyright MIT License - (c) https://github.com/hi5
 ; </for compiled scripts>
 
