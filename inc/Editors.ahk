@@ -28,7 +28,7 @@ Important:
 
 Info:
 1 - Delay (in miliseconds) D&&D = Drag && Drop, Open = startup.
-2 - Sort using Ctrl+UP / Ctrl+DOWN or use Edit menu.
+2 - Sort using Ctrl+UP / Ctrl+DOWN or use Edit menu (multiple rows possible).
 )
 
 IfWinExist, F4MiniMenu - Editor Settings ahk_class AutoHotkeyGUI
@@ -109,6 +109,9 @@ Loop, % LV_GetCount() ; %
 	 MatchList[Row,"Name"]:=Name
 	}
 
+If (Trim(MatchList.1.Ext,"`n`r`t ") = "")
+	MatchList.1.Ext:="txt" ; safety as we need at least one extension for the default editor
+
 Backup:=""
 %F4Save%("MatchList",F4ConfigFile)
 Gui, Browse:Destroy
@@ -133,7 +136,7 @@ SelItem := LV_GetNext()
 If (SelItem = 0)
 	SelItem = 1
 LV_GetText(Ask, SelItem, 1)
-MsgBox, 52, Remove editor, Do you want to remove:`n%Ask%?
+MsgBox, 52, Remove editor (only one entry per time), Do you want to remove:`n%Ask%?
 IfMsgBox, Yes
 	{
 	 LV_Delete(SelItem)
@@ -221,8 +224,8 @@ Gui, Modify:Add, DropDownList, % dpi("x89 yp-3 w238 h21 R3 Choose" WindowMode " 
 ;Gui, Modify:Default
 ;GuiControl, Disable, Mode
 
-Gui, Modify:Add, Text,         % dpi("x10 yp+32 w77 h16"), Ex&tensions
-Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w438 h76 vExt"), %Ext%
+Gui, Modify:Add, Text,         % dpi("x10 yp+32 w77 h80"), Ex&tensions (Default editor must have at least one ext.`nTXT is set if not defined)
+Gui, Modify:Add, Edit,         % dpi("x89 yp-2 w438 h80 vExt"), %Ext%
 
 Gui, Modify:Add, Link,         % dpi("x10 yp+100 w310 h16"), F4MiniMenu %F4Version% --- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 
@@ -322,6 +325,9 @@ StringReplace, Ext, Ext, `r`n, , All
 StringReplace, Ext, Ext, `n, , All
 StringReplace, Ext, Ext, `r, , All
 MatchList[Editor,"Ext"]:=Ext
+
+If (Trim(MatchList.1.Ext,"`n`r`t ") = "")
+	MatchList.1.Ext:="txt" ; safety as we need at least one extension for the default editor
 
 MatchList[Editor,"Delay"]:=Delay
 MatchList[Editor,"Open"]:=Open
