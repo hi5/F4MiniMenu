@@ -410,7 +410,7 @@ Automatically close F4MiniMenu using the following options (available via Settin
 1. Close F4MM when all copies of TC close: this waits until all running copies of Total Commander are closed, then exit F4MiniMenu.
 2. Close F4MM when TC closes started by F4MM: If (a new) Total Commander was started via F4MiniMenu, wait until that specific Total Commander instance closes, then exit F4MiniMenu.
 
-# Passive
+# Passive (use in button, start menu, user cmd)
 
 **Important** Do not use passive mode when F4MiniMenu is already running.
 

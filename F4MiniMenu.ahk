@@ -20,7 +20,7 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.42"
+F4Version:="v1.43"
 
 ; <for compiled scripts>
 ;@Ahk2Exe-SetFileVersion 1.43
