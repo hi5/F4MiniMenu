@@ -1,6 +1,7 @@
 /*
 Everything functions
 - Note: deactivated Everything_DirectoryTree() for now
+- 20250209 If there are no selected rows, get entire list and grab first one
 - 20250208 Added Everything64.exe; for 1.5 alpha the F4MM shortcut F4 overrides "F4 = Focus Next Selected"
 */
 
@@ -15,10 +16,10 @@ Everything_GetSelection(dir="0")
 	{
 	 WinGet, EverythingExe, ProcessName, Everything
 	 ControlGet, OutputVar, List, Selected, SysListView321, ahk_exe %EverythingExe%
-	 If (OutputVar = "")
+	 If (OutputVar = "") ; there was no selection so just grab the first result only
 		{
-		 Send {Down}
-		 ControlGet, OutputVar, List, Selected, SysListView321, ahk_exe %EverythingExe%
+		 ControlGet, OutputVar, List, , SysListView321, ahk_exe %EverythingExe%
+		 OutputVar:=StrSplit(OutputVar,"`n").1
 		}
 	 Loop, parse, OutputVar, `n, `r
 		{
