@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.46
+Version     : v1.47
 Author      : hi5
 Last update : 09 February 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.46"
+F4Version:="v1.47"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.46
+;@Ahk2Exe-SetFileVersion 1.47
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -373,7 +373,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				cmdfiles .= """" A_LoopField """" A_Space                ; " fix highlighting
 			 OpenFile(v, cmdfiles, MatchList.Settings.MaxWinWaitSec)
 			 If MatchList.Settings.log
-				Log(A_Now " : cmdline -> " v.exe "|" cmdfiles "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
+				Log(A_Now " : ProcessFiles, cmdline -> " v.exe "|" cmdfiles "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 			 cmdfiles:=""
 			}
 		 else If (v.Method = "FileList")
@@ -382,7 +382,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 FileAppend, %list%, %TmpFileList%, UTF-8-RAW
 			 OpenFile(v, TmpFileList, MatchList.Settings.MaxWinWaitSec)
 			 If MatchList.Settings.log
-				Log(A_Now " :  FileList -> " v.exe "|" TmpFileList "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
+				Log(A_Now " : ProcessFiles, FileList -> " v.exe "|" TmpFileList "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 			}
 		 Else If (v.Method <> "Files")
 			{
@@ -392,7 +392,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 					Continue
 				 OpenFile(v, A_LoopField, MatchList.Settings.MaxWinWaitSec)
 				 If MatchList.Settings.log
-					Log("`n" A_Now " : Files  -> " v.exe "|" A_LoopField "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
+					Log("`n" A_Now " : ProcessFiles, Files -> " v.exe "|" A_LoopField "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 				}
 			}
 		}
@@ -421,6 +421,8 @@ GetFiles()
 		{
 		 FileRead, Files, %CLI_File%
 		 MatchList.Temp["Files"]:=Files
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, CLI_Exit ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -428,6 +430,8 @@ GetFiles()
 		{
 		 Files:=Explorer_GetSelection()
 		 MatchList.Temp["Files"]:=Files
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, Explorer ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -435,6 +439,8 @@ GetFiles()
 		{
 		 Files:=Everything_GetSelection()
 		 MatchList.Temp["Files"]:=Files
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, Everything ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -442,6 +448,8 @@ GetFiles()
 		{
 		 Files:=DoubleCommander_GetSelection()
 		 MatchList.Temp["Files"]:=Files
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, DoubleCommander ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -449,6 +457,8 @@ GetFiles()
 		{
 		 Files:=XYPlorer_GetSelection()
 		 MatchList.Temp["Files"]:=Files
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, XYPlorer ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -456,6 +466,8 @@ GetFiles()
 		{
 		 Files:=QDir_GetSelection()
 		 MatchList.Temp["Files"]:=Files
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, QDir ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -469,6 +481,8 @@ GetFiles()
 		 Files:=RegExReplace(Files,"U)^.*\[(.*).$","$1")
 		 If ListerWindowClose in 2,3
 			WinClose, A
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, Lister ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -478,6 +492,8 @@ GetFiles()
 		 If (Files <> "")
 			{
 			 RegExMatch(Files,"U) - \K\[(.*)\]`r?`n",Files)
+			 If MatchList.Settings.log
+				Log(A_Now " : GetFiles, QuickView ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 			 Return Files1
 			}
 		}
@@ -489,7 +505,11 @@ GetFiles()
 		 If (ErrorLevel = 1) or (Files = "")
 			ControlGet, Files, Choice,, LCLListbox2, ahk_class TFindFile
 		 IfNotInString, Files,[ ; make sure you haven't selected a directory or the first line
-			Return Files
+			{
+			 If MatchList.Settings.log
+				Log(A_Now " : GetFiles, Find files ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+			 Return Files
+			}
 		}
 
 	 ClipboardSave:=ClipboardAll
@@ -501,6 +521,8 @@ GetFiles()
 	 ClipboardSave:=""
 ;	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
 	 MatchList.Temp["Files"]:=Files
+	 If MatchList.Settings.log
+		Log(A_Now " : GetFiles, TC File Panel ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 	 Return Files
 	}
 
@@ -981,9 +1003,16 @@ if (A_PriorHotkey <> "$Esc" or A_TimeSincePriorHotkey > 400)
 	 Return
 	}
 Else
-	WinClose ahk_exe everything.exe
+	{
+	 WinClose ahk_exe everything.exe
+	 WinClose ahk_exe everything64.exe
+	}
 Return
 #If
+
+/*
+
+; use *Enter to open folders in TC panels, disable for now 20250209
 
 #If MatchList.settings.Everything and Everything_Active()
 
@@ -1016,11 +1045,14 @@ Return
 TCCD(tc,par,dir)
 	{
 	 WinClose ahk_exe everything.exe
+	 WinClose ahk_exe everything64.exe
 	 If !InStr(par,"/R=")
 		Run, %tc% %par% "%dir%\"
 	 Else
 		Run, %tc% %par%"%dir%\"
 	}
+
+*/
 
 SaveSettings:
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
@@ -1171,6 +1203,7 @@ Return
 #include %A_ScriptDir%\lib\dpi.ahk
 #include %A_ScriptDir%\lib\tc.ahk              ; wm_copydata
 #include %A_ScriptDir%\lib\log.ahk
+#include %A_ScriptDir%\lib\AutoXYWH.ahk
 
 ;@Ahk2Exe-IgnoreBegin
 	#include *i %A_ScriptDir%\..\ButtonBarKeyboard\ButtonBarKeyboard.ahk

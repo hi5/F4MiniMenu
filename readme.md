@@ -1,4 +1,4 @@
-# F4MiniMenu - v1.46
+# F4MiniMenu - v1.47
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
 (and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
@@ -343,7 +343,7 @@ To configure Total Commander to use F4TCIE.ahk:
     TC, Configuration, Edit/View, Editor (ini):
     drive:\path-to\F4TCIEi.ahk "%1"
 
-Note: if both AutoHotkey v1.1 and v2 are installed you may receive an error message (from the AutoHotkey launcher).
+Note: if both AutoHotkey v1.1 and v2 are installed an error message may be shown (from the AutoHotkey launcher).
 In that case include the full path of the AutoHotkey v1.1 executable before the drive:\path-to\F4TCIE.ahk like so:
 
     TC, Configuration, Edit/View, Editor:
@@ -511,6 +511,7 @@ __Editor configuration__
 * [DropFilesA - SKAN](http://www.autohotkey.com/board/topic/41467-make-ahk-drop-files-into-other-applications/#entry258810) including Unicode version [nimda](http://www.autohotkey.com/board/topic/79145-help-converting-ahk-ahk-l/#entry502676)
 * [OSDTIP_Pop() - SKAN](https://www.autohotkey.com/boards/viewtopic.php?t=76881#p333577)
 * [TC_SendData() - dindog and others](https://www.ghisler.ch/board/viewtopic.php?p=363391#p363391) - using WM_CopyData
+* [AutoXYWH() - toralf and tmplinshi](https://www.autohotkey.com/boards/viewtopic.php?t=1079)
 
 ## Changelog
 

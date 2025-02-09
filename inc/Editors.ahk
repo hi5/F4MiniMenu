@@ -28,7 +28,8 @@ Important:
 
 Info:
 1 - Delay (in miliseconds) D&&D = Drag && Drop, Open = startup.
-2 - Sort using Ctrl+UP / Ctrl+DOWN or use Edit menu (multiple rows possible).
+2 - Sort using Ctrl+UP / Ctrl+DOWN or use Edit menu
+     (multiple rows possible).
 )
 
 IfWinExist, F4MiniMenu - Editor Settings ahk_class AutoHotkeyGUI
@@ -39,6 +40,8 @@ IfWinExist, F4MiniMenu - Editor Settings ahk_class AutoHotkeyGUI
 	 Return
 	}
 
+Gui, Browse: +Resize +MinSize790x427
+
 Menu, EditMenu, Add, Move Up`tCtrl+Up, MoveUp
 Menu, EditMenu, Add, Move Down`tCtrl+Down, MoveDown
 Menu, MenuBar, Add, %A_Space%Edit, :EditMenu
@@ -47,20 +50,37 @@ Gui, Browse:Menu, MenuBar
 ; INI Gui
 Gui, Browse:font,          % dpi("s8")
 Gui, Browse:Add, ListView, % dpi("x6 y5 w780 h285 grid hwndhLV vLV gLVLabel"), Program|Parameters|Start Dir.|Window|Extensions|Method|D&D|Open|Editor|Icon|Name
-Gui, Browse:Add, GroupBox, % dpi("x6 yp+290 w360 h120 vGroupBoxInfo"), Comments
-Gui, Browse:Add, Text,     % dpi("x16 yp+20 w340"), %infotext%
-Gui, Browse:Add, Button,   % dpi("xp+370   yp w70 h24 gSettings"), &Settings
-Gui, Browse:Add, Button,   % dpi("xp+80    yp w70 h24 gAdd"), &Add
-Gui, Browse:Add, Button,   % dpi("xp+80    yp w70 h24 gModify"), &Modify
-Gui, Browse:Add, Button,   % dpi("xp+80    yp w70 h24 gRemove"), &Remove
-Gui, Browse:Add, Button,   % dpi("xp-240   yp+40 w150 h24 gOK"), &OK
-Gui, Browse:Add, Button,   % dpi("xp+160   yp w150 h24 gCancel"), &Cancel
-Gui, Browse:Add, Link,     % dpi("xp-160   yp+40 w310 h16"), F4MiniMenu %F4Version% -- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
+Gui, Browse:Add, GroupBox, % dpi("x6 yp+290 w390 h120 vGroupBoxInfo"), Comments
+Gui, Browse:Add, Text,     % dpi("x16 yp+20 w340 vInfoText"), %infotext%
+Gui, Browse:Add, Button,   % dpi("xp+445   yp w70 h24 gSettings vButtonSettings"), &Settings
+Gui, Browse:Add, Button,   % dpi("xp+80    yp w70 h24 gAdd      vButtonAdd"), &Add
+Gui, Browse:Add, Button,   % dpi("xp+80    yp w70 h24 gModify   vButtonModify"), &Modify
+Gui, Browse:Add, Button,   % dpi("xp+80    yp w70 h24 gRemove   vButtonRemove"), &Remove
+Gui, Browse:Add, Button,   % dpi("xp-240   yp+40 w150 h24 gOK   vButtonOK"), &OK
+Gui, Browse:Add, Button,   % dpi("xp+160   yp w150 h24 gCancel  vButtonCancel"), &Cancel
+Gui, Browse:Add, Link,     % dpi("xp-160   yp+40 w310 h16       vLinkText"), F4MiniMenu %F4Version% -- More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>
 Gosub, UpdateListview
 LvHandle := New LV_Rows(hLV)
 Gui, Browse:Show,          % dpi("x261 y211 h427 w790 center"), F4MiniMenu - Editor Settings
 
 Sleep 100
+
+BrowseGuiSize:
+	If (A_EventInfo = 1) ; The window has been minimized.
+		Return
+	AutoXYWH("w h"   , "Lv")
+	AutoXYWH("y"     , "GroupBoxInfo")
+	AutoXYWH("y"     , "InfoText")
+	AutoXYWH("x y"   , "ButtonSettings")
+	AutoXYWH("x y"   , "ButtonAdd")
+	AutoXYWH("x y"   , "ButtonModify")
+	AutoXYWH("x y"   , "ButtonRemove")
+	AutoXYWH("x y"   , "ButtonOK")
+	AutoXYWH("x y"   , "ButtonCancel")
+	AutoXYWH("x y"   , "LinkText")
+	ControlGetPos, , , OutWidth, , Syslistview321, F4MiniMenu - Editor Settings
+	LV_ModifyCol(1, (dpifactor*250) + (OutWidth-780))
+Return
 
 NewEditor:
 If (New = 1) ; we choose "Add new Editor in foreground menu"
@@ -136,7 +156,7 @@ SelItem := LV_GetNext()
 If (SelItem = 0)
 	SelItem = 1
 LV_GetText(Ask, SelItem, 1)
-MsgBox, 52, Remove editor (only one entry per time), Do you want to remove:`n%Ask%?
+MsgBox, 52, Remove editor (one entry),Do you want to remove:`n%Ask%?
 IfMsgBox, Yes
 	{
 	 LV_Delete(SelItem)

@@ -1,5 +1,9 @@
 ## Changelog
 
+* 20250209 - v1.47 a) Allow resizing of Configure Editors GUI (browse list) using AutoXYWH()  
+                   b) Some code cleanup re Enter shortcuts; add everything64.exe to Esc Winclose routine  
+                   c) Trace menu steps and result of GetFiles in log  
+
 * 20250209 - v1.46 a) Finetuning Everything_GetSelection() to check for selected rows in listview (if none get first result only)  
 
 * 20250208 - v1.45 a) Finetuning Everything_Active() (using "A" not "Everything" in WinGet to detect active window)  

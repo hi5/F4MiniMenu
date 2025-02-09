@@ -40,5 +40,7 @@ If (A_Args.Length() <> 0)
 			CLI_Settings:=1
 		 if (v = "/ED")
 			CLI_Editors:=1
-		}	
+		}
+	 If MatchList.Settings.log
+		Log(A_Now " : CLI Params -> CLI_ShowMenu: " CLI_ShowMenu " CLI_FilteredMenu: " CLI_FilteredMenu "CLI_Settings: " CLI_Settings " CLI_Editors: " CLI_Editors,MatchList.Settings.logFile)
 	}

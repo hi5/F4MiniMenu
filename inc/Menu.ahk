@@ -52,6 +52,8 @@ Return
 ; Tray menu
 MenuHandler:
 ; MsgBox % A_ThisMenu ":" A_ThisMenuItemPos-1 ":" MatchList[A_ThisMenuItemPos-1].exe ; debug
+If MatchList.Settings.log
+	Log(A_Now " : Menuhandler, call -> A_ThisMenu=" A_ThisMenu "| A_ThisMenuItemPos-1=" A_ThisMenuItemPos-1 "| Exe=" A_ThisMenuItem,MatchList.Settings.logFile)
 
 ; Easy & Quick options first
 If (A_ThisMenuItem = "&Open")
@@ -82,7 +84,7 @@ Else If (A_ThisMenuItem = "&Pause Script")
 	 Return
 	}
 Else If (A_ThisMenuItem = "   Exit")
-	Return
+	 Return
 Else If (A_ThisMenuItem = "   Settings") ; Settings menu
 	{
 	 Gosub, Settings
@@ -90,17 +92,23 @@ Else If (A_ThisMenuItem = "   Settings") ; Settings menu
 	}
 Else If (A_ThisMenuItemPos = 1) ; Default editor
 	{
+	 If MatchList.Settings.log
+		Log(A_Now " : Menuhandler, selected editor -> Default editor" ,MatchList.Settings.logFile)
 	 ProcessFiles(Matchlist, 1)
 	 Return
 	}
 Else
 	If (MatchList.Temp.SelectedExtensions = "") or (A_ThisMenu = "MyMenu") ; entire Foreground menu
 		{
+		 If MatchList.Settings.log
+			Log(A_Now " : Menuhandler, selected editor -> editor from entire menu, Exe=" A_ThisMenuItem,MatchList.Settings.logFile)
 		 ProcessFiles(Matchlist, A_ThisMenuItemPos-1) ; proceed with the selected editor. Menu order = editor order.
 		 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp"),MatchListReference:=""
 		}
 	else                         ; filtered Foreground menu
 		{
+		 If MatchList.Settings.log
+			Log(A_Now " : Menuhandler, selected editor -> editor from filtered menu, Exe=" A_ThisMenuItem,MatchList.Settings.logFile)
 		 ProcessFiles(Matchlist, MatchListReference[A_ThisMenuItemPos])
 		 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp"),MatchListReference:=""
 		}

@@ -48,7 +48,7 @@ Everything_DirectoryTree()
 	 StartSearch:=StrReplace(StartSearch,"/drive",drive)
 	 StartSearch:=StrReplace(StartSearch,"/dir",dir)
 	 Run, % StartSearch
-	 WinWaitActive, ahk_exe Everything.exe
+	 WinWaitActive, ahk_exe Everything.exe ; note 20250209 everything64.exe v1.5 alpha
 	 ControlSend, Edit1, {space}, ahk_exe Everything.exe
 	}
 

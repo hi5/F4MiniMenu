@@ -374,7 +374,6 @@ When unchecked all selected files will be opened even when QuickView is being us
 
 )
 
-
 ;Ev DirTree:`tReplace TC Dir Tree (Alt-F10)`n
 ;Ev Path:`t`tPath to eEverything.exe (required by DirTree)`n`n
 Return
