@@ -12,3 +12,7 @@ Catch
 
 If ((MatchList.MaxIndex() = 0) or (MatchList.MaxIndex() = ""))
 	Error:=1
+
+; safety for upgrading to v1.50 with existing settings
+If (MatchList.settings.TCDelay = "")
+	MatchList.settings.TCDelay:=100

@@ -1,5 +1,9 @@
 ## Changelog
 
+* 20250915 - v1.50 a) Fix: add new editor didn't show New Editor gui (due to misplaced GuiResize)  
+                   b) New: Allow user to setup new programs via INI & new settings Gui (see Settings and Examples and f4mm-other-file-managers.md)  
+                   c) New: Allow user to set Copy Delay or use Clipwait (AutoHotkey Command) for TC and other programs (see Settings (TC) Copy Delay)  
+
 * 20250209 - v1.47 a) Allow resizing of Configure Editors GUI (browse list) using AutoXYWH()  
                    b) Some code cleanup re Enter shortcuts; add everything64.exe to Esc Winclose routine  
                    c) Trace menu steps and result of GetFiles in log  

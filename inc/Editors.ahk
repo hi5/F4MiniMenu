@@ -36,7 +36,7 @@ IfWinExist, F4MiniMenu - Editor Settings ahk_class AutoHotkeyGUI
 	{
 	 WinActivate, F4MiniMenu - Editor Settings ahk_class AutoHotkeyGUI
 	 If New
-	 	Gosub, NewEditor
+		Gosub, NewEditor
 	 Return
 	}
 
@@ -65,23 +65,6 @@ Gui, Browse:Show,          % dpi("x261 y211 h427 w790 center"), F4MiniMenu - Edi
 
 Sleep 100
 
-BrowseGuiSize:
-	If (A_EventInfo = 1) ; The window has been minimized.
-		Return
-	AutoXYWH("w h"   , "Lv")
-	AutoXYWH("y"     , "GroupBoxInfo")
-	AutoXYWH("y"     , "InfoText")
-	AutoXYWH("x y"   , "ButtonSettings")
-	AutoXYWH("x y"   , "ButtonAdd")
-	AutoXYWH("x y"   , "ButtonModify")
-	AutoXYWH("x y"   , "ButtonRemove")
-	AutoXYWH("x y"   , "ButtonOK")
-	AutoXYWH("x y"   , "ButtonCancel")
-	AutoXYWH("x y"   , "LinkText")
-	ControlGetPos, , , OutWidth, , Syslistview321, F4MiniMenu - Editor Settings
-	LV_ModifyCol(1, (dpifactor*250) + (OutWidth-780))
-Return
-
 NewEditor:
 If (New = 1) ; we choose "Add new Editor in foreground menu"
 	{
@@ -102,6 +85,23 @@ If (New = 1) ; we choose "Add new Editor in foreground menu"
 	}
 
 New:=0
+Return
+
+BrowseGuiSize:
+	If (A_EventInfo = 1) ; The window has been minimized.
+		Return
+	AutoXYWH("w h"   , "Lv")
+	AutoXYWH("y"     , "GroupBoxInfo")
+	AutoXYWH("y"     , "InfoText")
+	AutoXYWH("x y"   , "ButtonSettings")
+	AutoXYWH("x y"   , "ButtonAdd")
+	AutoXYWH("x y"   , "ButtonModify")
+	AutoXYWH("x y"   , "ButtonRemove")
+	AutoXYWH("x y"   , "ButtonOK")
+	AutoXYWH("x y"   , "ButtonCancel")
+	AutoXYWH("x y"   , "LinkText")
+	ControlGetPos, , , OutWidth, , Syslistview321, F4MiniMenu - Editor Settings
+	LV_ModifyCol(1, (dpifactor*250) + (OutWidth-780))
 Return
 
 ; Approved chances, read ListView to store new or changed data

@@ -9,7 +9,7 @@ Include for F4MiniMenu.ahk
 ShowMenu:
 CoordMode, Menu, Client
 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
-Menu, MyMenu, Show, % Coord["x"], % Coord["y"] 
+Menu, MyMenu, Show, % Coord["x"], % Coord["y"]
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 Return
 
@@ -44,7 +44,7 @@ Gosub, AddMenuProgramOptions
 Return
 
 ; If the tray icon is double click we do not actually want to do anything
-DoubleTrayClick: 
+DoubleTrayClick:
 Send {rbutton} ; show tray menu
 Return
 

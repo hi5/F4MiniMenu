@@ -1,9 +1,11 @@
-# F4MiniMenu - v1.47
+# F4MiniMenu - v1.50
 
 A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
-(and experimental/rudimentary support for Windows Explorer, Double Commander, XYPlorer, and Everything - only [when activated](#other-programs)).  
+(and experimental/rudimentary support for others incl. Windows Explorer, Double Commander, XYPlorer, Everything, etc, but only [when activated](#other-programs)).  
 
 It is a *standalone* program which runs separatly from Total Commander. See Getting Started.
+
+_It makes use of the clipboard to process selected files, so it may effect your clipboard manager history._
 
 ## Features
 
@@ -117,18 +119,24 @@ Once F4MiniMenu is started, the Global settings and new editors with a variety o
   - Foreground menu (select program (from all programs) to open all selected files with)
   - Filtered menu (select program (filtered programs based on matching extensions) to open all selected files with)
 * Other programs (1)
-  - Explorer, Double Commander, XYPlorer, Everything.
-* Use elsewhere in TC
+  - See below, changed as of v1.50 can now be defined by user per program.
+* Use elsewhere in TC - Misc.
   - Lister(2), Find Files, QuickView(3)
+  - TC Copy Delay: 0 will use another method to wait for the clipboard to receive the (selected) filepath(s) 
+    [the AutoHotkey ClipWait command](https://www.autohotkey.com/docs/v1/lib/ClipWait.htm), otherwise it
+    will wait the selected number of milliseconds before continuing. It impacts the display of the menu,
+    it will "wait" that time before showing the menu.
 
 (1) Support for other programs may stop or change at any time when new versions of those programs are being used.
-(1a) In Everything >v1.5+ F4 is assigned to "Focus Next Selected", F4MM will overrule this functionality - select another shortcut (either in F4MM or Everything) is this is not desired behaviour. (Settings in Everything may change during the programs development, still Alpha Feb. 2025)
+(Check program setup in the Settings).
 
 (2) If **Lister** setting is active _and_ `F4Edit>1` in wincmd.ini: _close Lister window_ - See `F4Edit=` options in TC help file on how to handle F4 in lister via wincmd.ini (Introduced in TC v11.03).
 
 (3) **QuickView** is experimental:  
 `[x]` when checked, it will try to open the file that is currently open in the QuickView panel, _even_ if multiple files are selected in the active TC panel and the focus is NOT on the QuickView panel it self. The foreground and filtered menus can be opened in the QuickView panel, but here also only the one "viewed" file will be opened.  
-`[ ]` when unchecked all selected files will be opened even when QuickView is being used.
+`[ ]` when unchecked all selected files will be opened even when QuickView is being used.  
+Regarding `TC Copy Delay`: the default 100ms seems to work well, even in very large folders with 100K+ files, but it all depends in the program and computer, so experiment to determine a workable solution.
+
 
 __WinWait__ Set the maximum time in seconds to wait for the selected program window to appear before applying the selected Window Mode (Normal, Maximized, Minimized -- see Editor configuration). This should also prevent any unexpected "waiting" in case a program launch failed (crash, very slow program start etc).  
 As soon as the window appears it will continue to apply the Window mode and no longer wait.
@@ -183,7 +191,7 @@ AutoHotkey path variables:
 Environment path variables:
 
 * ComSpec
-* WinDir
+* WinDir and SystemRoot
 * ProgramFiles
 * ProgramFiles(x86)
 * ProgramW6432
@@ -446,11 +454,13 @@ Parameters: %L /P2 /M2
 
 ## Other programs
 
-### File managers
+**File managers**
 
-The foreground and background menu should work with Explorer, Double Commander, XYPlorer, and Everything.  
+F4MM _can_ be made to work with other file managers such as Explorer, Double Commander,
+XYPlorer, Everything, and many others. But your mileage may vary e.g. it depends on your
+setup if it works reliably.
 
-Not supported:
+Not supported are:
 
 * Starting and Closing of these file managers and/or F4MiniMenu
 * DocumentTemplates
@@ -458,19 +468,25 @@ Not supported:
 
 Each file manager has to be (de)activated in the settings.
 
-To enable:
+**Add/Enable:**
 
-* for Explorer and Everything: tick the checkbox (on)
-* for Double Commander and XYPlorer set the hotkey that will copy the full path names to the clipboard, e.g. the equivalent of the `cm_CopyFullNamesToClip` TC command (Double Commander default: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>c</kbd>, XYPlorer default: <kbd>Ctrl</kbd>+<kbd>p</kbd>)
-* save the settings (OK) - F4MiniMenu should reload automatically and now work with the activated file managers.
+* To Endable: check the checkbox before the program name. Click OK to save changes.
+* `F4MMOtherPrograms.ini` includes __inactive__ settings for Double Commander, Everything, and Explorer by default.
+* To Add: Click "Add" and enter the setting or copy it from the clipboard, see [f4mm-other-file-managers.md](f4mm-other-file-managers.md)
+  for details.
 
-To disable:
+**Remove/Disable:**
 
-* for Explorer and Everything: tick the checkbox (off)
-* for Double Commander and XYPlorer delete the hotkey(s) (press <kbd>DEL</kbd>)
-* save the settings (OK)
+* To Remove: Make the name active by clicking it once, and press "DEL" to remove.
+  Note that Deletion is immediate, so even if you CANCEL the settings, the file manager
+  settings are still removed and have to be added again.
+* To Disable: uncheck the checkbox infront of the file manager name in the list. Click OK to save changes.
 
-As support for these other file managers is not thoroughly tested, unexpected behaviour may occur.
+As support for other file managers is not thoroughly tested, unexpected behaviour may occur.
+
+It assumes the "file list" of the other program is Active before invoking F4MM as sending the
+shortcut to "copy file names with their full paths" is sent directly. If not active it may
+fail to copy the file names.
 
 ## Screenshots
 
@@ -512,6 +528,10 @@ __Editor configuration__
 * [OSDTIP_Pop() - SKAN](https://www.autohotkey.com/boards/viewtopic.php?t=76881#p333577)
 * [TC_SendData() - dindog and others](https://www.ghisler.ch/board/viewtopic.php?p=363391#p363391) - using WM_CopyData
 * [AutoXYWH() - toralf and tmplinshi](https://www.autohotkey.com/boards/viewtopic.php?t=1079)
+
+### Other
+
+* Two [Tango Desktop](https://en.wikipedia.org/wiki/Tango_Desktop_Project) Icons (help-browser and dialog-warning) for use in Settings GUI (see res folder)
 
 ## Changelog
 

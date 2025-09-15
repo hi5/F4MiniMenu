@@ -2,12 +2,6 @@
 Explorer functions
 */
 
-Explorer_Active()
-	{
-	 WinGetClass, winClass, % "ahk_id" . hWnd := WinExist("A")
-	 if winClass in CabinetWClass,ExploreWClass
-		Return 1
-	}
 
 Explorer_GetSelection() ; https://www.autohotkey.com/boards/viewtopic.php?t=60403#p255169
 	{
@@ -25,6 +19,20 @@ Explorer_GetSelection() ; https://www.autohotkey.com/boards/viewtopic.php?t=6040
 	}
 
 /*
+; Not used at the moment 
+Explorer_GetFocusedItem() ; 
+	{
+	 WinGetClass, winClass, % "ahk_id" . hWnd := WinExist("A")
+	 if winClass not in CabinetWClass,ExploreWClass
+		Return
+	 for window in ComObjCreate("Shell.Application").Windows
+	 if (hWnd = window.HWND) && (oShellFolderView := window.document)
+		break
+	 result := oShellFolderView.FocusedItem.Path
+	 Return result
+	}
+
+; 
 ; better? https://www.autohotkey.com/boards/viewtopic.php?p=462887#p462887
 Explorer_GetSelection() {
    WinGetClass, winClass, % "ahk_id" . hWnd := WinExist("A")

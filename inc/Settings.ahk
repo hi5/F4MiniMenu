@@ -9,14 +9,6 @@ Settings:
 
 Gui, Browse:Destroy
 
-; Variables
-;SelectMenuPos:=MatchList.settings.MenuPos
-;SelectTCStart:=MatchList.settings.TCStart
-;SettingsFormat:=MatchList.settings.SettingsFormat
-;If (SettingsFormat = "")
-;	SettingsFormat:=1
-;OldSettingsFormat:=SettingsFormat
-
 If (MatchList.settings.FilteredMenuAutoEdit = "")
 	MatchList.settings.FilteredMenuAutoEdit:=1
 FGHKey:=MatchList.settings.ForegroundHotkey
@@ -68,12 +60,64 @@ Checked:=MatchList.settings.F4MMCloseAll
 Gui, Settings: Add, Checkbox,     % dpi("x25 yp+3   w240 h16 Checked" checked " vF4MMCloseAll"), Close F4MM when all copies of TC close
 Checked:=MatchList.settings.F4MMClosePID
 Gui, Settings: Add, Checkbox,     % dpi("x25 yp+25  w240 h16 Checked" checked " vF4MMClosePID"), Close F4MM when TC closes started by F4MM
+
 Gui, Settings: Font, % dpi("cGreen")
-Gui, Settings: Add, Text,         % dpi("xp+240 yp gFMMCloseHelpText"), (?)
-Gui, Settings: Add, Text,         % dpi("xp+260 yp gFMMPathsHelpText"), (?)
+;Gui, Settings: Add, Text,         % dpi("xp+240 yp gFMMCloseHelpText"), (?)
+Gui, Settings: Add, Picture, % dpi("xp+245 yp+1 gFMMCloseHelpText w12 h-1"), %A_ScriptDir%\res\help-browser.ico
+;Gui, Settings: Add, Text,         % dpi("xp+260 yp gFMMPathsHelpText"), (?)
+Gui, Settings: Add, Picture, % dpi("xp+250 yp+1 gFMMPathsHelpText w12 h-1"), %A_ScriptDir%\res\help-browser.ico
+
 Gui, Settings: Font, % dpi("cBlack")
 Gui, Settings: Font, ; needed as theme is stripped from control @ https://www.autohotkey.com/boards/viewtopic.php?p=399355#p399355
 Gui, Settings: Font, % dpi("s8")
+
+Gui, Settings: Add, GroupBox, % dpi("x16 yp+34 w260 h94"), Other prg. (Hotkey: Copy File Names w. Full Path)
+
+Gui, Settings: Add, ListView, % dpi("x20 yp+16 w200 h72 checked grid vSelItem gOtherProgramEdit"), Program (double click to edit)
+
+Gui, Settings: Font, % dpi("s8 cGreen")
+;Gui, Settings: Add, Text,      % dpi("xp+225 yp gOtherProgramHelp"), ⚠ (?) ; was gFMMFileManText
+Gui, Settings: Add, Picture, % dpi("xp+225 yp+1 gOtherProgramHelp w12 h-1"), %A_ScriptDir%\res\dialog-warning.ico
+Gui, Settings: Add, Picture, % dpi("xp+13 yp gOtherProgramHelp w12 h-1"), %A_ScriptDir%\res\help-browser.ico
+
+Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, ; see note above, required to reset style
+Gui, Settings: Font, % dpi("s8")
+
+;Gui, Settings: Add, Button, % dpi("xp-17 yp+15 w46 h25 gOtherProgram"), Add
+Gui, Settings: Add, Button, % dpi("xp-32 yp+15 w46 h25 gOtherProgram"), Add
+
+Gui, Settings: Add, Button, % dpi("xp    yp+30 w46 h25 gDeleteProgram"), Del
+
+Gui, Settings: Add, GroupBox, % dpi("xp+54 yp-63 w276 h94"), Use elsewhere in TC (no menu) -- Misc.
+
+Checked:=MatchList.settings.Lister
+Gui, Settings: Add, Checkbox,  % dpi("xp+10 yp+20 w220 h16 Checked" checked " vLister"), Lister (+ use F4Edit setting in wincmd.ini)
+
+Checked:=MatchList.settings.QuickView
+Gui, Settings: Add, Checkbox,  % dpi("xp    yp+20 w120 h16 Checked" checked " vQuickView"), QuickView (see ?)
+
+Checked:=MatchList.settings.FindFiles
+Gui, Settings: Add, Checkbox,  % dpi("xp+160 yp w80 h16 Checked" checked " vFindFiles"), Find Files
+
+Gui, Settings: Font, % dpi("s8 cGreen")
+;Gui, Settings: Add, Text,      % dpi("xp+75 yp-28 gFMMTCElseWhere"), (?)
+Gui, Settings: Add, Picture, % dpi("xp+70 yp-28 gFMMTCElseWhere w12 h-1"), %A_ScriptDir%\res\help-browser.ico
+
+Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, ; see note above, required to reset style
+Gui, Settings: Font, % dpi("s8")
+
+Gui, Settings: Font, % dpi("s8 cc0c0c0")
+Gui, Settings: Add, Text,      % dpi("xp-230 yp+42 h10 "), ───────────────────────────────
+Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, ; see note above, required to reset style
+Gui, Settings: Font, % dpi("s8")
+
+Gui, Settings: Add, Text,  % dpi("xp yp+16 w160 h16"), TC Copy Delay (ms, 0=ClipWait)::
+
+Gui, Settings: Add, DropDownList,  % dpi("xp+170 yp-3 w60 h20 r7 vTCDelay"), 0|100|200|300|400|500|600|700|800|900|1000
+GuiControl, Settings:, TCDelay, % "|" LTrim(StrReplace("|0|100|200|300|400|500|600|700|800|900|1000|", "|" Matchlist.Settings.TCDelay "|", "|" Matchlist.Settings.TCDelay "||"),"|")
 
 Gui, Settings: Add, GroupBox,     % dpi("x16 yp+35 w395 h120"), Hotkeys
 
@@ -121,7 +165,7 @@ If InStr(FGHKey,"Esc &")
 	 StringReplace, FGHKey, FGHKey, %A_Space%, , All
 	 GuiControl, Choose, FMod, 2
 	}
-	
+
 Gui, Settings: Add, Hotkey, % dpi("xp+90 yp w140 h20 vFGHKey"), %FGHKey% 
 ;Gui, Settings: Add, Button, % dpi("xp+110 yp w30 h20 gButtonClearFG"), clear
 
@@ -146,7 +190,7 @@ If InStr(TMHKey,"Esc &")
 	 StringReplace, TMHKey, TMHKey, %A_Space%, , All
 	 GuiControl, Choose, Tmod, 2
 	}
-	
+
 Gui, Settings: Add, Hotkey, % dpi("xp+90 yp w140 h20 vTMHKey"), %TMHKey% 
 ; Gui, Settings: Add, Button, % dpi("xp+110 yp w30 h20 gButtonClearTM"), clear
 
@@ -154,69 +198,35 @@ Gui, Settings: Add, Button, % dpi("xp+170 yp-75 w120 h25 gButtonOK"), OK
 Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gButtonClear"), Clear All Hotkeys
 Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gSettingsGuiClose"), Cancel
 
-Gui, Settings: Add, GroupBox, % dpi("x16 yp+40 w260 h72"), Other prg. (Hotkey: Copy File Names w. Full Path)
+Gui, Settings: Add, Link,   % dpi("x20 yp+35"), F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
 
-Gui, Settings: Add, Text,      % dpi("x25 yp+20 w100 h20"), Dbl Cmd:
-Gui, Settings: Add, Hotkey,    % dpi("xp+52 yp-3 w90 h20 vDoubleCommander"), % MatchList.settings.DoubleCommander
+Gosub, ParseSettingsF4MMOtherPrograms
+LV_ModifyCol(1,170)
 
-Gui, Settings: Add, Text,      % dpi("x25 yp+30 w50 h20"), XYPlorer:
-Gui, Settings: Add, Hotkey,    % dpi("xp+52 yp-3 w90 h20 vXYPlorer"), % MatchList.settings.XYPlorer
+Gui, Settings: Show,        % dpi("center w570"), F4MiniMenu - Settings
 
-Checked:=MatchList.settings.Explorer
-Gui, Settings: Add, Checkbox,  % dpi("xp+100 yp-25 w60 h16 Checked" checked " vExplorer"), Explorer
+Return
 
-Checked:=MatchList.settings.Everything
-Gui, Settings: Add, Checkbox,  % dpi("xp     yp+28 w80 h16 Checked" checked " vEverything"), Everything
+; note: we read settings in ReadSettingsF4MMOtherPrograms.ahk
+ParseSettingsF4MMOtherPrograms:
+If !FileExist(A_ScriptDir "\F4MMOtherPrograms.ini")
+	{
+	 Gui, Settings: Default
+	 GuiControl, Disable, F4MMOtherPrograms
+	 Return
+	}
+; "ProgramExe,ProgramShortCut,ProgramDelay,ProgramSendMethod,Active,Name"
+Gui, Settings: ListView, SelItem
+Gui, Settings: Default
+LV_Delete()
+for k, v in F4MMOtherPrograms
+	{
+	 if (k = "settings")
+		continue
+	 if F4MMOtherPrograms[k].Name ; we have .group and .active so we only need to add actual program
+		LV_Add(F4MMOtherPrograms[k].Active ? "check" : "", F4MMOtherPrograms[k].Name)
+	}
 
-Gui, Settings: Font, % dpi("s8 cGreen")
-Gui, Settings: Add, Text,      % dpi("xp+70 yp-28 gFMMFileManText"), (?)
-Gui, Settings: Font, % dpi("cBlack")
-Gui, Settings: Font, ; see note above, required to reset style
-Gui, Settings: Font, % dpi("s8")
-
-Gui, Settings: Add, GroupBox, % dpi("xp+35 yp-19 w270 h72"), Use elsewhere in TC (no menu)
-
-Checked:=MatchList.settings.Lister
-Gui, Settings: Add, Checkbox,  % dpi("xp+10 yp+20 w220 h16 Checked" checked " vLister"), Lister (+ use F4Edit setting in wincmd.ini)
-
-Checked:=MatchList.settings.QuickView
-Gui, Settings: Add, Checkbox,  % dpi("xp    yp+28 w120 h16 Checked" checked " vQuickView"), QuickView (see ?)
-
-Checked:=MatchList.settings.FindFiles
-Gui, Settings: Add, Checkbox,  % dpi("xp+160 yp w80 h16 Checked" checked " vFindFiles"), Find Files
-
-Gui, Settings: Font, % dpi("s8 cGreen")
-Gui, Settings: Add, Text,      % dpi("xp+70 yp-28 gFMMTCElseWhere"), (?)
-Gui, Settings: Font, % dpi("cBlack")
-Gui, Settings: Font, ; see note above, required to reset style
-Gui, Settings: Font, % dpi("s8")
-
-
-; Note: deactivated Everything Directory Tree and DocumentTemplates settings for now
-/*
-Gui, Settings: Add, Text,      % dpi("xp+70 yp+1 w100 h20"), Ev. Dir Tree:
-Gui, Settings: Add, Hotkey,    % dpi("xp+100 yp-3 w90 h20 vEVDirTree"), % MatchList.settings.EVDirTree
-
-Gui, Settings: Add, Text,      % dpi("xp+100 yp+1 w50 h20"), Ev. Path:
-Gui, Settings: Add, Edit  ,    % dpi("xp+50  yp-5 w160 h21 vEvPath"), % MatchList.settings.EvPath ; %
-Gui, Settings: Add, Button,    % dpi("xp+165  yp   w30  h20 gSelectEv"), >>
-
-Gui, Settings: Add, GroupBox, % dpi("x16 yp+45 w540 h70"), Currently Available Document Templates
-Gui, Settings: Add, Edit, % dpi("x25 yp+20 ReadOnly h40 w385 vDocumentTemplates"), % MatchList.Settings.templatesExt
-Gui, Settings: Add, Button, % dpi("xp+402 yp w120 h25 gButtonDocumentTemplates"), Update (scan)
-*/
-
-;Gui, Settings: Add, GroupBox, x16 yp+40 w395 h60 , Misc.
-;perhaps in future versions
-;Gui, Settings: Add, Text, x25 yp+25 w150 h16 , Store set&tings in:
-;Gui, Settings: Add, DropDownList, xp+225 yp-5 w140 h25 r2 Choose%SettingsFormat% vSettingsFormat AltSubmit, 1 - XML Format|2 - INI format
-
-Gui, Settings: Add, Link,   % dpi("x25 yp+60"), F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
-
-;Gui, Settings: Add, GroupBox, xp+400 yp-85 w122 h60
-;Gui, Settings: Add, Link,   xp+5 yp+13, Feedback welcome at`n<a href="http://ghisler.ch/board/viewtopic.php?t=35721">Total Commander forum</a>`nor <a href="https://github.com/hi5/F4MiniMenu">GitHub Issues</a>.
-
-Gui, Settings: Show, % dpi("center w570"), F4MiniMenu - Settings
 Return
 
 ButtonDocumentTemplates:
@@ -227,6 +237,7 @@ Return
 
 ButtonOK:
 Gui, Settings: Submit, NoHide
+
 MatchList.settings.MenuPos:=MenuPos
 MatchList.settings.FilteredMenuAutoEdit:=FilteredMenuAutoEdit
 If (MaxFiles > 50)
@@ -242,6 +253,7 @@ MatchList.settings.F4MMCloseAll:=F4MMCloseAll
 MatchList.settings.F4MMClosePID:=F4MMClosePID
 MatchList.settings.FullMenu:=trim(SubStr(FullMenu,1,1)," `t&")
 MatchList.settings.MaxWinWaitSec:=MaxWinWaitSec
+MatchList.settings.TCDelay:=TCDelay
 
 ;GuiControlGet, EscFG, , FEsc
 ;GuiControlGet, WinFG, , FWin
@@ -279,15 +291,25 @@ MatchList.settings.ForegroundHotkey:=FGHKey
 MatchList.settings.BackgroundHotkey:=BGHKey
 MatchList.settings.FilteredHotkey:=TMHKey
 
-MatchList.settings.Explorer:=Explorer
-MatchList.settings.Everything:=Everything
-;MatchList.settings.EvPath:=EvPath
-;MatchList.settings.EVDirTree:=EVDirTree
-MatchList.settings.DoubleCommander:=DoubleCommander
-MatchList.settings.XYPlorer:=XYPlorer
 MatchList.settings.Lister:=Lister
 MatchList.settings.QuickView:=QuickView
 MatchList.settings.FindFiles:=FindFiles
+
+Gui, Settings:Default
+ProgramStateToSave:=""
+Loop, % LV_GetCount()
+	{
+	 LV_GetText(ProgramStateToSave, A_Index, 1)
+	 If (ProgramStateToSave = "") ; or (ProgramStateToSave = "Program")
+		Continue
+	 If (LV_GetNext(A_Index-1, "Checked") = A_Index)
+		IsProgramChecked:=1
+	 Else
+		IsProgramChecked:=0
+	 IniWrite, %IsProgramChecked%, %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramStateToSave%, Active
+	 IsProgramChecked:=0
+	 ProgramStateToSave:=""
+	}
 
 HotKeyState:="On"
 Gosub, SetHotkeys
@@ -316,8 +338,149 @@ HotKeyState:="On"
 Gosub, SetHotkeys
 Return
 
+
+/*
+[ProgramName]
+ProgramExe=Everything.exe
+ProgramShortCut=!Ins
+ProgramDelay=300
+ProgramSendMethod=ControlSend
+ProgramActive=1
+
+*/
+DeleteProgram:
+ControlFocus, SysListView321, F4MiniMenu - Settings
+SelItem := LV_GetNext()
+If (SelItem = 0)
+	SelItem = 1
+LV_GetText(ProgramToEdit, SelItem, 1)
+MsgBox, % 36+8192, Delete editor, Delete %ProgramToEdit% from F4MiniMenu?
+IfMsgBox, No
+	Return
+LV_Delete(SelItem)
+IniDelete, F4MMOtherPrograms.ini, %ProgramToEdit%
+If !ErrorLevel
+	{
+	 ReadSettingsF4MMOtherPrograms()
+	 MsgBox,% 64+8192,Delete editor, %ProgramToEdit% deleted.
+	 Gosub, ParseSettingsF4MMOtherPrograms
+	}
+Return
+
+OtherProgramEdit:
+
+if A_GuiControlEvent not in DoubleClick
+	Return
+ProgramEditSettings:=1
+ControlFocus, SysListView321, F4MiniMenu - Settings
+SelItem := LV_GetNext()
+If (SelItem = 0)
+	SelItem = 1
+LV_GetText(ProgramToEdit, SelItem, 1)
+OtherProgram:
+
+Gui, Settings:+Disabled
+Gui, OtherProgram:Destroy
+Gui, OtherProgram:+OwnerSettings -SysMenu +Toolwindow
+;Gui, OtherProgram: -SysMenu +Toolwindow
+Gui, OtherProgram:font,              bold
+Gui, OtherProgram:Add, Text, , Configure third party programs.`nSee help for details.
+Gui, OtherProgram:font,              
+Gui, OtherProgram:Add, Text, , Program Name:
+Gui, OtherProgram:Add, Edit, % dpi("w300 h20 vProgramName"),
+Gui, OtherProgram:Add, Text, , Program Executable(s) [comma separated]:
+Gui, OtherProgram:Add, Edit, % dpi("w300 h20 vProgramExe"),
+Gui, OtherProgram:Add, Text, , Shortcut to copy file path(s):
+Gui, OtherProgram:Add, Hotkey, % dpi("w300 h20 vProgramShortCut"),
+Gui, OtherProgram:Add, Text, , Copy Delay (ms, 0=ClipWait):
+Gui, OtherProgram:Add, DropDownList, % dpi("w140 R6 vProgramDelay"), 0|100||200|300|400|500
+Gui, OtherProgram:Add, Text, % dpi("xp+159 yp-19"), Send Method:
+Gui, OtherProgram:Add, DropDownList, % dpi("w140 R2 vProgramSendMethod"), Send||ControlSend
+Gui, OtherProgram:Add, Button, % dpi("w30  x9     yp+40  gOtherProgramHelp")  ,?
+Gui, OtherProgram:Add, Button, % dpi("w100 x+65   yp     gOtherProgramCancel"),Cancel
+Gui, OtherProgram:Add, Button, % dpi("w100 xp+105 yp     gOtherProgramSave")  ,Save
+If ProgramEditSettings
+	{
+	 GuiControl,OtherProgram:,ProgramName      , %ProgramToEdit%
+	 GuiControl,OtherProgram:Disable,ProgramName, ; only allow progam name change in INI
+	 GuiControl,OtherProgram:,ProgramExe       , % F4MMOtherPrograms[ProgramToEdit,"ProgramExe"]
+	 GuiControl,OtherProgram:,ProgramShortCut  , % F4MMOtherPrograms[ProgramToEdit,"ProgramShortCut"]
+	 GuiControl,OtherProgram:,ProgramDelay     , |
+	 GuiControl,OtherProgram:,ProgramSendMethod, |
+	 GuiControl,OtherProgram:,ProgramDelay     , % LTrim(StrReplace("|0|100|200|300|400|500|","|" F4MMOtherPrograms[ProgramToEdit,"ProgramDelay"]      . "|","|" F4MMOtherPrograms[ProgramToEdit,"ProgramDelay"]      . "||"),"|")
+	 GuiControl,OtherProgram:,ProgramSendMethod, % LTrim(StrReplace("|Send|ControlSend|"     ,"|" F4MMOtherPrograms[ProgramToEdit,"ProgramSendMethod"] . "|","|" F4MMOtherPrograms[ProgramToEdit,"ProgramSendMethod"] . "||"),"|")
+	}
+If !ProgramEditSettings
+	{
+	 Gui, OtherProgram:font,              s14
+	 Gui, OtherProgram:Add, Button, % dpi("0x8000 x280 y5 w30 h30 gOtherProgramProcessClipboard"), % Chr(128203) ; 128203=Clipboard
+	 Gui, OtherProgram:font,              s8
+	}
+Gui, OtherProgram:Show,,F4MiniMenu - Setup other programs
+Return
+
+OtherProgramCancel:
+OtherProgramGuiEscape:
+OtherProgramGuiClose:
+ProgramToEdit:=""
+ProgramEditSettings:=0
+Gui, OtherProgram:Destroy
+Gui, Settings:-Disabled
+WinActivate, F4MiniMenu - Settings ahk_class AutoHotkeyGUI
+Return
+
+OtherProgramSave:
+Gui, OtherProgram:Submit,NoHide
+If (Trim(ProgramName," `r`n`t") = "") or (Trim(ProgramExe," `r`n`t") = "") or (Trim(ProgramShortCut," `r`n`t") = "")
+	{
+	 MsgBox, % 16+8192, F4MiniMenu, Program Name, Executable, and Shortcut are required.
+	 Return
+	}
+Gui, Settings:-Disabled
+Gui, OtherProgram:Destroy
+IniWrite, %ProgramExe%       , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, ProgramExe
+IniWrite, %ProgramShortCut%  , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, ProgramShortCut
+IniWrite, %ProgramDelay%     , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, ProgramDelay
+IniWrite, %ProgramSendMethod%, %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, ProgramSendMethod
+IniWrite, 1                  , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, Active
+
+Gui, Settings: Default
+Gui, ListView, SelItem
+
+LV_Delete()
+
+ReadSettingsF4MMOtherPrograms()
+
+Gosub, ParseSettingsF4MMOtherPrograms
+
+ProgramToEdit:=""
+ProgramEditSettings:=0
+WinActivate, F4MiniMenu - Settings ahk_class AutoHotkeyGUI
+Return
+
+OtherProgramProcessClipboard:
+If !InStr(Clipboard,"ProgramExe=") and !InStr(Clipboard,"ProgramShortCut=")
+	{
+	 MsgBox, 16, F4MiniMenu, No setup found in clipboard
+	 Return
+	}
+Loop, parse, Clipboard, `n, `r
+	{
+	If RegExMatch(A_LoopField,"\[(.*)\]")
+		GuiControl, OtherProgram:, ProgramName, % Trim(A_LoopField," []")
+	If InStr(A_LoopField,"ProgramExe=")
+		GuiControl, OtherProgram:, ProgramExe, % Trim(StrSplit(A_LoopField,"=").2," `r`n`t")
+	If InStr(A_LoopField,"ProgramShortCut"  )
+		GuiControl, OtherProgram:, ProgramShortCut, % Trim(StrSplit(A_LoopField,"=").2," `r`n`t")
+	If InStr(A_LoopField,"ProgramDelay"     ) and RegExMatch(A_LoopField,"i)\b(0|100|200|300|400|500)\b")
+		GuiControl, OtherProgram:, ProgramDelay, % "|" StrReplace("0|100|200|300|400|500|",Trim(StrSplit(A_LoopField,"=").2," `r`n`t"), Trim(StrSplit(A_LoopField,"=").2," `r`n`t") "|")
+	If InStr(A_LoopField,"ProgramSendMethod") and RegExMatch(A_LoopField,"i)\b(send|controlsend)\b")
+		GuiControl, OtherProgram:, ProgramSendMethod, % "|" RegExReplace("Send|ControlSend|","iU)\b" Trim(StrSplit(A_LoopField,"=").2," `r`n`t") "\b", Trim(StrSplit(A_LoopField,"=").2," `r`n`t") "|")
+	}
+Return
+
 FMMPathsHelpText:
-MsgBox, 8224, TC/INI Paths (experimental),
+MsgBox, 8224, TC/INI Paths (experimental) - Help,
 (join`n
 TC Path: Attempt is made to read from the registry, can be set manually.
 
@@ -331,7 +494,7 @@ When set manually the registry will not be read.
 Return
 
 FMMCloseHelpText:
-MsgBox, 8224, F4MMClose (experimental),
+MsgBox, 8224, F4MMClose (experimental) - Help,
 (join`n
 F4MiniMenu - %F4Version% can automatically exit from memory using the following rules:
 
@@ -344,21 +507,8 @@ If you have started (a new) Total Commander via F4MiniMenu, wait until that spec
 )
 Return
 
-FMMFileManText:
-MsgBox, 8224, Other file managers (experimental),
-(join`n
-F4MiniMenu can also work with other programs.`nTo activate, enter the keyboard shortcut to "Copy File Name(s) with Full Path"`n`
-Double Commander default:`tShift+Ctrl+C`n
-XYPlorer default:`t`t`tCtrl+p`n
-Explorer, Everything:`t`tCheckbox to use F4MM`n`n
-Notes:
-ℹ Everything >v1.5: F4 may override "Focus Next Selected"
-⚠ Use at your own risk.
-)
-Return
-
 FMMTCElseWhere:
-MsgBox, 8224, Use elsewhere in TC (experimental),
+MsgBox, 8224, Use elsewhere in TC (experimental) - Help,
 (join`n
 As of TC 11.03 it is natively possible to "Edit" files from Lister (see TC Help, especially [lister] F4Edit and Editor settings).
 F4MM also opens files that are shown using plugins whereas TC only when used in internal mode (no plugins).
@@ -372,8 +522,25 @@ the focus is NOT on the QuickView panel it self.
 The foreground and filtered menus can be opened in the QuickView panel, but here also only the one "viewed" file will be opened.
 When unchecked all selected files will be opened even when QuickView is being used.
 
+TC Copy Delay: 0 will use another method to wait for the clipboard to receive the (selected) filepath(s) [the AutoHotkey ClipWait command], otherwise it will wait the selected number of milliseconds before continuing.
 )
+Return
 
-;Ev DirTree:`tReplace TC Dir Tree (Alt-F10)`n
-;Ev Path:`t`tPath to eEverything.exe (required by DirTree)`n`n
+OtherProgramHelp:
+MsgBox, 8224, Setup other programs - Help,
+(join`n
+F4MM will try to copy the (selected) path of the (selected) file(s) to the clipboard for further processing by sending the shortcut that has to be available in the "target" program. Often this will be Ctrl+C. Consult the documentation of the target program(s) for the correct shortcut or how to change it.
+
+⚠ Important: Adding and Removing have an immediate effect, even if you CANCEL the General Settings Window.
+
+The Program Name, Executable(s), and shortcuts are mandatory.
+
+Program Delay: 0 will use another method to wait for the clipboard to receive the (selected) filepath(s) [the AutoHotkey ClipWait command], otherwise it will wait the selected number of milliseconds before continuing.
+
+Send Method: Choose between Send (default) and ControlSend. If Send fails, ControlSend may work. If both methods do not work a custom solution for the target application might be required to be implemented in F4MM. Open an Issue at GitHub with the program details (name + version).
+
+When a "setup" has been copied to the clipboard, pressing the Clipboard icon will fill in the fields accordingly. The readme.md has some examples.
+
+When a program is added or edited it is automatically "Active" for F4MM. Use the Checkboxes to change the state (active/inactive).
+)
 Return

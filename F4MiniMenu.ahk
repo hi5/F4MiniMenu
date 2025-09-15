@@ -1,9 +1,9 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.47
+Version     : v1.50
 Author      : hi5
-Last update : 09 February 2025
+Last update : 15 September 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -23,7 +23,7 @@ SetTitleMatchMode, 2
 F4Version:="v1.47"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.47
+;@Ahk2Exe-SetFileVersion 1.50
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -34,6 +34,8 @@ F4Version:="v1.47"
 IfNotExist, %A_ScriptDir%\res
 	FileCreateDir, %A_ScriptDir%\res
 FileInstall, res\f4.ico, %A_ScriptDir%\res\f4.ico
+FileInstall, res\dialog-warning.ico, %A_ScriptDir%\res\dialog-warning.ico
+FileInstall, res\help-browser.ico, %A_ScriptDir%\res\help-browser.ico
 ; </for compiled scripts>
 
 global AllExtensions:=""
@@ -58,6 +60,9 @@ GroupAdd, TCOnly, ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE
 GroupAdd, TCOnly, ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE
 
 FileDelete, % TmpFileList
+
+If (MatchList.Settings.log > 1)
+	FileDelete, % MatchList.Settings.logFile
 
 Try
 	Menu, tray, icon, res\f4.ico
@@ -107,6 +112,11 @@ If !FileExist(F4ConfigFile) and !FileExist(F4ConfigFile ".bak") ; most likely fi
 ; shared with F4TCIE
 #Include %A_ScriptDir%\inc\LoadSettings2.ahk
 
+; Double Commander, Everything, Explorer etc
+IfNotExist, %A_ScriptDir%\F4MMOtherPrograms.ini
+	Gosub, CreateNewConfigOther
+ReadSettingsF4MMOtherPrograms()
+
 If (Error = 1)
 	{
 	 ErrorText=
@@ -124,6 +134,9 @@ If (Error = 1)
 ; Create backup file
 FileCopy, %F4ConfigFile%, %F4ConfigFile%.bak, 1
 
+; Used if ProgramDelay=0 in programsetup and TC
+
+
 ; Hotkey groups (menus)
 GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE
 GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE
@@ -135,38 +148,10 @@ If MatchList.settings.FindFiles
 	GroupAdd, TCF4Windows, ahk_class TFindFile
 
 
-; Add other file managers if any
-If MatchList.settings.Explorer
+Loop, parse, % F4MMOtherPrograms["settings","group"], CSV
 	{
-	 GroupAdd, TCF4Windows, ahk_class CabinetWClass
-	 GroupAdd, TCF4Windows, ahk_class ExploreWClass
+	 GroupAdd, TCF4Windows, ahk_exe %A_LoopField%
 	}
-
-If MatchList.settings.Everything
-	{
-	 GroupAdd, TCF4Windows, ahk_exe Everything.exe
-	 GroupAdd, TCF4Windows, ahk_exe Everything64.exe
-	}
-
-If (MatchList.settings.DoubleCommander <> "") ; note that some versions of DC report ahk_class TTOTAL_CMD ahk_exe doublecmd.exe
-	{
-	 GroupAdd, TCF4Windows, ahk_class DClass ahk_exe doublecmd.exe     ; v0.9
-	 GroupAdd, TCF4Windows, ahk_class TTOTAL_CMD ahk_exe doublecmd.exe ; v1.0
-	}
-
-If (MatchList.settings.XYPlorer <> "")
-	{
-	 GroupAdd, TCF4Windows, ahk_exe XYPlorer.exe
-	 GroupAdd, TCF4Windows, ahk_exe XYPlorerFree.exe
-	}
-
-If (MatchList.settings.QDir <> "")
-	{
-	 GroupAdd, TCF4Windows, ahk_exe Q-Dir.exe
-	 GroupAdd, TCF4Windows, ahk_exe Q-Dir_x64.exe
-	}
-
-; /Add other file managers if any
 
 If (MatchList.settings.TCStart = 2) and !WinExist("ahk_class TTOTAL_CMD")
 	{
@@ -183,7 +168,6 @@ If (MatchList.settings.TCStart = 3)
 	}
 
 #Include %A_ScriptDir%\inc\CLIParser.ahk
-
 
 ; shared with F4MM
 #Include %A_ScriptDir%\inc\TotalCommanderPath.ahk
@@ -281,7 +265,9 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 Else
 				Check:=Files
 
-			 If WinActive("ahk_class TTOTAL_CMD ahk_exe TOTALCMD.EXE") or WinActive("ahk_class TTOTAL_CMD ahk_exe TOTALCMD64.EXE")
+			 WinGet, ActiveProcessName, ProcessName, A
+
+			 If ActiveProcessName in TOTALCMD.EXE,TOTALCMD64.EXE
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
 					{                ; therefore we resort to the internal TC Edit command - added for v0.51
@@ -290,20 +276,20 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 					}
 				}
 
-			 If MatchList.settings.DoubleCommander and DoubleCommander_Active()
+			 If (ActiveProcessName = "explorer.exe")
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
-					{                ; therefore we resort to sending enter, now user can choose what to do (close or edit using default program)
-					 Send {enter}
+					{                ; don't allow it and return for Explorer
+					 MsgBox, 16, F4MiniMenu, Editing files from Archives when using Explorer not permitted.
 					 Return
 					}
 				}
 
-			 If MatchList.settings.Explorer and Explorer_Active()
+			 If (ActiveProcessName = "doublecmd.exe")
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
-					{                ; don't allow it and return for Explorer
-					 MsgBox, 16, F4MiniMenu, You can not edit files from Archives when using Explorer.
+					{                ; therefore we resort to sending enter, now user can choose what to do (close or edit using default program)
+					 Send {enter}
 					 Return
 					}
 				}
@@ -330,7 +316,6 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 		 open:=A_LoopField
 		 SplitPath, A_LoopField, , , OutExtension
 
-		 ; TODO: check for "checked" (= active) editor from settings
 		 for k, v in MatchList
 			{
 			 Index:=A_Index
@@ -413,61 +398,19 @@ GetExt(Files)
 
 ; Process other applications and windows first (find files, lister)
 ; Get a list of selected files using internal TC commands (see totalcmd.inc for references)
+
 GetFiles()
 	{
-	 Global MatchList, CLI_Exit, CLI_File, ListerWindowClose
+	 Global MatchList, CLI_Exit, CLI_File, ListerWindowClose, F4MMOtherPrograms
 
+	 WinGet, ActiveProcessName, ProcessName, A
+	
 	 If CLI_Exit
 		{
 		 FileRead, Files, %CLI_File%
 		 MatchList.Temp["Files"]:=Files
 		 If MatchList.Settings.log
 			Log(A_Now " : GetFiles, CLI_Exit ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
-		 Return Files
-		}
-
-	 If MatchList.settings.Explorer and Explorer_Active()
-		{
-		 Files:=Explorer_GetSelection()
-		 MatchList.Temp["Files"]:=Files
-		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, Explorer ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
-		 Return Files
-		}
-
-	 If MatchList.settings.Everything and Everything_Active()
-		{
-		 Files:=Everything_GetSelection()
-		 MatchList.Temp["Files"]:=Files
-		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, Everything ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
-		 Return Files
-		}
-
-	 If MatchList.settings.DoubleCommander and DoubleCommander_Active()
-		{
-		 Files:=DoubleCommander_GetSelection()
-		 MatchList.Temp["Files"]:=Files
-		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, DoubleCommander ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
-		 Return Files
-		}
-
-	 If MatchList.settings.XYPlorer and XYPlorer_Active()
-		{
-		 Files:=XYPlorer_GetSelection()
-		 MatchList.Temp["Files"]:=Files
-		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, XYPlorer ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
-		 Return Files
-		}
-
-	 If MatchList.settings.QDir and QDir_Active()
-		{
-		 Files:=QDir_GetSelection()
-		 MatchList.Temp["Files"]:=Files
-		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, QDir ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -512,18 +455,101 @@ GetFiles()
 			}
 		}
 
+	 ;WinGet, ActiveProcessName, ProcessName, A
+
 	 ClipboardSave:=ClipboardAll
 	 Clipboard:=""
-	 PostMessage 1075, 2018, 0, , ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
-	 Sleep 100
+
+	 ; total commander first
+	 If ActiveProcessName in TOTALCMD.EXE,TOTALCMD64.EXE
+		{
+		 PostMessage 1075, 2018, 0, , ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
+		 if Matchlist.Settings.TCDelay
+			{
+			 Sleep % Matchlist.Settings.TCDelay
+			 LogSection:="GetFiles, TC File Panel (Sleep)"
+			}
+		 else ; 0 so user prefers clipwait
+			{
+			 ClipWait, 1, 0
+			 LogSection:="GetFiles, TC File Panel (ClipWait)"
+			}
+		} ; explorer next as it doesn't use a shortcut to copy the path(s)
+	 else if (ActiveProcessName = "explorer.exe") and F4MMOtherPrograms["Explorer","ProgramExe"].Active
+		{
+		 Files:=Explorer_GetSelection()
+		 MatchList.Temp["Files"]:=Files
+		 If MatchList.Settings.log
+			Log(A_Now " : GetFiles, Explorer ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+		 Return Files
+		}
+	 else
+		{
+		 ; find settings
+		 ; "ProgramExe,ProgramShortCut,ProgramDelay,ProgramSendMethod,Active"
+
+		 Programfound:=0
+		 for k, v in F4MMOtherPrograms
+			{
+			 if MatchProces(ActiveProcessName,F4MMOtherPrograms[k,"ProgramExe"])
+				{
+				 ProgramSendMethod:=F4MMOtherPrograms[k,"ProgramSendMethod"]
+				 ProgramShortCut  :=F4MMOtherPrograms[k,"ProgramShortCut"]
+				 ProgramDelay     :=F4MMOtherPrograms[k,"ProgramDelay"]
+				 Programfound:=1
+				 LogSection:="GetFiles, F4MMOtherPrograms (" k 
+				 Break
+				}
+			}
+		
+		 if !Programfound ; nothing found, do nothing
+			{
+			 Files:=""
+			 MatchList.Temp["Files"]:=""
+			 Clipboard:=ClipboardSave
+			 ClipboardSave:=""
+			 If MatchList.Settings.log
+				Log(A_Now " : GetFiles, F4MMOtherPrograms->`n[NO FILES FOUND IN GETFILES()]`n-----------------------",MatchList.Settings.logFile)
+			 Return Files
+			}
+
+		 if (ProgramSendMethod = "Send")
+			Send, % ProgramShortCut
+		 if (ProgramSendMethod = "ControlSend")
+			ControlSend, , % ProgramShortCut, A
+		 if ProgramDelay
+			{
+			 Sleep % ProgramDelay
+			 LogSection .= ", Sleep)"
+			}
+		 else ; 0 so user prefers clipwait
+			{
+			 ClipWait, 1, 0 ; wait set 1 sec max for text to appear on clipboard
+			 LogSection .= ", ClipWait)"
+			}
+
+		 ; MsgBox ">" %clipboard%
+		 ; MsgBox Debug v1.50: %clipboard% : %ProgramShortCut% : %ProgramDelay% : %ProgramSendMethod% : %ActiveProcessName%
+		}
+
 	 Files:=Clipboard
+	 MatchList.Temp["Files"]:=Files
+
 	 Clipboard:=ClipboardSave
 	 ClipboardSave:=""
-;	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
-	 MatchList.Temp["Files"]:=Files
+
 	 If MatchList.Settings.log
-		Log(A_Now " : GetFiles, TC File Panel ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+		Log(A_Now " : " LogSection " ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 	 Return Files
+	}
+
+; helper functions for finding ActiveProcessName in F4MMOtherPrograms[k,"ProgramExe"]
+MatchProces(find,list)
+	{
+	 if find in %list%
+		Return 1
+	 else
+		Return 0
 	}
 
 ; Function to determine which method to use to open a file
@@ -809,8 +835,8 @@ GetTCFields(opt,file="")
 	 ; %T inserts the current target path. Especially useful for packers.
 
 	 ; first we deal with non TC
-
-	 if MatchList.settings.Explorer or MatchList.settings.XYPlorer or MatchList.settings.QDir or MatchList.settings.Everything
+	 WinGet, ActiveProcessName, ProcessName, A
+	 if ActiveProcessName not in TOTALCMD.EXE,TOTALCMD64.EXE
 		{
 		 if (opt = "%p") or (opt = "%t")
 			{
@@ -937,9 +963,6 @@ SetHotkeys:
 
 Hotkey, IfWinActive, ahk_group TCONLY
 
-;If MatchList.settings.EVDirTree
-;	Hotkey, % MatchList.settings.EVDirTree, Everything_DirectoryTree, %HotKeyState%  ; %
-
 Hotkey, IfWinActive,
 
 Hotkey, IfWinActive, ahk_group TCF4Windows
@@ -995,65 +1018,6 @@ If (InStr(FGHKey BGHKey TMHKey,"Esc"))
 Hotkey, IfWinActive
 Return
 
-#If EscHotkeys and MatchList.settings.Everything and Everything_Active()
-$Esc::
-if (A_PriorHotkey <> "$Esc" or A_TimeSincePriorHotkey > 400)
-	{
-	 Keywait Esc
-	 Return
-	}
-Else
-	{
-	 WinClose ahk_exe everything.exe
-	 WinClose ahk_exe everything64.exe
-	}
-Return
-#If
-
-/*
-
-; use *Enter to open folders in TC panels, disable for now 20250209
-
-#If MatchList.settings.Everything and Everything_Active()
-
-Enter:: ; open in source panel/tab
-TCCD(MatchList.settings.TCPath," /O /S ",Everything_GetSelection(dir="1"))
-Return
-
-^Enter:: ; open in source panel, new tab foreground
-TCCD(MatchList.settings.TCPath," /O /S /T ",Everything_GetSelection(dir="1"))
-Return
-
-^+Enter:: ; open in source panel, new tab background
-TCCD(MatchList.settings.TCPath," /O /S /B",Everything_GetSelection(dir="1"))
-Return
-
-!Enter:: ; open in target panel/tab
-TCCD(MatchList.settings.TCPath," /O /S /R=",Everything_GetSelection(dir="1"))
-Return
-
-!^Enter:: ; open in target panel, new tab foreground
-TCCD(MatchList.settings.TCPath," /O /S /T /R=",Everything_GetSelection(dir="1"))
-Return
-
-!+Enter:: ; open in target panel, new tab background
-TCCD(MatchList.settings.TCPath," /O /S /B /R=",Everything_GetSelection(dir="1"))
-Return
-
-#If
-
-TCCD(tc,par,dir)
-	{
-	 WinClose ahk_exe everything.exe
-	 WinClose ahk_exe everything64.exe
-	 If !InStr(par,"/R=")
-		Run, %tc% %par% "%dir%\"
-	 Else
-		Run, %tc% %par%"%dir%\"
-	}
-
-*/
-
 SaveSettings:
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 %F4Save%("MatchList", F4ConfigFile)
@@ -1107,8 +1071,9 @@ FileAppend,
 		<FilteredMenuAutoEdit>1</FilteredMenuAutoEdit>
 		<MaxFiles>30</MaxFiles>
 		<MenuPos>3</MenuPos>
-		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
+		<TCDelay>100</TCDelay>
 		<TCIniPath></TCIniPath>
+		<TCPath>c:\totalcmd\TotalCmd.exe</TCPath>
 		<TCStart>1</TCStart>
 		<F4MMCloseAll>0</F4MMCloseAll>
 		<F4MMClosePID>0</F4MMClosePID>
@@ -1143,14 +1108,13 @@ FilteredHotkey=
 MaxFiles=30
 MenuPos=3
 FilteredMenuAutoEdit=1
-TCPath=c:\totalcmd\TotalCmd.exe
-TCStart=1
+TCDelay=100
 TCIniPath=
+TCStart=1
+TCPath=c:\totalcmd\TotalCmd.exe
 F4MMCloseAll=0
 F4MMClosePID=0
 FullMenu=z
-Explorer=0
-Everything=0
 MaxWinWaitSec=2
 Lister=1
 FindFiles=1
@@ -1167,6 +1131,31 @@ windowmode=1
 }
 Return
 
+CreateNewConfigOther:
+FileDelete, F4MMOtherPrograms.ini
+FileAppend,
+(
+; see f4mm-other-file-managers.md for details
+[Double Commander]
+ProgramExe=doublecmd.exe
+ProgramShortCut=^+c
+ProgramDelay=100
+ProgramSendMethod=Send
+Active=0
+[Everything]
+ProgramExe=Everything.exe,Everything64.exe
+ProgramShortCut=^+c
+ProgramDelay=100
+ProgramSendMethod=Send
+Active=0
+[Explorer]
+ProgramExe=explorer.exe
+ProgramShortCut=^c
+ProgramDelay=100
+ProgramSendMethod=Send
+Active=0
+), F4MMOtherPrograms.ini, UTF-16
+Return
 
 ; Check DocumentTemplates\ - this setting can be used in F4TCIE.ahk (not required)
 DocumentTemplatesScan:
@@ -1197,6 +1186,7 @@ Return
 #include %A_ScriptDir%\inc\HelperFunctions.ahk ; shared with F4TCIE
 #include %A_ScriptDir%\lib\XA.ahk              ; shared with F4TCIE
 #include %A_ScriptDir%\lib\iob.ahk             ; shared with F4TCIE
+#include %A_ScriptDir%\inc\ReadSettingsF4MMOtherPrograms.ahk
 #include %A_ScriptDir%\lib\class_lv_rows.ahk
 #include %A_ScriptDir%\lib\DropFiles.ahk
 #include %A_ScriptDir%\lib\GetPos.ahk
@@ -1204,6 +1194,7 @@ Return
 #include %A_ScriptDir%\lib\tc.ahk              ; wm_copydata
 #include %A_ScriptDir%\lib\log.ahk
 #include %A_ScriptDir%\lib\AutoXYWH.ahk
+; #include %A_ScriptDir%\lib\HtmlBox.ahk
 
 ;@Ahk2Exe-IgnoreBegin
 	#include *i %A_ScriptDir%\..\ButtonBarKeyboard\ButtonBarKeyboard.ahk
