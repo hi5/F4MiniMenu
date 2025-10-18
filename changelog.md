@@ -1,5 +1,7 @@
 ## Changelog
 
+* 20251018 - v1.51 a) Fix: only check QuickView if TC is active + refined RegEx to grab filename from WinGetText result  
+
 * 20250915 - v1.50 a) Fix: add new editor didn't show New Editor gui (due to misplaced GuiResize)  
                    b) New: Allow user to setup new programs via INI & new settings Gui (see Settings and Examples and f4mm-other-file-managers.md)  
                    c) New: Allow user to set Copy Delay or use Clipwait (AutoHotkey Command) for TC and other programs (see Settings (TC) Copy Delay)  

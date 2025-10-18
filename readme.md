@@ -5,7 +5,7 @@ A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to o
 
 It is a *standalone* program which runs separatly from Total Commander. See Getting Started.
 
-_It makes use of the clipboard to process selected files, so it may effect your clipboard manager history._
+_It makes use of the clipboard to process selected files, so it may affect your clipboard manager history._
 
 ## Features
 

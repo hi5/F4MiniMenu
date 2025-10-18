@@ -1,9 +1,9 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.50
+Version     : v1.51
 Author      : hi5
-Last update : 15 September 2025
+Last update : 18 October 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.50"
+F4Version:="v1.51"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.50
+;@Ahk2Exe-SetFileVersion 1.51
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -429,15 +429,20 @@ GetFiles()
 		 Return Files
 		}
 
-	 If MatchList.settings.QuickView
+	 ; v1.51 ensure we only do it when TC is active
+	 ; + additional safety check to see if we can find a valid path
+	 If MatchList.settings.QuickView and InStr("TOTALCMD.EXE,TOTALCMD64.EXE",ActiveProcessName)
 		{
 		 WinGetText, Files, ahk_class TTOTAL_CMD, Lister
 		 If (Files <> "")
 			{
-			 RegExMatch(Files,"U) - \K\[(.*)\]`r?`n",Files)
-			 If MatchList.Settings.log
-				Log(A_Now " : GetFiles, QuickView ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
-			 Return Files1
+			 RegExMatch(Files,"U)Lister.*- \K\[(.*)\]`r?`n",Files)
+			 If FileExist(Files1)
+				{
+				 If MatchList.Settings.log
+					Log(A_Now " : GetFiles, QuickView ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+				 Return Files1
+				}
 			}
 		}
 
