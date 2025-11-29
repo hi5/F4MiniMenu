@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.51
+Version     : v1.60
 Author      : hi5
 Last update : 18 October 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.51"
+F4Version:="v1.60"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.51
+;@Ahk2Exe-SetFileVersion 1.60
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -266,12 +266,14 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				Check:=Files
 
 			 WinGet, ActiveProcessName, ProcessName, A
+			 WinGet, ActiveProcessPID, PID, A
 
 			 If ActiveProcessName in TOTALCMD.EXE,TOTALCMD64.EXE
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
 					{                ; therefore we resort to the internal TC Edit command - added for v0.51
-					 SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD ; Edit (Notepad)
+					 ; SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD ; Edit (Notepad)
+					  SendMessage 1075, 904, 0, , ahk_pid %ActiveProcessPID% ; Edit (Notepad)
 					 Return
 					}
 				}
@@ -381,7 +383,8 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				}
 			}
 		}
-	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
+;	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
+	 SendMessage 1075, 524, 0, , ahk_pid %ActiveProcessPID% ; Unselect all (files+folders)
 	}
 
 ; Get a list of extensions from selected files we can use to build filtered menu
@@ -404,6 +407,7 @@ GetFiles()
 	 Global MatchList, CLI_Exit, CLI_File, ListerWindowClose, F4MMOtherPrograms
 
 	 WinGet, ActiveProcessName, ProcessName, A
+	 WinGet, ActiveProcessPID, PID, A
 	
 	 If CLI_Exit
 		{
@@ -431,12 +435,14 @@ GetFiles()
 
 	 ; v1.51 ensure we only do it when TC is active
 	 ; + additional safety check to see if we can find a valid path
-	 If MatchList.settings.QuickView and InStr("TOTALCMD.EXE,TOTALCMD64.EXE",ActiveProcessName)
-		{
-		 WinGetText, Files, ahk_class TTOTAL_CMD, Lister
+;	 If MatchList.settings.QuickView and InStr("TOTALCMD.EXE,TOTALCMD64.EXE",ActiveProcessName)
+	 If MatchList.settings.QuickView and WinActive("ahk_pid " ActiveProcessPID)
+	 	{
+;		 WinGetText, Files, ahk_class TTOTAL_CMD, Lister
+		 WinGetText, Files, ahk_pid %ActiveProcessPID%, Lister
 		 If (Files <> "")
 			{
-			 RegExMatch(Files,"U)Lister.*- \K\[(.*)\]`r?`n",Files)
+			 RegExMatch(Files,"U)^Lister.*- \K\[(.*)\]`r?`n",Files)
 			 If FileExist(Files1)
 				{
 				 If MatchList.Settings.log
@@ -449,9 +455,9 @@ GetFiles()
 	 If WinActive("ahk_class TFindFile") ; class names may change between versions, below for TC11
 		{
 		 ; ControlGet, Files, Choice,, TWidthListBox1, ahk_class TFindFile;  for TC10
-		 ControlGet, Files, Choice,, TMyListBox2, ahk_class TFindFile
+		 ControlGet, Files, Choice,, TMyListBox2, A ; ahk_class TFindFile
 		 If (ErrorLevel = 1) or (Files = "")
-			ControlGet, Files, Choice,, LCLListbox2, ahk_class TFindFile
+			ControlGet, Files, Choice,, LCLListbox2, A ; ahk_class TFindFile
 		 IfNotInString, Files,[ ; make sure you haven't selected a directory or the first line
 			{
 			 If MatchList.Settings.log
@@ -468,7 +474,8 @@ GetFiles()
 	 ; total commander first
 	 If ActiveProcessName in TOTALCMD.EXE,TOTALCMD64.EXE
 		{
-		 PostMessage 1075, 2018, 0, , ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
+;		 PostMessage 1075, 2018, 0, , ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
+		 SendMessage 1075, 2018, 0, , ahk_pid %ActiveProcessPID% ; Copy names with full path to clipboard
 		 if Matchlist.Settings.TCDelay
 			{
 			 Sleep % Matchlist.Settings.TCDelay

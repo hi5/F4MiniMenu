@@ -1,5 +1,7 @@
 ## Changelog
 
+* 20251126 - v1.60 a) New: Replaced `ahk_class TTOTAL_CMD` with `ahk_pid %ActiveProcessPID%`; use WinTitle `A` in `ControlGet` for "Find Files" in various commands to (hopefully) ensure the _currently_ active TC is targetted vs potentially the wrong one in case multiple copies of TC are running. (ahk_pid Not yet implemented in GetTCFields/TC_SendData (p,t,n,m))  
+
 * 20251018 - v1.51 a) Fix: only check QuickView if TC is active + refined RegEx to grab filename from WinGetText result  
 
 * 20250915 - v1.50 a) Fix: add new editor didn't show New Editor gui (due to misplaced GuiResize)  
