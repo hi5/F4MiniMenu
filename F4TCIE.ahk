@@ -1,9 +1,9 @@
 /*
 
 Script      : F4TCIE.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 1.3
+Version     : 1.4
 Author      : hi5
-Last update : 30 October 2023
+Last update : 23 December 2025
 Purpose     : Helper script for F4MiniMenu program to allow internal editor to function
               now you can edit files from within Archives and FTP (and have TC update/upload them)
 Notes       : It will always use the "normal" method to open programs, so the "drag & drop", "filelist" 
@@ -28,7 +28,7 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 #NoEnv
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.3
+;@Ahk2Exe-SetFileVersion 1.4
 ;@Ahk2Exe-SetProductName F4MiniMenu (IE)
 ;@Ahk2Exe-SetDescription F4MiniMenu (IE): Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -86,18 +86,22 @@ for k, v in MatchList
 			{
 			 Sleep % v.delay
 			 Try
-			 	{
-			 	 Run "%editor%" "%file%"
+				{
+				 Run "%editor%" "%file%"
 				 Sleep 100 ; added explicit Exit as compiled version sometimes kept running 30/10/2023
+				 If MatchList.Settings.log
+					Log(A_Now " : F4TCIE - Editor1 (" editor ") -> " file,MatchList.Settings.logFile)
 				 ExitApp
-			 	}
+				}
 			 Catch
-			 	{
-			 	 editor:=GetPath(matchlist[1].exe)
+				{
+				 editor:=GetPath(matchlist[1].exe)
 				 Run "%editor%" "%file%"
 				 ; OSDTIP_Pop(MainText, SubText, TimeOut, Options, FontName, Transparency)
 				 OSDTIP_Pop("F4MiniMenu/F4TCIE", "Defined editor/program not found`nReverting to default editor", -750,"W230 H80 U1")
 				 Sleep 100 ; added explicit Exit as compiled version sometimes kept running 30/10/2023
+				 If MatchList.Settings.log
+					Log(A_Now " : F4TCIE - Editor2 (" editor ") -> " file,MatchList.Settings.logFile)
 				 ExitApp
 				}
 			}
@@ -109,6 +113,9 @@ for k, v in MatchList
 editor:=GetPath(matchlist[1].exe)
 Run "%editor%" "%file%"
 Sleep 100 ; added explicit Exit as compiled version sometimes kept running 30/10/2023
+If MatchList.Settings.log
+	Log(A_Now " : F4TCIE - Editor3 (" editor ") -> " file,MatchList.Settings.logFile)
+
 ExitApp
 
 ; shared with F4MM
@@ -117,3 +124,4 @@ ExitApp
 ; just for loading the Matchlist object, we don't need all the rest
 #include %A_ScriptDir%\lib\xa.ahk
 #include %A_ScriptDir%\lib\iob.ahk
+#include %A_ScriptDir%\lib\log.ahk

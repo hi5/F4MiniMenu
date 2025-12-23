@@ -13,7 +13,11 @@ Returned position:
 1: At Mouse cursor
 2: Centered in window
 3: Right next of current file
-4: Docked next of current file (Opposite panel)
+4: Docked next of current file (in Opposite panel)
+
+History:
+- 20251223 fix for Position = 4 when in RIGHT panel (it was placed to the RIGHT of the TC window). Set to fixed position 5
+- 20250915 update to accommodate removal of Explorer_Active() or DoubleCommander_Active() or XYPlorer_Active()
 
 */
 
@@ -21,7 +25,8 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 	{
 	 ; center in window for all programs apart from TC where we respect the setting
 	 WinGet, ActiveProcessName, ProcessName, A
-	 if ActiveProcessName not in TOTALCMD.EXE, TOTALCMD64.EXE
+	 WinGet, ActiveProcessPID, PID, A
+	 if ActiveProcessName not in TOTALCMD.EXE,TOTALCMD64.EXE
 		Position:=2
 
 	 Pos:=[]
@@ -33,7 +38,7 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 		}
 
 	 ; Get Active Window statistics
-	 WinGetPos, WinX, WinY, WinWidth, WinHeight, A
+	 WinGetPos, WinX, WinY, WinWidth, WinHeight, ahk_pid %ActiveProcessPID%
 
 	 If (Position = 2) ; second fastest method so deal with it first
 		{
@@ -43,15 +48,15 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 		}
 
 	 ; Get focused control info + Listbox properties to calculate Y position of popup menu
-	 ControlGetFocus, FocusCtrl, A
-	 ControlGetPos, CtrlX, CtrlY, CtrlWidth, CtrlHeight, %FocusCtrl%, A
-	 SendMessage, 0x1A1, 0, 0, %FocusCtrl%, A   ; 0x1A1 is LB_GETITEMHEIGHT
-	 LB_GETITEMHEIGHT:=ErrorLevel               ;
-	 SendMessage, 0x188, 0, 0, %FocusCtrl%, A   ; 0x188 is LB_GETCURSEL
-	 LB_GETCURSEL:=ErrorLevel + 1               ; Convert from zero-based to one-based.
-	 SendMessage, 0x18E, 0, 0, %FocusCtrl%, A   ; 0x18E is LB_GETTOPINDEX Gets the index of the first visible item in a list box. Initially the item with index 0 is at the top of the list box, but if the list box contents have been scrolled another item may be at the top. The first visible item in a multiple-column list box is the top-left item.
-	 LB_GETTOPINDEX:=ErrorLevel                 ;
-	 SendMessage, 0x18B, 0, 0, %FocusCtrl%, A   ; 0x18B is LB_GETCOUNT Gets the number of items in a list box.
+	 ControlGetFocus, FocusCtrl, ahk_pid %ActiveProcessPID%
+	 ControlGetPos, CtrlX, CtrlY, CtrlWidth, CtrlHeight, %FocusCtrl%, ahk_pid %ActiveProcessPID%
+	 SendMessage, 0x1A1, 0, 0, %FocusCtrl%, ahk_pid %ActiveProcessPID%  ; 0x1A1 is LB_GETITEMHEIGHT
+	 LB_GETITEMHEIGHT:=ErrorLevel                                       ;
+	 SendMessage, 0x188, 0, 0, %FocusCtrl%, ahk_pid %ActiveProcessPID%  ; 0x188 is LB_GETCURSEL
+	 LB_GETCURSEL:=ErrorLevel + 1                                       ; Convert from zero-based to one-based.
+	 SendMessage, 0x18E, 0, 0, %FocusCtrl%, ahk_pid %ActiveProcessPID%  ; 0x18E is LB_GETTOPINDEX Gets the index of the first visible item in a list box. Initially the item with index 0 is at the top of the list box, but if the list box contents have been scrolled another item may be at the top. The first visible item in a multiple-column list box is the top-left item.
+	 LB_GETTOPINDEX:=ErrorLevel                                         ;
+	 SendMessage, 0x18B, 0, 0, %FocusCtrl%, ahk_pid %ActiveProcessPID%  ; 0x18B is LB_GETCOUNT Gets the number of items in a list box.
 	 LB_GETCOUNT:=ErrorLevel
 
 	 ; Start calculations
@@ -74,10 +79,17 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 		 Pos.Insert("x", X), Pos.Insert("y", Y)
 		 Return Pos
 		}
-	 Else If (Position = 4)
+	
+	 ; TMyListBox2 (32-bit), LCLListBox2 (64-bit) - LEFT panel
+	 ; TMyListBox1 (32-bit), LCLListBox1 (64-bit) - RIGHT panel
+	 If (Position = 4)
 		{
-		 X:= CtrlX + CtrlWidth - 5
+		 If InStr(FocusCtrl,"ListBox2") 
+			X:= CtrlX + CtrlWidth - 5
+		 else
+			X:=5
 		 Pos.Insert("x", X), Pos.Insert("y", Y)
+;		 ToolTip % FocusCtrl ":" A_Now
 		 Return Pos
 		}
 	}

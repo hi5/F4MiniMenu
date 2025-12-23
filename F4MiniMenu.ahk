@@ -1,7 +1,7 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.60
+Version     : v1.61
 Author      : hi5
 Last update : 18 October 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.60"
+F4Version:="v1.61"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.60
+;@Ahk2Exe-SetFileVersion 1.61
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -254,19 +254,20 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 		Files:=GetFiles() ; Get list of selected files in TC, one per line
 	 else
 		Files:=MatchList.Temp.Files
-	 MatchList.Temp.Files:=""
-
-		 ; Check if we possibly have selected file(s) from an archive
-		 If RegExMatch(Files,"iUm)" ArchiveExtentions)
-			{
-			 Files:=StrReplace(Files,"`r","")
-			 If InStr(Files,"`n")
-				Check:=SubStr(Files,1,InStr(Files,"`n")-1)
-			 Else
-				Check:=Files
-
-			 WinGet, ActiveProcessName, ProcessName, A
-			 WinGet, ActiveProcessPID, PID, A
+			 	 MatchList.Temp.Files:=""
+			 
+	 WinGet, ActiveProcessName, ProcessName, A
+	 WinGet, ActiveProcessPID, PID, A
+	
+			 		 ; Check if we possibly have selected file(s) from an archive
+			 		 If RegExMatch(Files,"iUm)" ArchiveExtentions)
+			 			{
+			 			 Files:=StrReplace(Files,"`r","")
+			 			 If InStr(Files,"`n")
+			 				Check:=SubStr(Files,1,InStr(Files,"`n")-1)
+			 			 Else
+			 				Check:=Files
+			 
 
 			 If ActiveProcessName in TOTALCMD.EXE,TOTALCMD64.EXE
 				{
@@ -297,6 +298,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				}
 
 			}
+
 
 	 SelectedFiles:=CountFiles(Files)
 
@@ -360,7 +362,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 				cmdfiles .= """" A_LoopField """" A_Space                ; " fix highlighting
 			 OpenFile(v, cmdfiles, MatchList.Settings.MaxWinWaitSec)
 			 If MatchList.Settings.log
-				Log(A_Now " : ProcessFiles, cmdline -> " v.exe "|" cmdfiles "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
+				Log(A_Now " : ProcessFiles1 (" ActiveProcessName "), cmdline -> " v.exe "|" cmdfiles "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 			 cmdfiles:=""
 			}
 		 else If (v.Method = "FileList")
@@ -369,9 +371,9 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			 FileAppend, %list%, %TmpFileList%, UTF-8-RAW
 			 OpenFile(v, TmpFileList, MatchList.Settings.MaxWinWaitSec)
 			 If MatchList.Settings.log
-				Log(A_Now " : ProcessFiles, FileList -> " v.exe "|" TmpFileList "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
+				Log(A_Now " : ProcessFiles2 (" ActiveProcessName "), FileList -> " v.exe "|" TmpFileList "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 			}
-		 Else If (v.Method <> "Files")
+		 else If (v.Method <> "Files")
 			{
 			 Loop, parse, list, `n
 				{
@@ -379,7 +381,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 					Continue
 				 OpenFile(v, A_LoopField, MatchList.Settings.MaxWinWaitSec)
 				 If MatchList.Settings.log
-					Log("`n" A_Now " : ProcessFiles, Files -> " v.exe "|" A_LoopField "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
+					Log("`n" A_Now " : ProcessFiles3 (" ActiveProcessName "), Files -> " v.exe "|" A_LoopField "|" MatchList.Settings.MaxWinWaitSec,MatchList.Settings.logFile)
 				}
 			}
 		}
@@ -414,7 +416,7 @@ GetFiles()
 		 FileRead, Files, %CLI_File%
 		 MatchList.Temp["Files"]:=Files
 		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, CLI_Exit ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+			Log(A_Now " : GetFiles4, CLI_Exit (" ActiveProcessName ") ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -429,7 +431,7 @@ GetFiles()
 		 If ListerWindowClose in 2,3
 			WinClose, A
 		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, Lister ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+			Log(A_Now " : GetFiles5, Lister (" ActiveProcessName ") ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 
@@ -437,16 +439,16 @@ GetFiles()
 	 ; + additional safety check to see if we can find a valid path
 ;	 If MatchList.settings.QuickView and InStr("TOTALCMD.EXE,TOTALCMD64.EXE",ActiveProcessName)
 	 If MatchList.settings.QuickView and WinActive("ahk_pid " ActiveProcessPID)
-	 	{
+		{
 ;		 WinGetText, Files, ahk_class TTOTAL_CMD, Lister
 		 WinGetText, Files, ahk_pid %ActiveProcessPID%, Lister
 		 If (Files <> "")
 			{
-			 RegExMatch(Files,"U)^Lister.*- \K\[(.*)\]`r?`n",Files)
+			 RegExMatch(Files,"U)Lister.*- \K\[(.*)\]`r?`n",Files)
 			 If FileExist(Files1)
 				{
 				 If MatchList.Settings.log
-					Log(A_Now " : GetFiles, QuickView ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+					Log(A_Now " : GetFiles6, QuickView  (" ActiveProcessName ") ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 				 Return Files1
 				}
 			}
@@ -455,13 +457,13 @@ GetFiles()
 	 If WinActive("ahk_class TFindFile") ; class names may change between versions, below for TC11
 		{
 		 ; ControlGet, Files, Choice,, TWidthListBox1, ahk_class TFindFile;  for TC10
-		 ControlGet, Files, Choice,, TMyListBox2, A ; ahk_class TFindFile
+		 ControlGet, Files, Choice,, TMyListBox2, ahk_class TFindFile
 		 If (ErrorLevel = 1) or (Files = "")
-			ControlGet, Files, Choice,, LCLListbox2, A ; ahk_class TFindFile
+			ControlGet, Files, Choice,, LCLListbox2, ahk_class TFindFile
 		 IfNotInString, Files,[ ; make sure you haven't selected a directory or the first line
 			{
 			 If MatchList.Settings.log
-				Log(A_Now " : GetFiles, Find files ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+				Log(A_Now " : GetFiles7, Find files  (" ActiveProcessName ") ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 			 Return Files
 			}
 		}
@@ -479,12 +481,12 @@ GetFiles()
 		 if Matchlist.Settings.TCDelay
 			{
 			 Sleep % Matchlist.Settings.TCDelay
-			 LogSection:="GetFiles, TC File Panel (Sleep)"
+			 LogSection:="GetFiles8a, TC File Panel (Sleep)"
 			}
 		 else ; 0 so user prefers clipwait
 			{
 			 ClipWait, 1, 0
-			 LogSection:="GetFiles, TC File Panel (ClipWait)"
+			 LogSection:="GetFiles8b, TC File Panel (ClipWait)"
 			}
 		} ; explorer next as it doesn't use a shortcut to copy the path(s)
 	 else if (ActiveProcessName = "explorer.exe") and F4MMOtherPrograms["Explorer","ProgramExe"].Active
@@ -492,7 +494,7 @@ GetFiles()
 		 Files:=Explorer_GetSelection()
 		 MatchList.Temp["Files"]:=Files
 		 If MatchList.Settings.log
-			Log(A_Now " : GetFiles, Explorer ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+			Log(A_Now " : GetFiles9, Explorer ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 		 Return Files
 		}
 	 else
@@ -509,7 +511,7 @@ GetFiles()
 				 ProgramShortCut  :=F4MMOtherPrograms[k,"ProgramShortCut"]
 				 ProgramDelay     :=F4MMOtherPrograms[k,"ProgramDelay"]
 				 Programfound:=1
-				 LogSection:="GetFiles, F4MMOtherPrograms (" k 
+				 LogSection:="GetFiles10, F4MMOtherPrograms (" k 
 				 Break
 				}
 			}
@@ -521,7 +523,7 @@ GetFiles()
 			 Clipboard:=ClipboardSave
 			 ClipboardSave:=""
 			 If MatchList.Settings.log
-				Log(A_Now " : GetFiles, F4MMOtherPrograms->`n[NO FILES FOUND IN GETFILES()]`n-----------------------",MatchList.Settings.logFile)
+				Log(A_Now " : GetFiles11, F4MMOtherPrograms ->`n[NO FILES FOUND IN GETFILES()]`n-----------------------",MatchList.Settings.logFile)
 			 Return Files
 			}
 
@@ -551,7 +553,7 @@ GetFiles()
 	 ClipboardSave:=""
 
 	 If MatchList.Settings.log
-		Log(A_Now " : " LogSection " ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
+		Log(A_Now " : " LogSection " (" ActiveProcessName ") ->`n" Files  "`n-----------------------",MatchList.Settings.logFile)
 	 Return Files
 	}
 
