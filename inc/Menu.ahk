@@ -9,6 +9,8 @@ Include for F4MiniMenu.ahk
 ShowMenu:
 CoordMode, Menu, Client
 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
+DetectHiddenWindows, On
+WinActivate, ahk_class AutoHotkey ; catch menu not having focus at times, see changelog v1.70
 Menu, MyMenu, Show, % Coord["x"], % Coord["y"]
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 Return
@@ -143,6 +145,12 @@ AddMenuProgramOptions:
 
 ; Program options
 Menu, %MenuName%, Add
+If MatchList.Settings.ContextMenu
+	{
+	 Menu, %MenuName%, Add,  %MenuPadding%Open Context menu, OpenContextMenu
+	 Menu, %MenuName%, Icon, %MenuPadding%Open Context menu, %A_WinDir%\System32\imageres.dll, 249
+	 Menu, %MenuName%, Add
+	}
 Menu, %MenuName%, Add,  %MenuPadding%Add new Editor,    ConfigEditorsNew
 Menu, %MenuName%, Icon, %MenuPadding%Add new Editor,    shell32.dll, 176
 Menu, %MenuName%, Add,  %MenuPadding%Configure Editors, ConfigEditors
@@ -155,4 +163,9 @@ Menu, %MenuName%, Icon, %MenuPadding%Settings,          shell32.dll, 170
 Menu, %MenuName%, Add,  %MenuPadding%Exit,              MenuHandler
 Menu, %MenuName%, Icon, %MenuPadding%Exit,              shell32.dll, 132
 
+Return
+
+OpenContextMenu:
+Sleep 10
+Send +{F10}
 Return

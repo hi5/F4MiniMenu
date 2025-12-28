@@ -1,9 +1,9 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.61
+Version     : v1.70
 Author      : hi5
-Last update : 18 October 2025
+Last update : 25 December 2025
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.61"
+F4Version:="v1.70"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.61
+;@Ahk2Exe-SetFileVersion 1.70
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -254,27 +254,27 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 		Files:=GetFiles() ; Get list of selected files in TC, one per line
 	 else
 		Files:=MatchList.Temp.Files
-			 	 MatchList.Temp.Files:=""
+			 MatchList.Temp.Files:=""
 			 
 	 WinGet, ActiveProcessName, ProcessName, A
 	 WinGet, ActiveProcessPID, PID, A
-	
-			 		 ; Check if we possibly have selected file(s) from an archive
-			 		 If RegExMatch(Files,"iUm)" ArchiveExtentions)
-			 			{
-			 			 Files:=StrReplace(Files,"`r","")
-			 			 If InStr(Files,"`n")
-			 				Check:=SubStr(Files,1,InStr(Files,"`n")-1)
-			 			 Else
-			 				Check:=Files
-			 
+	 WinGetTitle, ActiveProcessTitle, A
+
+			 ; Check if we possibly have selected file(s) from an archive
+			 If RegExMatch(Files,"iUm)" ArchiveExtentions)
+				{
+				 Files:=StrReplace(Files,"`r","")
+				 If InStr(Files,"`n")
+					Check:=SubStr(Files,1,InStr(Files,"`n")-1)
+				 Else
+					Check:=Files
 
 			 If ActiveProcessName in TOTALCMD.EXE,TOTALCMD64.EXE
 				{
 				 IfNotExist, %check% ; additional check, if the file is from an archive it won't exist
 					{                ; therefore we resort to the internal TC Edit command - added for v0.51
 					 ; SendMessage 1075, 904, 0, , ahk_class TTOTAL_CMD ; Edit (Notepad)
-					  SendMessage 1075, 904, 0, , ahk_pid %ActiveProcessPID% ; Edit (Notepad)
+					 SendMessage 1075, 904, 0, , %ActiveProcessTitle% ahk_class TTOTAL_CMD ; Edit (Notepad)
 					 Return
 					}
 				}
@@ -386,7 +386,7 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 			}
 		}
 ;	 PostMessage 1075, 524, 0, , ahk_class TTOTAL_CMD  ; Unselect all (files+folders)
-	 SendMessage 1075, 524, 0, , ahk_pid %ActiveProcessPID% ; Unselect all (files+folders)
+	 SendMessage 1075, 524, 0, , %ActiveProcessTitle% ahk_class TTOTAL_CMD ; Unselect all (files+folders)
 	}
 
 ; Get a list of extensions from selected files we can use to build filtered menu
@@ -477,7 +477,7 @@ GetFiles()
 	 If ActiveProcessName in TOTALCMD.EXE,TOTALCMD64.EXE
 		{
 ;		 PostMessage 1075, 2018, 0, , ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
-		 SendMessage 1075, 2018, 0, , ahk_pid %ActiveProcessPID% ; Copy names with full path to clipboard
+		 SendMessage 1075, 2018, 0, , %ActiveProcessTitle% ahk_class TTOTAL_CMD ; Copy names with full path to clipboard
 		 if Matchlist.Settings.TCDelay
 			{
 			 Sleep % Matchlist.Settings.TCDelay
@@ -1002,11 +1002,12 @@ If (MatchList.settings.ForegroundHotkey <> "ERROR") and (MatchList.settings.Fore
 If (MatchList.settings.BackgroundHotkey <> "ERROR") and (MatchList.settings.BackgroundHotkey <> "")
 	{
 	 hk_prefix:="$"
-	 ;If (RegExMatch(MatchList.settings.BackgroundHotkey,"[\^\+\!\# \&]")) ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in "in place rename" (shift-f6) operations in a panel, or at least that is my experience.
-	 ;	hk_prefix:="~"
+	 ;If (RegExMatch(MatchList.settings.BackgroundHotkey,"[\^\+\!\# \&]"))
 	 BGHKey:=MatchList.settings.BackgroundHotkey
 	 StringReplace, BGHKey, BGHKey, &amp`;amp`;, & , All
 	 StringReplace, BGHKey, BGHKey, &amp`;, &, All
+
+	 ; for example if hotkey is Esc & F4 not adding the ~ would mean Esc is actually disabled in "in place rename" (shift-f6) operations in a panel, or at least that is my experience.
 	 If (InStr(BGHKey,"ESC"))
 		hk_prefix:="~"
 
@@ -1080,6 +1081,7 @@ FileAppend,
 <MatchList>
 	<Invalid_Name id="settings" ahk="True">
 		<BackgroundHotkey>F4</BackgroundHotkey>
+		<ContextMenu>0</ContextMenu>
 		<ForegroundHotkey>Esc & F4</ForegroundHotkey>
 		<FilteredHotkey></FilteredHotkey>
 		<FilteredMenuAutoEdit>1</FilteredMenuAutoEdit>
@@ -1117,6 +1119,7 @@ FileAppend,
 (
 [settings]
 BackgroundHotkey=F4
+ContextMenu=0
 ForegroundHotkey=Esc & F4
 FilteredHotkey=
 MaxFiles=30

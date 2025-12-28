@@ -1,9 +1,9 @@
 /*
 
 Script      : F4TCIE.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : 1.4
+Version     : 1.5
 Author      : hi5
-Last update : 23 December 2025
+Last update : 24 December 2025
 Purpose     : Helper script for F4MiniMenu program to allow internal editor to function
               now you can edit files from within Archives and FTP (and have TC update/upload them)
 Notes       : It will always use the "normal" method to open programs, so the "drag & drop", "filelist" 
@@ -28,7 +28,7 @@ Templates   : Create a DocumentTemplates\ folder and place files for each templa
 #NoEnv
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.4
+;@Ahk2Exe-SetFileVersion 1.5
 ;@Ahk2Exe-SetProductName F4MiniMenu (IE)
 ;@Ahk2Exe-SetDescription F4MiniMenu (IE): Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -80,6 +80,8 @@ for k, v in MatchList
 				 FileGetSize, NewFileSize, %file%
 				 If (NewFileSize = 0) ; TC created it, so overwrite with our template, otherwise don't. This to avoid overwriting existing documents.
 					FileCopy, %A_ScriptDir%\DocumentTemplates\template.%OutExtension%, %file%, 1
+				 If MatchList.Settings.log
+					Log(A_Now " : F4TCIE - Document Template, template.(" OutExtension ") -> " file,MatchList.Settings.logFile)
 				}
 			}
 		 if editor

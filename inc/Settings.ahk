@@ -22,7 +22,7 @@ Gosub, SetHotkeys
 
 ; Gui for general program settings
 Gui, Settings: +OwnDialogs
-Gui, Settings: font,              % dpi("s8")
+Gui, Settings: font,              % dpi("s8"), MS Shell Dlg
 Gui, Settings: Add, GroupBox,     % dpi("x16 y7 w540 h70"), Menu
 Gui, Settings: Add, Text,         % dpi("x25 y25 w309 h16"), &Selection menu appears (TC only)
 Gui, Settings: Add, DropDownList, % dpi("x328 y20 w219 h25 r4 Choose" MatchList.settings.MenuPos " vMenuPos AltSubmit"), 1 - At Mouse cursor|2 - Centered in window|3 - Right next to current file|4 - Docked next to current file (opposite panel)
@@ -61,28 +61,28 @@ Gui, Settings: Add, Checkbox,     % dpi("x25 yp+3   w240 h16 Checked" checked " 
 Checked:=MatchList.settings.F4MMClosePID
 Gui, Settings: Add, Checkbox,     % dpi("x25 yp+25  w240 h16 Checked" checked " vF4MMClosePID"), Close F4MM when TC closes started by F4MM
 
-Gui, Settings: Font, % dpi("cGreen")
+Gui, Settings: Font, % dpi("cGreen"), MS Shell Dlg
 ;Gui, Settings: Add, Text,         % dpi("xp+240 yp gFMMCloseHelpText"), (?)
 Gui, Settings: Add, Picture, % dpi("xp+245 yp+1 gFMMCloseHelpText w12 h-1"), %A_ScriptDir%\res\help-browser.ico
 ;Gui, Settings: Add, Text,         % dpi("xp+260 yp gFMMPathsHelpText"), (?)
 Gui, Settings: Add, Picture, % dpi("xp+250 yp+1 gFMMPathsHelpText w12 h-1"), %A_ScriptDir%\res\help-browser.ico
 
-Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, % dpi("cBlack"), MS Shell Dlg
 Gui, Settings: Font, ; needed as theme is stripped from control @ https://www.autohotkey.com/boards/viewtopic.php?p=399355#p399355
-Gui, Settings: Font, % dpi("s8")
+Gui, Settings: Font, % dpi("s8"), MS Shell Dlg
 
 Gui, Settings: Add, GroupBox, % dpi("x16 yp+34 w260 h94"), Other prg. (Hotkey: Copy File Names w. Full Path)
 
 Gui, Settings: Add, ListView, % dpi("x20 yp+16 w200 h72 checked grid vSelItem gOtherProgramEdit"), Program (double click to edit)
 
-Gui, Settings: Font, % dpi("s8 cGreen")
+Gui, Settings: Font, % dpi("s8 cGreen"), MS Shell Dlg
 ;Gui, Settings: Add, Text,      % dpi("xp+225 yp gOtherProgramHelp"), ⚠ (?) ; was gFMMFileManText
 Gui, Settings: Add, Picture, % dpi("xp+225 yp+1 gOtherProgramHelp w12 h-1"), %A_ScriptDir%\res\dialog-warning.ico
 Gui, Settings: Add, Picture, % dpi("xp+13 yp gOtherProgramHelp w12 h-1"), %A_ScriptDir%\res\help-browser.ico
 
-Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, % dpi("cBlack"), MS Shell Dlg
 Gui, Settings: Font, ; see note above, required to reset style
-Gui, Settings: Font, % dpi("s8")
+Gui, Settings: Font, % dpi("s8"), MS Shell Dlg
 
 ;Gui, Settings: Add, Button, % dpi("xp-17 yp+15 w46 h25 gOtherProgram"), Add
 Gui, Settings: Add, Button, % dpi("xp-32 yp+15 w46 h25 gOtherProgram"), Add
@@ -100,19 +100,19 @@ Gui, Settings: Add, Checkbox,  % dpi("xp    yp+20 w120 h16 Checked" checked " vQ
 Checked:=MatchList.settings.FindFiles
 Gui, Settings: Add, Checkbox,  % dpi("xp+160 yp w80 h16 Checked" checked " vFindFiles"), Find Files
 
-Gui, Settings: Font, % dpi("s8 cGreen")
+Gui, Settings: Font, % dpi("s8 cGreen"), MS Shell Dlg
 ;Gui, Settings: Add, Text,      % dpi("xp+75 yp-28 gFMMTCElseWhere"), (?)
 Gui, Settings: Add, Picture, % dpi("xp+70 yp-28 gFMMTCElseWhere w12 h-1"), %A_ScriptDir%\res\help-browser.ico
 
-Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, % dpi("cBlack"), MS Shell Dlg
 Gui, Settings: Font, ; see note above, required to reset style
-Gui, Settings: Font, % dpi("s8")
+Gui, Settings: Font, % dpi("s8"), MS Shell Dlg
 
-Gui, Settings: Font, % dpi("s8 cc0c0c0")
+Gui, Settings: Font, % dpi("s8 cc0c0c0"), MS Shell Dlg
 Gui, Settings: Add, Text,      % dpi("xp-230 yp+42 h10 "), ───────────────────────────────
-Gui, Settings: Font, % dpi("cBlack")
+Gui, Settings: Font, % dpi("cBlack"), MS Shell Dlg
 Gui, Settings: Font, ; see note above, required to reset style
-Gui, Settings: Font, % dpi("s8")
+Gui, Settings: Font, % dpi("s8"), MS Shell Dlg
 
 Gui, Settings: Add, Text,  % dpi("xp yp+16 w160 h16"), TC Copy Delay (ms, 0=ClipWait)::
 
@@ -383,9 +383,9 @@ Gui, Settings:+Disabled
 Gui, OtherProgram:Destroy
 Gui, OtherProgram:+OwnerSettings -SysMenu +Toolwindow
 ;Gui, OtherProgram: -SysMenu +Toolwindow
-Gui, OtherProgram:font,              bold
+Gui, OtherProgram:font,              bold, MS Shell Dlg
 Gui, OtherProgram:Add, Text, , Configure third party programs.`nSee help for details.
-Gui, OtherProgram:font,              
+Gui, OtherProgram:font, , MS Shell Dlg
 Gui, OtherProgram:Add, Text, , Program Name:
 Gui, OtherProgram:Add, Edit, % dpi("w300 h20 vProgramName"),
 Gui, OtherProgram:Add, Text, , Program Executable(s) [comma separated]:
@@ -412,9 +412,9 @@ If ProgramEditSettings
 	}
 If !ProgramEditSettings
 	{
-	 Gui, OtherProgram:font,              s14
+	 Gui, OtherProgram:font,              s14, MS Shell Dlg
 	 Gui, OtherProgram:Add, Button, % dpi("0x8000 x280 y5 w30 h30 gOtherProgramProcessClipboard"), % Chr(128203) ; 128203=Clipboard
-	 Gui, OtherProgram:font,              s8
+	 Gui, OtherProgram:font,              s8, MS Shell Dlg
 	}
 Gui, OtherProgram:Show,,F4MiniMenu - Setup other programs
 Return

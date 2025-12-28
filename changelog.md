@@ -1,5 +1,11 @@
 ## Changelog
 
+* 20251227 - v1.70 a) Added `MS Shell Dlg` to all "Gui, font" code so the Gui should be consistent even when the default font is set to something else - https://github.com/hi5/F4MiniMenu/issues/28  
+                   b) F4TCIE added logging for Document Templates  
+                   c) Revert change from v1.60/1.61 back to `ahk_class TTOTAL_CMD` (as this works with Quick Filter) but added `ActiveProcessTitle`  
+                   d) Hidden setting to add "Open Context Menu" option to menu (simply sends Shift+F10)  
+                   e) Added `DetectHiddenWindows` + `WinActivate, ahk_class AutoHotkey` before `Menu, *, Show` 2x `((Filtered)Menu.ahk)` to catch menu not having focus at times, background info https://www.autohotkey.com/boards/viewtopic.php?f=14&t=16809  
+
 * 20251223 - v1.61 a) Fix: GetPos setting 3 (64-bit) both panels; for setting 4 (both 32/64-bit) when in LEFT panel.  
                    b) New: F4TCIE added logging (if set).  
 

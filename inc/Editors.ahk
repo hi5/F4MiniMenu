@@ -48,7 +48,7 @@ Menu, MenuBar, Add, %A_Space%Edit, :EditMenu
 Gui, Browse:Menu, MenuBar
 
 ; INI Gui
-Gui, Browse:font,          % dpi("s8")
+Gui, Browse:font,          % dpi("s8"), MS Shell Dlg
 Gui, Browse:Add, ListView, % dpi("x6 y5 w780 h285 grid hwndhLV vLV gLVLabel"), Program|Parameters|Start Dir.|Window|Extensions|Method|D&D|Open|Editor|Icon|Name
 Gui, Browse:Add, GroupBox, % dpi("x6 yp+290 w390 h120 vGroupBoxInfo"), Comments
 Gui, Browse:Add, Text,     % dpi("x16 yp+20 w340 vInfoText"), %infotext%
@@ -201,7 +201,7 @@ If !New
 	}
 
 Gui, Modify:+OwnerBrowse -SysMenu
-Gui, Modify:font,              % dpi("s8")
+Gui, Modify:font,              % dpi("s8"), MS Shell Dlg
 Gui, Modify:Add, Text,         % dpi("x10  y10 w77  h18"), &Exe
 Gui, Modify:Add, Edit,         % dpi("x89  y8  w290 h20 vExe"), %Exe%
 Gui, Modify:Add, Button,       % dpi("x386 y8  w30  h20 gSelectExe"), >>
