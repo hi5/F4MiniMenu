@@ -16,6 +16,7 @@ Returned position:
 4: Docked next of current file (in Opposite panel)
 
 History:
+- 20251228 add ActiveProcessTitle, log Position for debug
 - 20251225 revert ahk_id %ActiveProcesshwnd% back to A
 - 20251223 fix for Position = 4 when in RIGHT panel (it was placed to the RIGHT of the TC window). Set to fixed position x:=5
 - 20250915 update to accommodate removal of Explorer_Active() or DoubleCommander_Active() or XYPlorer_Active()
@@ -24,8 +25,10 @@ History:
 
 GetPos(Position="1", MenuSize="5", Offset=40)
 	{
+	 Global MatchList
 	 ; center in window for all programs apart from TC where we respect the setting
 	 WinGet, ActiveProcessName, ProcessName, A
+	 WinGetTitle, ActiveProcessTitle, A
 	 if ActiveProcessName not in TOTALCMD.EXE,TOTALCMD64.EXE
 		Position:=2
 
@@ -33,7 +36,9 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 	 If (Position = 1) ; fastest method so deal with it first
 		{
 		 MouseGetPos, X, Y
-		 Pos.Insert("x", X), Pos.Insert("y", Y-Offset)
+		 Pos.Insert("x", X), Pos.Insert("y", Y-Offset), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
+		 If MatchList.Settings.log
+			Log(A_Now " : GetPos, Position 1 -> " X ":" Y ,MatchList.Settings.logFile)
 		 Return Pos
 		}
 
@@ -43,20 +48,22 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 	 If (Position = 2) ; second fastest method so deal with it first
 		{
 		 X:=WinWidth/2-100, Y:=WinHeight/2-WinY ; Y:=WinHeight/2-(MenuSize*15)-50 ; Crude calculation
-		 Pos.Insert("x", X), Pos.Insert("y", Y)
+		 Pos.Insert("x", Winx+X), Pos.Insert("y", Y-Offset), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
+		 If MatchList.Settings.log
+			Log(A_Now " : GetPos, Position 2 -> " X ":" Y ,MatchList.Settings.logFile)
 		 Return Pos
 		}
 
 	 ; Get focused control info + Listbox properties to calculate Y position of popup menu
 	 ControlGetFocus, FocusCtrl, A
 	 ControlGetPos, CtrlX, CtrlY, CtrlWidth, CtrlHeight, %FocusCtrl%, A
-	 SendMessage, 0x1A1, 0, 0, %FocusCtrl%, A  ; 0x1A1 is LB_GETITEMHEIGHT
-	 LB_GETITEMHEIGHT:=ErrorLevel                                       ;
-	 SendMessage, 0x188, 0, 0, %FocusCtrl%, A  ; 0x188 is LB_GETCURSEL
-	 LB_GETCURSEL:=ErrorLevel + 1                                       ; Convert from zero-based to one-based.
-	 SendMessage, 0x18E, 0, 0, %FocusCtrl%, A  ; 0x18E is LB_GETTOPINDEX Gets the index of the first visible item in a list box. Initially the item with index 0 is at the top of the list box, but if the list box contents have been scrolled another item may be at the top. The first visible item in a multiple-column list box is the top-left item.
-	 LB_GETTOPINDEX:=ErrorLevel                                         ;
-	 SendMessage, 0x18B, 0, 0, %FocusCtrl%, A  ; 0x18B is LB_GETCOUNT Gets the number of items in a list box.
+	 SendMessage, 0x1A1, 0, 0, %FocusCtrl%, A   ; 0x1A1 is LB_GETITEMHEIGHT
+	 LB_GETITEMHEIGHT:=ErrorLevel               ;
+	 SendMessage, 0x188, 0, 0, %FocusCtrl%, A   ; 0x188 is LB_GETCURSEL
+	 LB_GETCURSEL:=ErrorLevel + 1               ; Convert from zero-based to one-based.
+	 SendMessage, 0x18E, 0, 0, %FocusCtrl%, A   ; 0x18E is LB_GETTOPINDEX Gets the index of the first visible item in a list box. Initially the item with index 0 is at the top of the list box, but if the list box contents have been scrolled another item may be at the top. The first visible item in a multiple-column list box is the top-left item.
+	 LB_GETTOPINDEX:=ErrorLevel                 ;
+	 SendMessage, 0x18B, 0, 0, %FocusCtrl%, A   ; 0x18B is LB_GETCOUNT Gets the number of items in a list box.
 	 LB_GETCOUNT:=ErrorLevel
 
 	 ; Start calculations
@@ -76,20 +83,24 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 	 If (Position = 3)
 		{
 		 X:=CtrlX + 100
-		 Pos.Insert("x", X), Pos.Insert("y", Y)
+		 Pos.Insert("x", X), Pos.Insert("y", Y), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
+		 If MatchList.Settings.log
+			Log(A_Now " : GetPos, Position 3 -> " X ":" Y ,MatchList.Settings.logFile)
 		 Return Pos
 		}
-	
+
 	 ; TMyListBox2 (32-bit), LCLListBox2 (64-bit) - LEFT panel
 	 ; TMyListBox1 (32-bit), LCLListBox1 (64-bit) - RIGHT panel
 	 If (Position = 4)
 		{
-		 If InStr(FocusCtrl,"ListBox2") 
-			X:= CtrlX + CtrlWidth - 5
+		 If InStr(FocusCtrl,"ListBox2")
+			X:= CtrlX + CtrlWidth
 		 else
 			X:=5
-		 Pos.Insert("x", X), Pos.Insert("y", Y)
+		 Pos.Insert("x", X), Pos.Insert("y", Y-Offset), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
 ;		 ToolTip % FocusCtrl ":" A_Now
+		 If MatchList.Settings.log
+			Log(A_Now " : GetPos, Position 4 -> " X ":" Y ,MatchList.Settings.logFile)
 		 Return Pos
 		}
 	}

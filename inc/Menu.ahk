@@ -9,8 +9,7 @@ Include for F4MiniMenu.ahk
 ShowMenu:
 CoordMode, Menu, Client
 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
-DetectHiddenWindows, On
-WinActivate, ahk_class AutoHotkey ; catch menu not having focus at times, see changelog v1.70
+WinActivate, % Coord["ActiveProcessTitle"]
 Menu, MyMenu, Show, % Coord["x"], % Coord["y"]
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 Return

@@ -1,5 +1,7 @@
 ## Changelog
 
+* 20251228 - v1.71 a) Remove `DetectHiddenWindows` + `WinActivate, ahk_class AutoHotkey` (e.g. revert change 1.70 e)), replaced it with `WinActivate, % Coord["ActiveProcessTitle"]` (2x)  
+
 * 20251227 - v1.70 a) Added `MS Shell Dlg` to all "Gui, font" code so the Gui should be consistent even when the default font is set to something else - https://github.com/hi5/F4MiniMenu/issues/28  
                    b) F4TCIE added logging for Document Templates  
                    c) Revert change from v1.60/1.61 back to `ahk_class TTOTAL_CMD` (as this works with Quick Filter) but added `ActiveProcessTitle`  

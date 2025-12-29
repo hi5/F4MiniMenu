@@ -28,8 +28,7 @@ If (MenuCounter = 3) and (MatchList.Settings.FilteredMenuAutoEdit = 2)
 Else
 	{
 	 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
-	 DetectHiddenWindows, On
-	 WinActivate, ahk_class AutoHotkey ; catch menu not having focus at times, see changelog v1.70
+	 WinActivate, % Coord["ActiveProcessTitle"]
 	 Menu, %MenuName%, Show, % Coord["x"], % Coord["y"] 
 	}	
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
@@ -79,6 +78,8 @@ Try
 	Menu, MyFilteredMenu, Icon,  % MatchList.settings.FullMenu ? "&" MatchList.settings.FullMenu " Full menu" : "   Full menu", res\f4.ico
 
 Gosub, AddMenuProgramOptions
+
+
 
 If (MenuCounter = 2) ; we haven't found any matches, so just show full menu
 	MenuName:="MyMenu"

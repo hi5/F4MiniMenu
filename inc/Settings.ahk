@@ -114,7 +114,7 @@ Gui, Settings: Font, % dpi("cBlack"), MS Shell Dlg
 Gui, Settings: Font, ; see note above, required to reset style
 Gui, Settings: Font, % dpi("s8"), MS Shell Dlg
 
-Gui, Settings: Add, Text,  % dpi("xp yp+16 w160 h16"), TC Copy Delay (ms, 0=ClipWait)::
+Gui, Settings: Add, Text,  % dpi("xp yp+16 w167 h16"), TC Copy Delay (ms, 0=ClipWait):
 
 Gui, Settings: Add, DropDownList,  % dpi("xp+170 yp-3 w60 h20 r7 vTCDelay"), 0|100|200|300|400|500|600|700|800|900|1000
 GuiControl, Settings:, TCDelay, % "|" LTrim(StrReplace("|0|100|200|300|400|500|600|700|800|900|1000|", "|" Matchlist.Settings.TCDelay "|", "|" Matchlist.Settings.TCDelay "||"),"|")
@@ -385,6 +385,7 @@ Gui, OtherProgram:+OwnerSettings -SysMenu +Toolwindow
 ;Gui, OtherProgram: -SysMenu +Toolwindow
 Gui, OtherProgram:font,              bold, MS Shell Dlg
 Gui, OtherProgram:Add, Text, , Configure third party programs.`nSee help for details.
+Gui, OtherProgram:font,
 Gui, OtherProgram:font, , MS Shell Dlg
 Gui, OtherProgram:Add, Text, , Program Name:
 Gui, OtherProgram:Add, Edit, % dpi("w300 h20 vProgramName"),
