@@ -1,5 +1,10 @@
 ## Changelog
 
+* 20260525 - v1.80 a) Added OffsetX and OffsetY for menu position (both TC and Other programs)  
+                   b) Added `WinActivate, ahk_id %A_ScriptHwnd%` to catch menu not having focus at times, background info, background https://old.reddit.com/r/AutoHotkey/comments/13ka847/menu_sometimes_doesnt_get_focus_when_open/  
+                   c) Apply dpi() to LV_ModifyCol() in listview for other programs in Settings  
+                   d) Added hidden BreakMenu setting (for Full Menu): 0 default, don't break Menu; 1 best attempt to split Menu in two columns; >1 specific break after set entries.  
+
 * 20251228 - v1.71 a) Remove `DetectHiddenWindows` + `WinActivate, ahk_class AutoHotkey` (e.g. revert change 1.70 e)), replaced it with `WinActivate, % Coord["ActiveProcessTitle"]` (2x)  
 
 * 20251227 - v1.70 a) Added `MS Shell Dlg` to all "Gui, font" code so the Gui should be consistent even when the default font is set to something else - https://github.com/hi5/F4MiniMenu/issues/28  

@@ -27,10 +27,11 @@ If (MenuCounter = 3) and (MatchList.Settings.FilteredMenuAutoEdit = 2)
 	}
 Else
 	{
-	 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
+	 Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex(), 40, MatchList.settings.TCOffsetX, MatchList.settings.TCOffsetY)
 	 WinActivate, % Coord["ActiveProcessTitle"]
-	 Menu, %MenuName%, Show, % Coord["x"], % Coord["y"] 
-	}	
+	 WinActivate, ahk_id %A_ScriptHwnd%
+	 Menu, %MenuName%, Show, % Coord["x"], % Coord["y"]
+	}
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 MenuCounter:=""
 Return
@@ -72,7 +73,7 @@ for k, v in MatchList
 		}
 	}
 
-Menu, MyFilteredMenu, Add, 
+Menu, MyFilteredMenu, Add,
 Menu, MyFilteredMenu, Add, % MatchList.settings.FullMenu ? "&" MatchList.settings.FullMenu " Full menu" : "   Full menu", :MyMenu
 Try
 	Menu, MyFilteredMenu, Icon,  % MatchList.settings.FullMenu ? "&" MatchList.settings.FullMenu " Full menu" : "   Full menu", res\f4.ico

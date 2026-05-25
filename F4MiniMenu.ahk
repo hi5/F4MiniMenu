@@ -1,9 +1,9 @@
 /*
 
 Script      : F4MiniMenu.ahk for Total Commander - AutoHotkey 1.1+ (Ansi and Unicode)
-Version     : v1.71
+Version     : v1.80
 Author      : hi5
-Last update : 28 December 2025
+Last update : May 2026
 Purpose     : Minimalistic clone of the F4 Menu program for Total Commander (open selected files in editor(s))
 Source      : https://github.com/hi5/F4MiniMenu
 
@@ -20,10 +20,10 @@ SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 2
 ; Setup variables, menu, hotkeys etc
 
-F4Version:="v1.71"
+F4Version:="v1.80"
 
 ; <for compiled scripts>
-;@Ahk2Exe-SetFileVersion 1.71
+;@Ahk2Exe-SetFileVersion 1.80
 ;@Ahk2Exe-SetProductName F4MiniMenu
 ;@Ahk2Exe-SetDescription F4MiniMenu: Open files from TC
 ;@Ahk2Exe-SetProductVersion Compiled with AutoHotkey v%A_AhkVersion%
@@ -262,6 +262,9 @@ ProcessFiles(MatchList, SelectedEditor = "-1")
 
 			 ; Check if we possibly have selected file(s) from an archive
 			 If RegExMatch(Files,"iUm)" ArchiveExtentions)
+			 ; TC 11.57 
+			 ; Send WM_USER+50 with WPARAM set to 1023/1024 (left/right) to check if path is an archive.
+			 ; 0=no, >0 means length of archive file name without subdirectory in the archive (32/64)
 				{
 				 Files:=StrReplace(Files,"`r","")
 				 If InStr(Files,"`n")
@@ -438,6 +441,12 @@ GetFiles()
 	 ; v1.51 ensure we only do it when TC is active
 	 ; + additional safety check to see if we can find a valid path
 ;	 If MatchList.settings.QuickView and InStr("TOTALCMD.EXE,TOTALCMD64.EXE",ActiveProcessName)
+
+	 ; TC 11.57
+	 ; WM_USER+50 with wparam set to 1000 to get active panel: 1=left, 2=right (32/64)
+	 ; WM_USER+50 with WPARAM set to 1028 to get the window handle of the Quick View panel, or 0 if none (32/64)
+	 ; WM_USER+50 with WPARAM set to 1027 to get status of Quick View panel: 0=none, 1=left panel, 2=right panel, 3=separate quick view window (Ctrl+Shift+Q) (32/64)
+
 	 If MatchList.settings.QuickView and WinActive("ahk_pid " ActiveProcessPID)
 		{
 ;		 WinGetText, Files, ahk_class TTOTAL_CMD, Lister
@@ -1102,6 +1111,9 @@ FileAppend,
 		<QuickView>1</QuickView>
 		<log>0</log>
 		<logfile>%A_ScriptDir%\logfile.txt</logfile>
+		<TCOffsetX>0</TCOffsetX>
+		<TCOffsetY>0</TCOffsetY>
+		<BreakMenu>0</BreakMenu>
 	</Invalid_Name>
 	<Invalid_Name id="1" ahk="True">
 		<Exe>c:\WINDOWS\notepad.exe</Exe>
@@ -1138,6 +1150,9 @@ FindFiles=1
 QuickView=1
 log=0
 logfile=%A_ScriptDir%\logfile.txt
+TCOffsetX=0
+TCOffsetY=0
+BreakMenu=0
 [1]
 delay=0
 exe=c:\WINDOWS\notepad.exe

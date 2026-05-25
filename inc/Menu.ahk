@@ -8,8 +8,9 @@ Include for F4MiniMenu.ahk
 
 ShowMenu:
 CoordMode, Menu, Client
-Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex())
+Coord:=GetPos(MatchList.settings.MenuPos,MatchList.MaxIndex(), 40, MatchList.settings.TCOffsetX, MatchList.settings.TCOffsetY)
 WinActivate, % Coord["ActiveProcessTitle"]
+WinActivate, ahk_id %A_ScriptHwnd%
 Menu, MyMenu, Show, % Coord["x"], % Coord["y"]
 MatchList.Temp.Files:="",MatchList.Temp.SelectedExtensions:="",MatchList.Delete("Temp")
 Return
@@ -21,6 +22,18 @@ Menu, MyMenu, Add,
 Menu, MyMenu, DeleteAll
 
 MenuName:="MyMenu"
+
+BreakMenuCounter:=0
+
+If (MatchList.Settings.BreakMenu = 0)
+	BreakMenuCounterUseWhen:=0
+else If (MatchList.Settings.BreakMenu = 1)
+	; use +5 as we have some other options which should be counted in the total as well
+	; (so not just total number of programs appearing in the menu)
+	; then divide resulting total in 2 to have a best guess at balanced columns
+	BreakMenuCounterUseWhen:=Round((MatchList.Count()+5)/2)
+else If (MatchList.Settings.BreakMenu > 1) ; break after user specified number
+	BreakMenuCounterUseWhen:=MatchList.Settings.BreakMenu
 
 for k, v in MatchList
 	{
@@ -48,7 +61,6 @@ Return
 DoubleTrayClick:
 Send {rbutton} ; show tray menu
 Return
-
 
 ; Tray menu
 MenuHandler:
@@ -118,7 +130,18 @@ Return
 
 AddMenuEntry:
 
-	 Menu, %MenuName%, Add, %ShortName%, MenuHandler
+	 BreakIt:=""
+	 If (MenuName = "MyMenu")
+		{
+		 BreakMenuCounter++
+		 If (BreakMenuCounterUseWhen <> 0)
+			{
+			 If (BreakMenuCounter = BreakMenuCounterUseWhen)
+			 BreakIt:="+BarBreak"
+			}
+		}
+
+	 Menu, %MenuName%, Add, %ShortName%, MenuHandler, %BreakIt%
 
 	 Try
 		{
@@ -131,13 +154,9 @@ AddMenuEntry:
 		{
 		 Menu, %MenuName%, Icon, %ShortName%, shell32.dll, 3
 		}
-	 If (k = 1) ; Add line after default editors
+	 If (k = 1) ; Add line after default editor
 		Menu, %MenuName%, Add
 
-If debug
-	{
-	 debug_menu .= MenuCounter " : " ShortName "`n"
-	}
 Return
 
 AddMenuProgramOptions:
@@ -151,7 +170,10 @@ If MatchList.Settings.ContextMenu
 	 Menu, %MenuName%, Add
 	}
 Menu, %MenuName%, Add,  %MenuPadding%Add new Editor,    ConfigEditorsNew
-Menu, %MenuName%, Icon, %MenuPadding%Add new Editor,    shell32.dll, 176
+If FileExist(A_ScriptDir "\res\new-oldskool.ico")
+	Menu, %MenuName%, Icon, %MenuPadding%Add new Editor,    res\new-oldskool.ico
+else
+	Menu, %MenuName%, Icon, %MenuPadding%Add new Editor,    shell32.dll, 176
 Menu, %MenuName%, Add,  %MenuPadding%Configure Editors, ConfigEditors
 Menu, %MenuName%, Icon, %MenuPadding%Configure Editors, shell32.dll, 70
 Menu, %MenuName%, Add,  %MenuPadding%Scan Document Templates, DocumentTemplatesScan

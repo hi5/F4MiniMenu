@@ -1,7 +1,9 @@
-# F4MiniMenu - v1.71
+# F4MiniMenu - v1.80
 
-A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).  
-(and experimental/rudimentary support for others incl. Windows Explorer, Double Commander, XYPlorer, Everything, etc, but only [when activated](#other-programs)).  
+![Language AutoHotkey v1.1](img/language-autohotkey-v1_1.svg "Language AutoHotkey v1.1")
+
+A <kbd>F4</kbd> Menu program for [Total Commander](http://www.ghisler.com/) to open selected file(s) in editor(s).
+(and experimental/rudimentary support for others incl. Windows Explorer, Double Commander, XYPlorer, Everything, etc, but only [when activated](#other-programs)).
 
 It is a *standalone* program which runs separatly from Total Commander. See Getting Started.
 
@@ -106,6 +108,7 @@ Once F4MiniMenu is started, the Global settings and new editors with a variety o
 
 * Menu
   - Position of Menu
+  - Offset X and Y for the Menu position relative to the calculated position (0 by default). Negative X moves left, negative Y moves up. 
   - Accelerator key for full menu when using the filtered menu
   - Show Menu or Edit file directly when using the filtered menu
 * Files (Maximum number of files to be opened, will ask for confirmation if more are selected)
@@ -141,6 +144,35 @@ Regarding `TC Copy Delay`: the default 100ms seems to work well, even in very la
 __WinWait__ Set the maximum time in seconds to wait for the selected program window to appear before applying the selected Window Mode (Normal, Maximized, Minimized -- see Editor configuration). This should also prevent any unexpected "waiting" in case a program launch failed (crash, very slow program start etc).  
 As soon as the window appears it will continue to apply the Window mode and no longer wait.
 It may not be possible to edit (open) a new document during this defined waiting period.
+
+## Offset X, Y Menu 
+
+Use Offset X and Y to move the position of the menu(s). These are relative values compared to the calculated position.
+
+A positive X value moves the menu position to the right, a positive Y moves the menu position down.
+
+For TC: define the offset in the Settings. For other programs either edit the INI file manually, save and restart F4MM, or use the Settings (Add or double click to edit)
+
+If the menu appears off-screen, try reducing the offset values.
+
+### TC
+
+Set the X and Y offset in the Settings. The values are limited to the -100 to 100 range.
+For more extreme values edit the `TCOffsetX` and `TCOffsetY` in `F4MiniMenu.xml` or `F4MiniMenu.ini` manually.
+Note: Values outside of the above range will be reset/lost when using the Settings gui. 
+
+### Other programs
+
+Add the following two keys to `F4MMOtherPrograms.ini` for each program where an offset should be used.
+
+```ini
+OffsetX=0
+OffsetY=0
+```
+
+Save the ini file and restart F4MM manually. See the Optional values in the example provided in `f4mm-other-file-managers.md`
+
+Or doubleclick a program name to add or change the X and Y offset.
 
 ## Editor configuration
 

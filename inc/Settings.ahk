@@ -25,7 +25,13 @@ Gui, Settings: +OwnDialogs
 Gui, Settings: font,              % dpi("s8"), MS Shell Dlg
 Gui, Settings: Add, GroupBox,     % dpi("x16 y7 w540 h70"), Menu
 Gui, Settings: Add, Text,         % dpi("x25 y25 w309 h16"), &Selection menu appears (TC only)
-Gui, Settings: Add, DropDownList, % dpi("x328 y20 w219 h25 r4 Choose" MatchList.settings.MenuPos " vMenuPos AltSubmit"), 1 - At Mouse cursor|2 - Centered in window|3 - Right next to current file|4 - Docked next to current file (opposite panel)
+Gui, Settings: Add, DropDownList, % dpi("x190 y20 w168 h25 r4 Choose" MatchList.settings.MenuPos " vMenuPos AltSubmit"), 1 - At Mouse cursor|2 - Centered in window|3 - Right next to current file|4 - Docked in opposite panel
+Gui, Settings: Add, Text,         % dpi("x365 y25 w60 h16"), TC Offset X:
+Gui, Settings: Add, Edit,         % dpi("x426 y20 w46 h21")
+Gui, Settings:Add,  UpDown, Range-100-100 vTCOffsetX, % MatchList.settings.TCOffsetX
+Gui, Settings: Add, Text,         % dpi("x482 y25 w50 h16"), Y:
+Gui, Settings: Add, Edit,         % dpi("x501 y20 w46 h21")
+Gui, Settings:Add,  UpDown, Range-100-100 vTCOffsetY, % MatchList.settings.TCOffsetY
 Gui, Settings: Add, Text,         % dpi("x25 yp+35 w309 h16"), &Accelerator key for full menu (for use in filtered menu, 1 char.)
 Gui, Settings: Add, Edit,         % dpi("x328 yp-5 w30 h21 vFullMenu"), % MatchList.settings.FullMenu ; %
 Gui, Settings: Add, Text,         % dpi("x365 yp+5 w70 h16"), If one result:
@@ -201,7 +207,7 @@ Gui, Settings: Add, Button, % dpi("xp     yp+40 w120 h25 gSettingsGuiClose"), Ca
 Gui, Settings: Add, Link,   % dpi("x20 yp+35"), F4MiniMenu %F4Version%: Open selected file(s) from TC in defined editor(s). More info at <a href="https://github.com/hi5/F4MiniMenu">Github.com/hi5/F4MiniMenu</a>.
 
 Gosub, ParseSettingsF4MMOtherPrograms
-LV_ModifyCol(1,170)
+LV_ModifyCol(1,(170*dpi()))
 
 Gui, Settings: Show,        % dpi("center w570"), F4MiniMenu - Settings
 
@@ -226,7 +232,7 @@ for k, v in F4MMOtherPrograms
 	 if F4MMOtherPrograms[k].Name ; we have .group and .active so we only need to add actual program
 		LV_Add(F4MMOtherPrograms[k].Active ? "check" : "", F4MMOtherPrograms[k].Name)
 	}
-
+LV_ModifyCol(1,(170*dpi()))
 Return
 
 ButtonDocumentTemplates:
@@ -249,6 +255,8 @@ If (MaxFiles > 50)
 MatchList.settings.MaxFiles:=MaxFiles
 MatchList.settings.TCStart:=TCStart
 MatchList.settings.TCPath:=TCPath
+MatchList.settings.TCOffsetX:=TCOffsetX
+MatchList.settings.TCOffsetY:=TCOffsetY
 MatchList.settings.F4MMCloseAll:=F4MMCloseAll
 MatchList.settings.F4MMClosePID:=F4MMClosePID
 MatchList.settings.FullMenu:=trim(SubStr(FullMenu,1,1)," `t&")
@@ -384,21 +392,32 @@ Gui, OtherProgram:Destroy
 Gui, OtherProgram:+OwnerSettings -SysMenu +Toolwindow
 ;Gui, OtherProgram: -SysMenu +Toolwindow
 Gui, OtherProgram:font,              bold, MS Shell Dlg
-Gui, OtherProgram:Add, Text, , Configure third party programs.`nSee help for details.
+Gui, OtherProgram:Add, Text, % dpi("x10"), Configure third party programs.`nSee help for details.
 Gui, OtherProgram:font,
 Gui, OtherProgram:font, , MS Shell Dlg
-Gui, OtherProgram:Add, Text, , Program Name:
+Gui, OtherProgram:Add, Text, % dpi("x10"), Program Name:
 Gui, OtherProgram:Add, Edit, % dpi("w300 h20 vProgramName"),
-Gui, OtherProgram:Add, Text, , Program Executable(s) [comma separated]:
+Gui, OtherProgram:Add, Text, % dpi("x10"), Program Executable(s) [comma separated]:
 Gui, OtherProgram:Add, Edit, % dpi("w300 h20 vProgramExe"),
-Gui, OtherProgram:Add, Text, , Shortcut to copy file path(s):
+Gui, OtherProgram:Add, Text, % dpi("x10"), Shortcut to copy file path(s):
 Gui, OtherProgram:Add, Hotkey, % dpi("w300 h20 vProgramShortCut"),
-Gui, OtherProgram:Add, Text, , Copy Delay (ms, 0=ClipWait):
-Gui, OtherProgram:Add, DropDownList, % dpi("w140 R6 vProgramDelay"), 0|100||200|300|400|500
-Gui, OtherProgram:Add, Text, % dpi("xp+159 yp-19"), Send Method:
-Gui, OtherProgram:Add, DropDownList, % dpi("w140 R2 vProgramSendMethod"), Send||ControlSend
-Gui, OtherProgram:Add, Button, % dpi("w30  x9     yp+40  gOtherProgramHelp")  ,?
-Gui, OtherProgram:Add, Button, % dpi("w100 x+65   yp     gOtherProgramCancel"),Cancel
+
+Gui, OtherProgram:Add, Text, % dpi("x10 yp+30"), Copy Delay (ms, 0=ClipWait):
+Gui, OtherProgram:Add, Text, % dpi("xp+160 xp+160"), Send Method:
+Gui, OtherProgram:Add, DropDownList, % dpi("x10 w140 R6 vProgramDelay"), 0|100||200|300|400|500
+Gui, OtherProgram:Add, DropDownList, % dpi("xp+160 w140 R2 vProgramSendMethod"), Send||ControlSend
+
+; offset
+Gui, OtherProgram:Add, Text, % dpi("x10 yp+30"), Menu Offset, X:
+Gui, OtherProgram:Add, Text, % dpi("xp+160 xp+160"), Menu Offset, X:
+Gui, OtherProgram:Add, Edit, % dpi("x10 w140 h20")
+Gui, OtherProgram:Add, UpDown, Range-500-500 vOffsetX
+Gui, OtherProgram:Add, Edit, % dpi("xp+160 w140 h20")
+Gui, OtherProgram:Add, UpDown, Range-500-500 vOffsetY
+
+; buttons
+Gui, OtherProgram:Add, Button, % dpi("x10 w30  x9     yp+40  gOtherProgramHelp")  ,?
+Gui, OtherProgram:Add, Button, % dpi("w100 x+66   yp     gOtherProgramCancel"),Cancel
 Gui, OtherProgram:Add, Button, % dpi("w100 xp+105 yp     gOtherProgramSave")  ,Save
 If ProgramEditSettings
 	{
@@ -410,6 +429,8 @@ If ProgramEditSettings
 	 GuiControl,OtherProgram:,ProgramSendMethod, |
 	 GuiControl,OtherProgram:,ProgramDelay     , % LTrim(StrReplace("|0|100|200|300|400|500|","|" F4MMOtherPrograms[ProgramToEdit,"ProgramDelay"]      . "|","|" F4MMOtherPrograms[ProgramToEdit,"ProgramDelay"]      . "||"),"|")
 	 GuiControl,OtherProgram:,ProgramSendMethod, % LTrim(StrReplace("|Send|ControlSend|"     ,"|" F4MMOtherPrograms[ProgramToEdit,"ProgramSendMethod"] . "|","|" F4MMOtherPrograms[ProgramToEdit,"ProgramSendMethod"] . "||"),"|")
+	 GuiControl,OtherProgram:,OffsetX       , % F4MMOtherPrograms[ProgramToEdit,"OffsetX"]
+	 GuiControl,OtherProgram:,OffsetY       , % F4MMOtherPrograms[ProgramToEdit,"OffsetY"]
 	}
 If !ProgramEditSettings
 	{
@@ -444,6 +465,12 @@ IniWrite, %ProgramShortCut%  , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName
 IniWrite, %ProgramDelay%     , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, ProgramDelay
 IniWrite, %ProgramSendMethod%, %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, ProgramSendMethod
 IniWrite, 1                  , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, Active
+If (OffsetX = "")
+	OffsetX:=0
+If (OffsetY = "")
+	OffsetY:=0
+IniWrite, %OffsetX%          , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, OffsetX
+IniWrite, %OffsetY%          , %A_ScriptDir%\F4MMOtherPrograms.ini, %ProgramName%, OffsetY
 
 Gui, Settings: Default
 Gui, ListView, SelItem
@@ -477,6 +504,10 @@ Loop, parse, Clipboard, `n, `r
 		GuiControl, OtherProgram:, ProgramDelay, % "|" StrReplace("0|100|200|300|400|500|",Trim(StrSplit(A_LoopField,"=").2," `r`n`t"), Trim(StrSplit(A_LoopField,"=").2," `r`n`t") "|")
 	If InStr(A_LoopField,"ProgramSendMethod") and RegExMatch(A_LoopField,"i)\b(send|controlsend)\b")
 		GuiControl, OtherProgram:, ProgramSendMethod, % "|" RegExReplace("Send|ControlSend|","iU)\b" Trim(StrSplit(A_LoopField,"=").2," `r`n`t") "\b", Trim(StrSplit(A_LoopField,"=").2," `r`n`t") "|")
+	If InStr(A_LoopField,"OffsetX")
+		GuiControl, OtherProgram:, OffsetX, % Trim(StrSplit(A_LoopField,"=").2," `r`n`t")
+	If InStr(A_LoopField,"OffsetY")
+		GuiControl, OtherProgram:, OffsetY, % Trim(StrSplit(A_LoopField,"=").2," `r`n`t")
 	}
 Return
 
@@ -543,5 +574,7 @@ Send Method: Choose between Send (default) and ControlSend. If Send fails, Contr
 When a "setup" has been copied to the clipboard, pressing the Clipboard icon will fill in the fields accordingly. The readme.md has some examples.
 
 When a program is added or edited it is automatically "Active" for F4MM. Use the Checkboxes to change the state (active/inactive).
+
+Offset: By default the Menus should appear in the center of the application window. To change the position enter Offset for X and Y. A positive X value moves the menu position to the right, a positive Y moves the menu position down. See readme.md for more details.
 )
 Return
