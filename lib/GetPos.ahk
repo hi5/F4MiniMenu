@@ -16,6 +16,7 @@ Returned position:
 4: Docked next of current file (in Opposite panel)
 
 History:
+- 20260318 OffsetX,Y for TC and others...
 - 20251228 add ActiveProcessTitle, log Position for debug
 - 20251225 revert ahk_id %ActiveProcesshwnd% back to A
 - 20251223 fix for Position = 4 when in RIGHT panel (it was placed to the RIGHT of the TC window). Set to fixed position x:=5
@@ -23,20 +24,24 @@ History:
 
 */
 
-GetPos(Position="1", MenuSize="5", Offset=40)
+GetPos(Position=1, MenuSize=5, Offset=40, OffsetX=0, OffsetY=0)
 	{
-	 Global MatchList
+	 Global MatchList,F4MMOtherPrograms
 	 ; center in window for all programs apart from TC where we respect the setting
 	 WinGet, ActiveProcessName, ProcessName, A
 	 WinGetTitle, ActiveProcessTitle, A
 	 if ActiveProcessName not in TOTALCMD.EXE,TOTALCMD64.EXE
-		Position:=2
+		{
+		 Position:=2
+		 OffsetX:=F4MMOtherPrograms[ActiveProcessName,"OffsetX"]
+		 OffsetY:=F4MMOtherPrograms[ActiveProcessName,"OffsetY"]
+		}
 
 	 Pos:=[]
 	 If (Position = 1) ; fastest method so deal with it first
 		{
 		 MouseGetPos, X, Y
-		 Pos.Insert("x", X), Pos.Insert("y", Y-Offset), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
+		 Pos.Insert("x", X+OffsetX), Pos.Insert("y", Y-Offset+OffsetY), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
 		 If MatchList.Settings.log
 			Log(A_Now " : GetPos, Position 1 -> " X ":" Y ,MatchList.Settings.logFile)
 		 Return Pos
@@ -47,8 +52,14 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 
 	 If (Position = 2) ; second fastest method so deal with it first
 		{
-		 X:=WinWidth/2-100, Y:=WinHeight/2-WinY ; Y:=WinHeight/2-(MenuSize*15)-50 ; Crude calculation
-		 Pos.Insert("x", Winx+X), Pos.Insert("y", Y-Offset), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
+		 ; changed to Screen for v1.80 offset position, X/Y was way off already to begin with prior to this
+		 CoordMode, Menu, Screen
+		 DpiScaling := A_ScreenDPI / 96
+		 X:=WinX + (WinWidth / 2 / DpiScaling)
+		 X+=OffsetX
+		 Y:=WinY + (WinHeight / 2 / DpiScaling)
+		 Y+=OffsetY
+		 Pos.Insert("x", X), Pos.Insert("y", Y-Offset), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
 		 If MatchList.Settings.log
 			Log(A_Now " : GetPos, Position 2 -> " X ":" Y ,MatchList.Settings.logFile)
 		 Return Pos
@@ -82,7 +93,8 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 
 	 If (Position = 3)
 		{
-		 X:=CtrlX + 100
+		 X:=CtrlX + 100 + OffsetX
+		 Y+=OffsetY
 		 Pos.Insert("x", X), Pos.Insert("y", Y), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
 		 If MatchList.Settings.log
 			Log(A_Now " : GetPos, Position 3 -> " X ":" Y ,MatchList.Settings.logFile)
@@ -94,10 +106,10 @@ GetPos(Position="1", MenuSize="5", Offset=40)
 	 If (Position = 4)
 		{
 		 If InStr(FocusCtrl,"ListBox2")
-			X:= CtrlX + CtrlWidth
+			X:=CtrlX + CtrlWidth
 		 else
 			X:=5
-		 Pos.Insert("x", X), Pos.Insert("y", Y-Offset), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
+		 Pos.Insert("x", X+OffsetX), Pos.Insert("y", Y-Offset+OffsetY), Pos.Insert("ActiveProcessTitle", ActiveProcessTitle)
 ;		 ToolTip % FocusCtrl ":" A_Now
 		 If MatchList.Settings.log
 			Log(A_Now " : GetPos, Position 4 -> " X ":" Y ,MatchList.Settings.logFile)
